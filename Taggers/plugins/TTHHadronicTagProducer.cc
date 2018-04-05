@@ -72,6 +72,9 @@ namespace flashgg {
         double subleadPhoPtThreshold_;
         bool   subleadPhoUseVariableTh_;
         double subleadPhoOverMassThreshold_;
+
+        double diphotonMassThreshold_;
+
         //---jets
         double jetPtThreshold_;
         double jetEtaThreshold_;
@@ -190,7 +193,8 @@ namespace flashgg {
         useStdLeptonID_=iConfig.getParameter<bool>("useStdLeptonID");
         useElectronMVARecipe_=iConfig.getParameter<bool>("useElectronMVARecipe");
         useElectronLooseID_=iConfig.getParameter<bool>("useElectronLooseID");
-        
+
+        diphotonMassThreshold_ = iConfig.getParameter<double>( "diphotonMassThreshold"); 
 
         tthMVAweightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVAweightfile" ); 
 
@@ -339,6 +343,8 @@ namespace flashgg {
             JetBTagVal.clear();
 
             edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
+
+            if (dipho->mass() < diphotonMassThreshold_) { continue; } 
 
             idmva1_ = dipho->leadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
             idmva2_ = dipho->subLeadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
