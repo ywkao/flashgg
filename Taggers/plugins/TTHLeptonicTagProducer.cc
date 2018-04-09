@@ -87,8 +87,6 @@ namespace flashgg {
         double deltaRPhoElectronThreshold_;
         double deltaMassElectronZThreshold_;
 
-        double diphotonMassThreshold_;
-
         double TransverseImpactParam_EB;
         double LongitudinalImpactParam_EB;
         double TransverseImpactParam_EE;
@@ -132,8 +130,6 @@ namespace flashgg {
         bjetsNumberThreshold_ = iConfig.getParameter<double>( "bjetsNumberThreshold");
         jetPtThreshold_ = iConfig.getParameter<double>( "jetPtThreshold");
         jetEtaThreshold_ = iConfig.getParameter<double>( "jetEtaThreshold");
-
-        diphotonMassThreshold_ = iConfig.getParameter<double>( "diphotonMassThreshold");
 
         deltaRJetLeadPhoThreshold_ = iConfig.getParameter<double>( "deltaRJetLeadPhoThreshold");
         deltaRJetSubLeadPhoThreshold_ = iConfig.getParameter<double>( "deltaRJetSubLeadPhoThreshold");
@@ -269,8 +265,6 @@ namespace flashgg {
             edm::Ptr<flashgg::DiPhotonMVAResult> mvares = mvaResults->ptrAt( diphoIndex );
 
             TTHLeptonicTag tthltags_obj( dipho, mvares );
-
-            if( dipho->mass() < diphotonMassThreshold_ ) { continue; }
 
             if( dipho->leadingPhoton()->pt() < ( dipho->mass() )*leadPhoOverMassThreshold_ ) { continue; }
 

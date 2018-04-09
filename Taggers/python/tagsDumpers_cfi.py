@@ -2,10 +2,10 @@ import FWCore.ParameterSet.Config as cms
 
 from flashgg.Taggers.tagsDumpConfig_cff import tagsDumpConfig
 
-def createTagDumper (tagName):
-    tagDumper = cms.EDAnalyzer('CutBased'+tagName.replace("Loose","")+'Dumper',
+def createTagDumper (tagName): 
+    tagDumper = cms.EDAnalyzer('CutBased'+tagName+'Dumper',
                                **tagsDumpConfig.parameters_())    
-    tagDumper.className = cms.untracked.string("CutBased"+tagName.replace("Loose","")+"Dumper")
+    tagDumper.className = cms.untracked.string("CutBased"+tagName+"Dumper")
     tagDumper.src = cms.InputTag("flashgg"+tagName)
     tagDumper.processId = cms.string(dict[tagName])
     # split tree, histogram and datasets 
@@ -15,9 +15,7 @@ def createTagDumper (tagName):
 
 dict = {'UntaggedTag': 'untagged',
         'VBFTag': 'vbfh',                
-	'TTHLeptonicLooseTag': 'tth',
         'TTHLeptonicTag': 'tth',
-	'TTHHadronicLooseTag' : 'tth',
         'TTHHadronicTag': 'tth',
         'VHLooseTag': 'vh',
         'VHTightTag': 'vh',
