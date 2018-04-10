@@ -14,6 +14,7 @@
 #include "flashgg/DataFormats/interface/DiPhotonMVAResult.h"
 #include "flashgg/DataFormats/interface/Electron.h"
 #include "flashgg/DataFormats/interface/Muon.h"
+#include "flashgg/DataFormats/interface/Met.h"
 #include "flashgg/Taggers/interface/LeptonSelection.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
@@ -51,6 +52,7 @@ namespace flashgg {
         EDGetTokenT<View<reco::Vertex> > vertexToken_;
         EDGetTokenT<View<DiPhotonMVAResult> > mvaResultToken_;
         EDGetTokenT<View<reco::GenParticle> > genParticleToken_;
+        EDGetTokenT<View<flashgg::Met> > METToken_;
         EDGetTokenT<int> stage0catToken_, stage1catToken_, njetsToken_;
         EDGetTokenT<float> pTHToken_,pTVToken_;
         EDGetTokenT<double> rhoTag_;
@@ -137,6 +139,7 @@ namespace flashgg {
         vertexToken_( consumes<View<reco::Vertex> >( iConfig.getParameter<InputTag> ( "VertexTag" ) ) ),
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag>( "MVAResultTag" ) ) ),
         genParticleToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
+        METToken_( consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag>( "MetTag" ) ) ),
         rhoTag_( consumes<double>( iConfig.getParameter<InputTag>( "rhoTag" ) ) ),
         systLabel_( iConfig.getParameter<string> ( "SystLabel" ) ),
         _MVAMethod( iConfig.getParameter<string> ( "MVAMethod" ) )
@@ -254,6 +257,9 @@ namespace flashgg {
 
         Handle<View<flashgg::Electron> > theElectrons;
         evt.getByToken( electronToken_, theElectrons );
+
+        Handle<View<flashgg::Met> > theMet_;
+        evt.getByToken( METToken_, theMet_ );
 
         edm::Handle<double>  rho;
         evt.getByToken(rhoTag_,rho);
@@ -472,6 +478,12 @@ namespace flashgg {
                 tthhtags_obj.setSecondMaxBTagVal( secondMaxBTagVal_ );
                 tthhtags_obj.setSystLabel( systLabel_ );
                 tthhtags_obj.setMVAres(tthMvaVal_);
+
+                if( theMet_ -> size() != 1 )
+                  std::cout << "WARNING number of MET is not equal to 1" << std::endl;
+                Ptr<flashgg::Met> Met = theMet_->ptrAt( 0 );
+                tthhtags_obj.setMetPt((float)Met->pt());
+                tthhtags_obj.setMetPhi((float)Met->phi());
                 if(!useTTHHadronicMVA_){
                     for( unsigned num = 0; num < JetVect.size(); num++ ) {
                         tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagCutWeight");
