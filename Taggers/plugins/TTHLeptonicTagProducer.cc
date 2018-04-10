@@ -13,6 +13,7 @@
 #include "flashgg/DataFormats/interface/TTHLeptonicTag.h"
 #include "flashgg/DataFormats/interface/Electron.h"
 #include "flashgg/DataFormats/interface/Muon.h"
+#include "flashgg/DataFormats/interface/Met.h"
 #include "flashgg/DataFormats/interface/Photon.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
@@ -56,6 +57,7 @@ namespace flashgg {
         EDGetTokenT<View<Photon> > photonToken_;
         EDGetTokenT<View<reco::Vertex> > vertexToken_;
         EDGetTokenT<View<reco::GenParticle> > genParticleToken_;
+        EDGetTokenT<View<flashgg::Met> > METToken_;
         EDGetTokenT<int> stage0catToken_, stage1catToken_, njetsToken_;
         EDGetTokenT<float> pTHToken_,pTVToken_;
         EDGetTokenT<double> rhoTag_;
@@ -117,6 +119,7 @@ namespace flashgg {
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag> ( "MVAResultTag" ) ) ),
         vertexToken_( consumes<View<reco::Vertex> >( iConfig.getParameter<InputTag> ( "VertexTag" ) ) ),
         genParticleToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
+        METToken_( consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag>( "MetTag" ) ) ),
         rhoTag_( consumes<double>( iConfig.getParameter<InputTag>( "rhoTag" ) ) ),
         systLabel_( iConfig.getParameter<string> ( "SystLabel" ) )
     {
@@ -206,6 +209,9 @@ namespace flashgg {
 
         Handle<View<flashgg::Electron> > theElectrons;
         evt.getByToken( electronToken_, theElectrons );
+
+        Handle<View<flashgg::Met> > theMet_;
+        evt.getByToken( METToken_, theMet_ );
 
         edm::Handle<double>  rho;
         evt.getByToken(rhoTag_,rho);
@@ -494,6 +500,7 @@ namespace flashgg {
             if( tagBJets.size() >= bjetsNumberThreshold_ && tagJets.size() >= jetsNumberThreshold_ && photonSelection
                     && ( ( tagMuons.size() > 0 && TTHLepTagMuon ) || ( tagElectrons.size() > 0 && TTHLepTagElectron ) ) ) {
                 //                std::cout << " TTHLeptonicTagProducer TAGGED " << std::endl;
+
                 for( unsigned num = 0; num < tagJets.size(); num++ ) {
                     //std::cout << " TTHLeptonicTagProducer including weight for jet : "<<num<<" of "<< tagJets.size() << std::endl;
                     tthltags_obj.includeWeightsByLabel( *tagJets.at(num), "JetBTagCutWeight");
@@ -583,6 +590,11 @@ namespace flashgg {
                 tthltags_obj.setElectrons( tagElectrons );
                 tthltags_obj.setDiPhotonIndex( diphoIndex );
                 tthltags_obj.setSystLabel( systLabel_ );
+                if( theMet_ -> size() != 1 )
+                  std::cout << "WARNING number of MET is not equal to 1" << std::endl;
+                Ptr<flashgg::Met> Met = theMet_->ptrAt( 0 );
+                tthltags_obj.setMetPt((float)Met->pt());
+                tthltags_obj.setMetPhi((float)Met->phi());
                 tthltags->push_back( tthltags_obj );
                 if( ! evt.isRealData() ) {
                     TagTruthBase truth_obj;

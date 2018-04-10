@@ -88,8 +88,8 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                         "Mjj      := ?(jets.size>1)?"
                         +"sqrt((jets.at(0).energy+jets.at(1).energy)^2-(jets.at(0).px+jets.at(1).px)^2-(jets.at(0).py+jets.at(1).py)^2-(jets.at(0).pz+jets.at(1).pz)^2)"
                         +": -1",
-			#"MetPt  := MetPt",
-			#"MetPhi := MetPhi",
+			"MetPt  := MetPt",
+			"MetPhi := MetPhi",
 		 	"jet_pt1                :=  ? jets.size()>0 ? jets[0].pt() : -100 ",
 			"jet_eta1               :=  ? jets.size()>0 ? jets[0].eta() : -100 ",
 			"jet_phi1               :=  ? jets.size()>0 ? jets[0].phi() : -100 ",
