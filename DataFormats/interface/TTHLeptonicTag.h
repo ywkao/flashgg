@@ -26,6 +26,11 @@ namespace flashgg {
 
         float MetPt() const {return MetPt_;}
         float MetPhi() const {return MetPhi_;}
+        int nGoodEls() const {return nGoodEls_;}
+        int nGoodElsFromTau() const {return nGoodElsFromTau_;}
+        int nGoodMus() const {return nGoodMus_;}
+        int nGoodMusFromTau() const {return nGoodMusFromTau_;}
+        int nGoodTaus() const {return nGoodTaus_;}
 
         void setJets( std::vector<edm::Ptr<Jet> > Jets ) { Jets_ = Jets; }
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
@@ -35,6 +40,13 @@ namespace flashgg {
         void setMetPt(float metPt) {MetPt_ = (float)metPt;}
         void setMetPhi(float metPhi) {MetPhi_ = (float)metPhi;}
     
+        void setnGoodEls(int nGoodEls) {nGoodEls_ = nGoodEls;}
+        void setnGoodElsFromTau(int nGoodElsFromTau) {nGoodElsFromTau_ = nGoodElsFromTau;}
+        void setnGoodMus(int nGoodMus) {nGoodMus_ = nGoodMus;}
+        void setnGoodMusFromTau(int nGoodMusFromTau) {nGoodMusFromTau_ = nGoodMusFromTau;}
+        void setnGoodTaus(int nGoodTaus) {nGoodTaus_ = nGoodTaus;}
+
+
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHLeptonic; }
 
     private:
@@ -44,6 +56,11 @@ namespace flashgg {
         std::vector<edm::Ptr<Jet> > BJets_;
         float MetPt_;
         float MetPhi_;
+        int nGoodEls_;
+        int nGoodElsFromTau_;
+        int nGoodMus_;
+        int nGoodMusFromTau_;
+        int nGoodTaus_;
     };
 }
 

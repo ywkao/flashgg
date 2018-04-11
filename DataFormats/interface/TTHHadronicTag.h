@@ -32,6 +32,11 @@ namespace flashgg {
         float tthMvaRes() const {return tthMvaRes_;}
         float MetPt() const {return MetPt_;}
         float MetPhi() const {return MetPhi_;}
+        int nGoodEls() const {return nGoodEls_;}
+        int nGoodElsFromTau() const {return nGoodElsFromTau_;}
+        int nGoodMus() const {return nGoodMus_;}
+        int nGoodMusFromTau() const {return nGoodMusFromTau_;}
+        int nGoodTaus() const {return nGoodTaus_;}
         void setNjet( int nb ) { Njet_ = nb; }
         void setNBLoose( int nb ) { Nbtagloose_ = nb; }
         void setNBMedium( int nb ) { Nbtagmedium_ = nb; }
@@ -45,6 +50,11 @@ namespace flashgg {
         void setMVAres(float val) {tthMvaRes_ = val;}
         void setMetPt(float metPt) {MetPt_ = (float)metPt;}
         void setMetPhi(float metPhi) {MetPhi_ = (float)metPhi;}
+        void setnGoodEls(int nGoodEls) {nGoodEls_ = nGoodEls;}
+        void setnGoodElsFromTau(int nGoodElsFromTau) {nGoodElsFromTau_ = nGoodElsFromTau;}
+        void setnGoodMus(int nGoodMus) {nGoodMus_ = nGoodMus;}
+        void setnGoodMusFromTau(int nGoodMusFromTau) {nGoodMusFromTau_ = nGoodMusFromTau;}
+        void setnGoodTaus(int nGoodTaus) {nGoodTaus_ = nGoodTaus;}
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHHadronic; }
 
@@ -65,6 +75,11 @@ namespace flashgg {
 
         float MetPt_;
         float MetPhi_;
+        int nGoodEls_;
+        int nGoodElsFromTau_;
+        int nGoodMus_;
+        int nGoodMusFromTau_;
+        int nGoodTaus_;
     };
 }
 

@@ -595,6 +595,54 @@ namespace flashgg {
                 Ptr<flashgg::Met> Met = theMet_->ptrAt( 0 );
                 tthltags_obj.setMetPt((float)Met->pt());
                 tthltags_obj.setMetPhi((float)Met->phi());
+
+                if( ! evt.isRealData() ) {
+                    evt.getByToken( genParticleToken_, genParticles );
+                    int nGoodEls(0), nGoodMus(0), nGoodElsFromTau(0), nGoodMusFromTau(0), nGoodTaus(0);
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+                        double pt = genParticles->ptrAt( genLoop )->p4().pt();
+                        int status = genParticles->ptrAt( genLoop )->status(); 
+                        bool isPromptFinalState = genParticles->ptrAt( genLoop )->isPromptFinalState();
+                        bool isPromptDecayed = genParticles->ptrAt( genLoop )->isPromptDecayed();
+                        bool isDirectPromptTauDecayProductFinalState = genParticles->ptrAt( genLoop )->isDirectPromptTauDecayProductFinalState();              
+                        if (pt < 20) continue;
+                        if (abs(pdgid) == 11 || abs(pdgid) == 13 || abs(pdgid) == 15) {
+                            cout << "Found a gen lepton/tau with pT > 20" << endl;
+                            cout << "pdgid: " << pdgid << endl;
+                            cout << "pt: " << pt << endl;
+                            cout << "status: " << status << endl;
+                            cout << "isPromptFinalState: " << isPromptFinalState << endl;
+                            cout << "isPromptDecayed: " << isPromptDecayed << endl;
+                            cout << "isDirectPromptTauDecayProductFinalState: " << isDirectPromptTauDecayProductFinalState << endl;
+                        }
+                        if (abs(pdgid) == 11 && status == 1 && (isPromptFinalState || isDirectPromptTauDecayProductFinalState)) {
+                            nGoodEls++;
+                            if (isDirectPromptTauDecayProductFinalState)
+                                nGoodElsFromTau++;
+                        } 
+                        else if (abs(pdgid) == 13 && status == 1 && (isPromptFinalState || isDirectPromptTauDecayProductFinalState)) {
+                            nGoodMus++;
+                            if (isDirectPromptTauDecayProductFinalState)
+                                nGoodMusFromTau++;
+                        }
+                        if (abs(pdgid) == 15 && status == 2 && isPromptDecayed) {
+                            nGoodTaus++;
+                        }
+                    }
+                    tthltags_obj.setnGoodEls(nGoodEls);
+                    tthltags_obj.setnGoodElsFromTau(nGoodElsFromTau);
+                    tthltags_obj.setnGoodMus(nGoodMus);
+                    tthltags_obj.setnGoodMusFromTau(nGoodMusFromTau);
+                    tthltags_obj.setnGoodTaus(nGoodTaus);
+                }
+                else {
+                    tthltags_obj.setnGoodEls(-1);
+                    tthltags_obj.setnGoodElsFromTau(-1);
+                    tthltags_obj.setnGoodMus(-1);
+                    tthltags_obj.setnGoodMusFromTau(-1);
+                    tthltags_obj.setnGoodTaus(-1);
+                }
                 tthltags->push_back( tthltags_obj );
                 if( ! evt.isRealData() ) {
                     TagTruthBase truth_obj;

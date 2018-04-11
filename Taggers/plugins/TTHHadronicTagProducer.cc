@@ -52,6 +52,7 @@ namespace flashgg {
         EDGetTokenT<View<reco::Vertex> > vertexToken_;
         EDGetTokenT<View<DiPhotonMVAResult> > mvaResultToken_;
         EDGetTokenT<View<reco::GenParticle> > genParticleToken_;
+        //EDGetTokenT<View<reco::GenParticleCollection> > genParticleCollectionToken_;
         EDGetTokenT<View<flashgg::Met> > METToken_;
         EDGetTokenT<int> stage0catToken_, stage1catToken_, njetsToken_;
         EDGetTokenT<float> pTHToken_,pTVToken_;
@@ -139,6 +140,7 @@ namespace flashgg {
         vertexToken_( consumes<View<reco::Vertex> >( iConfig.getParameter<InputTag> ( "VertexTag" ) ) ),
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag>( "MVAResultTag" ) ) ),
         genParticleToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
+        //genParticleCollectionToken_( consumes<View<reco::GenParticleCollection> >( iConfig.getParameter<InputTag> ( "GenParticleCollectionTag" ) ) ),
         METToken_( consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag>( "MetTag" ) ) ),
         rhoTag_( consumes<double>( iConfig.getParameter<InputTag>( "rhoTag" ) ) ),
         systLabel_( iConfig.getParameter<string> ( "SystLabel" ) ),
@@ -273,6 +275,11 @@ namespace flashgg {
         // const PtrVector<flashgg::DiPhotonMVAResult>& mvaResultPointers = mvaResults->ptrVector();
 
         Handle<View<reco::GenParticle> > genParticles;
+
+        //Handle<View<reco::GenParticle> > genParticleCollection;
+        //edm::Handle<reco::GenParticleCollection> genpsHandle;
+        //evt.getByToken(genParticlesToken, genpsHandle);
+        //const vector<reco::GenParticle>* genps_coll = genParticleCollection.product();
 
         std::unique_ptr<vector<TTHHadronicTag> > tthhtags( new vector<TTHHadronicTag> );
         std::unique_ptr<vector<TagTruthBase> > truths( new vector<TagTruthBase> );
@@ -484,6 +491,57 @@ namespace flashgg {
                 Ptr<flashgg::Met> Met = theMet_->ptrAt( 0 );
                 tthhtags_obj.setMetPt((float)Met->pt());
                 tthhtags_obj.setMetPhi((float)Met->phi());
+
+                // Gen info
+                if( ! evt.isRealData() ) {
+                    evt.getByToken( genParticleToken_, genParticles );
+                    int nGoodEls(0), nGoodMus(0), nGoodElsFromTau(0), nGoodMusFromTau(0), nGoodTaus(0);
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+                        double pt = genParticles->ptrAt( genLoop )->p4().pt();
+                        int status = genParticles->ptrAt( genLoop )->status();
+                        bool isPromptFinalState = genParticles->ptrAt( genLoop )->isPromptFinalState();
+                        bool isPromptDecayed = genParticles->ptrAt( genLoop )->isPromptDecayed();
+                        bool isDirectPromptTauDecayProductFinalState = genParticles->ptrAt( genLoop )->isDirectPromptTauDecayProductFinalState();
+                        if (pt < 20) continue;
+                        if (abs(pdgid) == 11 || abs(pdgid) == 13 || abs(pdgid) == 15) {
+                            cout << "Found a gen lepton/tau with pT > 20" << endl;
+                            cout << "pdgid: " << pdgid << endl;
+                            cout << "pt: " << pt << endl;
+                            cout << "status: " << status << endl;
+                            cout << "isPromptFinalState: " << isPromptFinalState << endl;
+                            cout << "isPromptDecayed: " << isPromptDecayed << endl;
+                            cout << "isDirectPromptTauDecayProductFinalState: " << isDirectPromptTauDecayProductFinalState << endl;
+                        }
+                        if (abs(pdgid) == 11 && status == 1 && (isPromptFinalState || isDirectPromptTauDecayProductFinalState)) {
+                            nGoodEls++;
+                            if (isDirectPromptTauDecayProductFinalState)
+                                nGoodElsFromTau++;
+                        } 
+                        else if (abs(pdgid) == 13 && status == 1 && (isPromptFinalState || isDirectPromptTauDecayProductFinalState)) {
+                            nGoodMus++;
+                            if (isDirectPromptTauDecayProductFinalState)
+                                nGoodMusFromTau++;
+                        }
+                        if (abs(pdgid) == 15 && status == 2 && isPromptDecayed) {
+                            nGoodTaus++;
+                        }
+                    }
+                    tthhtags_obj.setnGoodEls(nGoodEls);
+                    tthhtags_obj.setnGoodElsFromTau(nGoodElsFromTau);
+                    tthhtags_obj.setnGoodMus(nGoodMus);
+                    tthhtags_obj.setnGoodMusFromTau(nGoodMusFromTau);
+                    tthhtags_obj.setnGoodTaus(nGoodTaus);
+                }
+                else {
+                    tthhtags_obj.setnGoodEls(-1);
+                    tthhtags_obj.setnGoodElsFromTau(-1);
+                    tthhtags_obj.setnGoodMus(-1);
+                    tthhtags_obj.setnGoodMusFromTau(-1);
+                    tthhtags_obj.setnGoodTaus(-1);
+                }
+
+
                 if(!useTTHHadronicMVA_){
                     for( unsigned num = 0; num < JetVect.size(); num++ ) {
                         tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagCutWeight");
