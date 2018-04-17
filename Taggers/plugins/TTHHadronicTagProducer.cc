@@ -485,6 +485,7 @@ namespace flashgg {
                 tthhtags_obj.setSecondMaxBTagVal( secondMaxBTagVal_ );
                 tthhtags_obj.setSystLabel( systLabel_ );
                 tthhtags_obj.setMVAres(tthMvaVal_);
+                tthhtags_obj.setDiphoMVARes(mvares->mvaValue());
 
                 if( theMet_ -> size() != 1 )
                   std::cout << "WARNING number of MET is not equal to 1" << std::endl;

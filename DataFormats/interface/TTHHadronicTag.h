@@ -37,6 +37,7 @@ namespace flashgg {
         int nGoodMus() const {return nGoodMus_;}
         int nGoodMusFromTau() const {return nGoodMusFromTau_;}
         int nGoodTaus() const {return nGoodTaus_;}
+        float diphoMVARes() const { return diphoMVARes_; }
         void setNjet( int nb ) { Njet_ = nb; }
         void setNBLoose( int nb ) { Nbtagloose_ = nb; }
         void setNBMedium( int nb ) { Nbtagmedium_ = nb; }
@@ -55,6 +56,7 @@ namespace flashgg {
         void setnGoodMus(int nGoodMus) {nGoodMus_ = nGoodMus;}
         void setnGoodMusFromTau(int nGoodMusFromTau) {nGoodMusFromTau_ = nGoodMusFromTau;}
         void setnGoodTaus(int nGoodTaus) {nGoodTaus_ = nGoodTaus;}
+        void setDiphoMVARes(float diphoMVARes) {diphoMVARes_ = diphoMVARes;}
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHHadronic; }
 
@@ -80,6 +82,8 @@ namespace flashgg {
         int nGoodMus_;
         int nGoodMusFromTau_;
         int nGoodTaus_;
+
+        float diphoMVARes_;
     };
 }
 

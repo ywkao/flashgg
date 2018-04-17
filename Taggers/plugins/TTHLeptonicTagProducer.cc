@@ -595,6 +595,7 @@ namespace flashgg {
                 Ptr<flashgg::Met> Met = theMet_->ptrAt( 0 );
                 tthltags_obj.setMetPt((float)Met->pt());
                 tthltags_obj.setMetPhi((float)Met->phi());
+                tthltags_obj.setDiphoMVARes((float)mvares->result);
 
                 if( ! evt.isRealData() ) {
                     evt.getByToken( genParticleToken_, genParticles );

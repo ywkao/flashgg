@@ -32,6 +32,8 @@ namespace flashgg {
         int nGoodMusFromTau() const {return nGoodMusFromTau_;}
         int nGoodTaus() const {return nGoodTaus_;}
 
+        float diphoMVARes() const { return diphoMVARes_; }
+
         void setJets( std::vector<edm::Ptr<Jet> > Jets ) { Jets_ = Jets; }
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
         void setMuons( std::vector<edm::Ptr<Muon> > Muons ) {Muons_ = Muons;}
@@ -45,7 +47,7 @@ namespace flashgg {
         void setnGoodMus(int nGoodMus) {nGoodMus_ = nGoodMus;}
         void setnGoodMusFromTau(int nGoodMusFromTau) {nGoodMusFromTau_ = nGoodMusFromTau;}
         void setnGoodTaus(int nGoodTaus) {nGoodTaus_ = nGoodTaus;}
-
+        void setDiphoMVARes(float diphoMVARes) {diphoMVARes_ = diphoMVARes;}
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHLeptonic; }
 
@@ -61,6 +63,7 @@ namespace flashgg {
         int nGoodMus_;
         int nGoodMusFromTau_;
         int nGoodTaus_;
+        float diphoMVARes_;
     };
 }
 

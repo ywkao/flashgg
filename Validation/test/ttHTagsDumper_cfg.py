@@ -69,6 +69,7 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
 		 "nGoodMus         := nGoodMus",
                  "nGoodMusFromTau  := nGoodMusFromTau",
 		 "nGoodTaus        := nGoodTaus",
+		 "diphoMVARes      := diphoMVARes",
 ]
 
 
