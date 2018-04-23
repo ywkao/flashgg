@@ -31,6 +31,31 @@ fileNames = fileNames.split(",")
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(fileNames))
 #process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/bemarsh/flashgg/MicroAOD_skim/2016_skim_v2/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016B-03Feb2017_ver2-v2/microAOD_1.root", "file:/hadoop/cms/store/user/bemarsh/flashgg/MicroAOD_skim/2016_skim_v2/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016B-03Feb2017_ver2-v2/microAOD_2.root"))
 
+# Add triggers/filters from workspaceStd.py L444-463
+from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
+process.hltHighLevel= hltHighLevel.clone(HLTPaths = cms.vstring("HLT_Diphoton30_18_R9Id_OR_IsoCaloId_AND_HE_R9Id_Mass90_v*",
+#                                                                "HLT_Diphoton30PV_18PV_R9Id_AND_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v1",
+#                                                                "HLT_Diphoton30EB_18EB_R9Id_OR_IsoCaloId_AND_HE_R9Id_DoublePixelVeto_Mass55_v1"
+                                                                ))
+
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+
+# ee bad supercluster filter on data
+process.load('RecoMET.METFilters.eeBadScFilter_cfi')
+process.eeBadScFilter.EERecHitSource = cms.InputTag("reducedEgamma","reducedEERecHits") # Saved MicroAOD Collection (data only)
+# Bad Muon filter LOADS WRONG IN 8_0_28, FIX LATER
+#process.load('RecoMET.METFilters.badGlobalMuonTaggersMiniAOD_cff')
+#process.badGlobalMuonTaggerMAOD.muons = cms.InputTag("flashggSelectedMuons")
+#process.cloneGlobalMuonTaggerMAOD.muons = cms.InputTag("flashggSelectedMuons")
+process.dataRequirements = cms.Sequence()
+
+#print('Process ID: %s' % customize.processId)
+#if customize.processId == "Data":
+if "DoubleEG" in fileNames[0]:
+        print('Adding HLT and filter requirements')
+        process.dataRequirements += process.hltHighLevel
+        process.dataRequirements += process.eeBadScFilter
+
 process.load("flashgg/Taggers/flashggTagSequence_cfi")
 process.load("flashgg/Taggers/flashggTagTester_cfi")
 
@@ -72,6 +97,10 @@ process.out = cms.OutputModule("PoolOutputModule", fileName = cms.untracked.stri
                                outputCommands = tagDefaultOutputCommand			       
                                )
 
-process.p = cms.Path(process.flashggTagSequence*process.flashggTagTester)
+process.p = cms.Path(process.dataRequirements*
+		     process.flashggTagSequence*
+		     process.flashggTagTester)
+process.out.SelectEvents = cms.untracked.PSet(SelectEvents=cms.vstring('p'))
+#process.p = cms.Path(process.flashggTagSequence*process.flashggTagTester*process.dataRequirements)
 
 process.e = cms.EndPath(process.out)
