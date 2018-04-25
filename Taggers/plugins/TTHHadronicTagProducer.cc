@@ -428,9 +428,11 @@ namespace flashgg {
                 }
                 
                 JetBTagVal.push_back( bDiscriminatorValue );
+                cout << "Loose b-tag value: " << bDiscriminator_[0] << endl;
                 if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
                 if( bDiscriminatorValue > bDiscriminator_[1] ){
-                    
+                
+    
                     njets_btagmedium_++;
                     //JetVect.pop_back();
                     BJetVect.push_back( thejet );
