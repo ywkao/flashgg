@@ -17,6 +17,12 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc')
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 #process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 100 )
 
+MUON_ID = "Tight" #["Tight", "Medium" , "Loose", "Soft", "HighPt", "MediumPrompt", "TrkHighPt"]
+MUON_ISO = "LooseRel" #{ LooseID : ["LooseRel"],MediumID:["LooseRel", "TightRel"] , TrkHighPtID:["LooseRelTk", "TightRelTk"], TightIDandIPCut:["LooseRel", "TightRel"], HighPtIDandIPCut:["LooseRelTk", "TightRelTk"] }
+from flashgg.Systematics.SystematicsCustomize import *
+jetSystematicsInputTags = createStandardSystematicsProducers(process)
+modifyTagSequenceForSystematics(process,jetSystematicsInputTags)
+
 # Uncomment the following if you notice you have a memory leak
 # This is a lightweight tool to digg further
 #process.SimpleMemoryCheck = cms.Service("SimpleMemoryCheck",
@@ -59,6 +65,10 @@ if "DoubleEG" in fileNames[0]:
 process.load("flashgg/Taggers/flashggTagSequence_cfi")
 process.load("flashgg/Taggers/flashggTagTester_cfi")
 
+print process.flashggTagSequence
+
+useEGMTools(process)
+
 # For debugging
 switchToUnPreselected = False
 switchToFinal = False
@@ -91,6 +101,7 @@ if switchToFinal:
 if switchToPuppi:
     process.flashggUnpackedJets.JetsTag = cms.InputTag("flashggFinalPuppiJets")
 
+
 from flashgg.Taggers.flashggTagOutputCommands_cff import tagDefaultOutputCommand
 
 process.out = cms.OutputModule("PoolOutputModule", fileName = cms.untracked.string('myTagOutputFile.root'),
@@ -98,6 +109,12 @@ process.out = cms.OutputModule("PoolOutputModule", fileName = cms.untracked.stri
                                )
 
 process.p = cms.Path(process.dataRequirements*
+		     process.flashggUpdatedIdMVADiPhotons*
+		     process.flashggDiPhotonSystematics*
+		     process.flashggMetSystematics*
+		     process.flashggMuonSystematics*process.flashggElectronSystematics*
+		     (process.flashggUnpackedJets*process.jetSystematicsSequence)*
+		     (process.flashggTagSequence*process.systematicsTagSequences)*
 		     process.flashggTagSequence*
 		     process.flashggTagTester)
 process.out.SelectEvents = cms.untracked.PSet(SelectEvents=cms.vstring('p'))
