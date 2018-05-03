@@ -2,6 +2,7 @@ import sys
 
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
+from flashgg.Systematics.SystematicDumperDefaultVariables import minimalVariables,minimalHistograms,minimalNonSignalVariables,systematicVariables
 
 process = cms.Process("FLASHggTag")
 
@@ -14,7 +15,12 @@ process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc')
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+nEvents = -1
+if len(sys.argv) > 3:
+  nEvents = int(sys.argv[3])
+
+print('Running over %d events' % nEvents)
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(nEvents) )
 #process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 100 )
 
 MUON_ID = "Tight" #["Tight", "Medium" , "Loose", "Soft", "HighPt", "MediumPrompt", "TrkHighPt"]
@@ -68,6 +74,27 @@ process.load("flashgg/Taggers/flashggTagTester_cfi")
 print process.flashggTagSequence
 
 useEGMTools(process)
+
+if "ttH" in fileNames[0]:
+  print "Signal MC, so adding systematics and dZ"
+  customizeSystematicsForSignal(process)
+elif "DoubleEG" in fileNames[0]:
+  print "Data, so turn off all shifts and systematics, with some exceptions"
+  variablesToUse = minimalNonSignalVariables
+  customizeSystematicsForData(process)
+else:
+  print "Background MC, so store mgg and central only"
+  variablesToUse = minimalNonSignalVariables
+  customizeSystematicsForBackground(process)
+
+printSystematicInfo(process)
+
+#if "ttH" in fileNames[0]:
+#  customizeSystematicsForSignal(process)
+#elif "DoubleEG" in fileNames[0]:
+#  customizeSystematicsForData(process)
+#else:
+#  customizeSystematicsForBackground(process):
 
 # For debugging
 switchToUnPreselected = False
