@@ -108,6 +108,10 @@ namespace flashgg {
 
         bool hasGoodElec = false;
         bool hasGoodMuons = false;
+
+        int njets_btagloose_;
+        int njets_btagmedium_;
+        int njets_btagtight_;
     };
 
     TTHLeptonicTagProducer::TTHLeptonicTagProducer( const ParameterSet &iConfig ) :
@@ -261,6 +265,10 @@ namespace flashgg {
 
         for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ ) {
 
+            njets_btagloose_ = 0;
+            njets_btagmedium_ = 0;
+            njets_btagtight_ = 0;
+
             hasGoodElec = false;
             hasGoodMuons = false;
 
@@ -365,10 +373,13 @@ namespace flashgg {
 
                         bDiscriminatorValue = thejet->bDiscriminator( bTag_.c_str() );
 
+                        if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
                         if( bDiscriminatorValue > bDiscriminator_[1] ) {
                             deltaRMuonBJetcount++;
+                            njets_btagmedium_++;
                             muonBJets.push_back( thejet );
                         }
+                        if( bDiscriminatorValue > bDiscriminator_[2] ) njets_btagtight_++;
 
                     }//end of jets loop
 
@@ -446,10 +457,13 @@ namespace flashgg {
                     
                         bDiscriminatorValue = thejet->bDiscriminator( bTag_.c_str() );
                     
+                        if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
                         if( bDiscriminatorValue > bDiscriminator_[1] ) {
                             deltaRElectronBJetcount++;
+                            njets_btagmedium_++;
                             ElectronBJets.push_back( thejet );
                         }
+                        if( bDiscriminatorValue > bDiscriminator_[2] ) njets_btagtight_++;
 
                     }//end of jets loop
 
@@ -596,6 +610,9 @@ namespace flashgg {
                 tthltags_obj.setMetPt((float)Met->pt());
                 tthltags_obj.setMetPhi((float)Met->phi());
                 tthltags_obj.setDiphoMVARes((float)mvares->result);
+                tthltags_obj.setNBLoose( njets_btagloose_ );
+                tthltags_obj.setNBMedium( njets_btagmedium_ );
+                tthltags_obj.setNBTight( njets_btagtight_ );
 
                 if( ! evt.isRealData() ) {
                     evt.getByToken( genParticleToken_, genParticles );

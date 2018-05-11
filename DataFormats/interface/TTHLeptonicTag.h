@@ -24,6 +24,10 @@ namespace flashgg {
         const std::vector<edm::Ptr<Jet> > jets() const { return Jets_;}
         const std::vector<edm::Ptr<Jet> > bJets() const { return BJets_;}
 
+        int nBLoose() const {return Nbtagloose_;}
+        int nBMedium() const {return Nbtagmedium_;}
+        int nBTight() const {return Nbtagtight_;}
+
         float MetPt() const {return MetPt_;}
         float MetPhi() const {return MetPhi_;}
         int nGoodEls() const {return nGoodEls_;}
@@ -39,6 +43,10 @@ namespace flashgg {
         void setMuons( std::vector<edm::Ptr<Muon> > Muons ) {Muons_ = Muons;}
         void setElectrons( std::vector<edm::Ptr<Electron> > Electrons ) {Electrons_ = Electrons;}
 
+        void setNBLoose( int nb ) { Nbtagloose_ = nb; }
+        void setNBMedium( int nb ) { Nbtagmedium_ = nb; }
+        void setNBTight( int nb ) { Nbtagtight_ = nb; }
+
         void setMetPt(float metPt) {MetPt_ = (float)metPt;}
         void setMetPhi(float metPhi) {MetPhi_ = (float)metPhi;}
     
@@ -52,6 +60,10 @@ namespace flashgg {
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHLeptonic; }
 
     private:
+        int Nbtagloose_;
+        int Nbtagmedium_;
+        int Nbtagtight_;
+
         std::vector<edm::Ptr<Muon> > Muons_;
         std::vector<edm::Ptr<Electron> > Electrons_;
         std::vector<edm::Ptr<Jet> > Jets_;

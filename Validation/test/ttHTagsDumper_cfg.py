@@ -72,6 +72,13 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "nGoodMusFromTau  := nGoodMusFromTau",
 		 "nGoodTaus        := nGoodTaus",
 		 "diphoMVARes      := diphoMVARes",
+		 "leadPassEVeto    := diPhoton.leadingPhoton.passElectronVeto",
+		 "subleadPassEVeto := diPhoton.subLeadingPhoton.passElectronVeto",
+		 "leadPixelSeed    := diPhoton.leadingPhoton.hasPixelSeed",
+		 "subleadPixelSeed := diPhoton.subLeadingPhoton.hasPixelSeed",
+		 "nb_loose         := nBLoose",
+		 "nb_medium        := nBMedium",
+                 "nb_tight         := nBTight"
 ]
 
 
