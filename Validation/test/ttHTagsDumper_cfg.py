@@ -78,7 +78,9 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
 		 "subleadPixelSeed := diPhoton.subLeadingPhoton.hasPixelSeed",
 		 "nb_loose         := nBLoose",
 		 "nb_medium        := nBMedium",
-                 "nb_tight         := nBTight"
+                 "nb_tight         := nBTight",
+		 "lead_photon_type := leadPhotonType",
+		 "sublead_photon_type := subleadPhotonType"
 ]
 
 

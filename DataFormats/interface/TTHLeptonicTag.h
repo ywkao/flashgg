@@ -37,6 +37,8 @@ namespace flashgg {
         int nGoodTaus() const {return nGoodTaus_;}
 
         float diphoMVARes() const { return diphoMVARes_; }
+        int leadPhotonType() const { return leadPhotonType_; }
+        int subleadPhotonType() const { return subleadPhotonType_; }
 
         void setJets( std::vector<edm::Ptr<Jet> > Jets ) { Jets_ = Jets; }
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
@@ -56,6 +58,9 @@ namespace flashgg {
         void setnGoodMusFromTau(int nGoodMusFromTau) {nGoodMusFromTau_ = nGoodMusFromTau;}
         void setnGoodTaus(int nGoodTaus) {nGoodTaus_ = nGoodTaus;}
         void setDiphoMVARes(float diphoMVARes) {diphoMVARes_ = diphoMVARes;}
+        
+        void setLeadPhotonType(int leadPhotonType) {leadPhotonType_ = leadPhotonType; }
+        void setSubleadPhotonType(int subleadPhotonType) {subleadPhotonType_ = subleadPhotonType; }
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHLeptonic; }
 
@@ -76,6 +81,9 @@ namespace flashgg {
         int nGoodMusFromTau_;
         int nGoodTaus_;
         float diphoMVARes_;
+
+        int leadPhotonType_;
+        int subleadPhotonType_;
     };
 }
 

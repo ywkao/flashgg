@@ -648,11 +648,62 @@ namespace flashgg {
                             nGoodTaus++;
                         }
                     }
+                    bool lead_photon_is_electron(false), sublead_photon_is_electron(false);
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+                        if (abs(pdgid) != 11) continue;
+                        if (genParticles->ptrAt( genLoop )->p4().pt() < 15) continue;
+                        if (!genParticles->ptrAt( genLoop )->isPromptFinalState()) continue;
+                        double electron_eta = genParticles->ptrAt( genLoop )->p4().eta();
+                        double electron_phi = genParticles->ptrAt( genLoop )->p4().phi();
+                        double lead_photon_eta = dipho->leadingPhoton()->superCluster()->eta();
+                        double lead_photon_phi = dipho->leadingPhoton()->superCluster()->phi();
+                        double sublead_photon_eta = dipho->subLeadingPhoton()->superCluster()->eta();
+                        double sublead_photon_phi = dipho->subLeadingPhoton()->superCluster()->phi();
+
+                        cout << "Found an electron with pT: " << genParticles->ptrAt( genLoop )->p4().pt() << endl;
+
+
+                        double deltaR_lead = sqrt( pow(electron_eta - lead_photon_eta, 2) + pow(electron_phi - lead_photon_phi, 2));
+                        double deltaR_sublead = sqrt( pow(electron_eta - sublead_photon_eta, 2) + pow(electron_phi - sublead_photon_phi, 2));
+
+                        cout << "Delta R with leading photon: " << deltaR_lead << endl;
+                        cout << "Delta R with subleading photon: " << deltaR_sublead << endl;
+
+                        const double deltaR_thresh = 0.1;
+                        if (deltaR_lead < deltaR_thresh)
+                            lead_photon_is_electron = true;
+                        if (deltaR_sublead < deltaR_thresh)
+                            sublead_photon_is_electron = true;
+
+                    } // end gen loop
+
+                    int lead_photon_type;
+                    if (dipho->leadingPhoton()->genMatchType() != 1) { // fake
+                        if (!lead_photon_is_electron)
+                            lead_photon_type = 3;   // fake
+                        else
+                            lead_photon_type = 2;   // fake from  electron 
+                    }
+                    else
+                        lead_photon_type = 1; // prompt
+                    int sublead_photon_type;
+                    if (dipho->subLeadingPhoton()->genMatchType() != 1) { // fake
+                        if (!sublead_photon_is_electron)
+                            sublead_photon_type = 3;   // fake
+                        else
+                            sublead_photon_type = 2;   // fake from  electron 
+                    }
+                    else
+                        sublead_photon_type = 1; // prompt
+
                     tthltags_obj.setnGoodEls(nGoodEls);
                     tthltags_obj.setnGoodElsFromTau(nGoodElsFromTau);
                     tthltags_obj.setnGoodMus(nGoodMus);
                     tthltags_obj.setnGoodMusFromTau(nGoodMusFromTau);
                     tthltags_obj.setnGoodTaus(nGoodTaus);
+                    tthltags_obj.setLeadPhotonType(lead_photon_type);
+                    tthltags_obj.setSubleadPhotonType(sublead_photon_type);
                 }
                 else {
                     tthltags_obj.setnGoodEls(-1);
@@ -660,6 +711,8 @@ namespace flashgg {
                     tthltags_obj.setnGoodMus(-1);
                     tthltags_obj.setnGoodMusFromTau(-1);
                     tthltags_obj.setnGoodTaus(-1);
+                    tthltags_obj.setLeadPhotonType(-1);
+                    tthltags_obj.setSubleadPhotonType(-1);
                 }
                 tthltags->push_back( tthltags_obj );
                 if( ! evt.isRealData() ) {

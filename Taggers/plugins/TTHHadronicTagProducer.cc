@@ -495,6 +495,7 @@ namespace flashgg {
                 tthhtags_obj.setMetPhi((float)Met->phi());
 
                 // Gen info
+
                 if( ! evt.isRealData() ) {
                     evt.getByToken( genParticleToken_, genParticles );
                     int nGoodEls(0), nGoodMus(0), nGoodElsFromTau(0), nGoodMusFromTau(0), nGoodTaus(0);
@@ -528,12 +529,63 @@ namespace flashgg {
                         if (abs(pdgid) == 15 && status == 2 && isPromptDecayed) {
                             nGoodTaus++;
                         }
+                    } // end gen loop
+                    bool lead_photon_is_electron(false), sublead_photon_is_electron(false);
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+                        if (abs(pdgid) != 11) continue;
+                        if (genParticles->ptrAt( genLoop )->p4().pt() < 15) continue;
+                        if (!genParticles->ptrAt( genLoop )->isPromptFinalState()) continue;
+                        double electron_eta = genParticles->ptrAt( genLoop )->p4().eta();
+                        double electron_phi = genParticles->ptrAt( genLoop )->p4().phi();
+                        double lead_photon_eta = dipho->leadingPhoton()->superCluster()->eta();
+                        double lead_photon_phi = dipho->leadingPhoton()->superCluster()->phi(); 
+                        double sublead_photon_eta = dipho->subLeadingPhoton()->superCluster()->eta();
+                        double sublead_photon_phi = dipho->subLeadingPhoton()->superCluster()->phi();
+
+                        cout << "Found an electron with pT: " << genParticles->ptrAt( genLoop )->p4().pt() << endl;
+
+
+                        double deltaR_lead = sqrt( pow(electron_eta - lead_photon_eta, 2) + pow(electron_phi - lead_photon_phi, 2));
+                        double deltaR_sublead = sqrt( pow(electron_eta - sublead_photon_eta, 2) + pow(electron_phi - sublead_photon_phi, 2));
+
+                        cout << "Delta R with leading photon: " << deltaR_lead << endl;
+                        cout << "Delta R with subleading photon: " << deltaR_sublead << endl;
+
+                        const double deltaR_thresh = 0.1;
+                        if (deltaR_lead < deltaR_thresh)
+                            lead_photon_is_electron = true;
+                        if (deltaR_sublead < deltaR_thresh)
+                            sublead_photon_is_electron = true;
+
+                    } // end gen loop
+
+                    int lead_photon_type;
+                    if (dipho->leadingPhoton()->genMatchType() != 1) { // fake
+                        if (!lead_photon_is_electron)
+                            lead_photon_type = 3;   // fake
+                        else
+                            lead_photon_type = 2;   // fake from  electron 
                     }
+                    else
+                        lead_photon_type = 1; // prompt
+                    int sublead_photon_type;
+                    if (dipho->subLeadingPhoton()->genMatchType() != 1) { // fake
+                        if (!sublead_photon_is_electron)
+                            sublead_photon_type = 3;   // fake
+                        else
+                            sublead_photon_type = 2;   // fake from  electron 
+                    }
+                    else
+                        sublead_photon_type = 1; // prompt
+
                     tthhtags_obj.setnGoodEls(nGoodEls);
                     tthhtags_obj.setnGoodElsFromTau(nGoodElsFromTau);
                     tthhtags_obj.setnGoodMus(nGoodMus);
                     tthhtags_obj.setnGoodMusFromTau(nGoodMusFromTau);
                     tthhtags_obj.setnGoodTaus(nGoodTaus);
+                    tthhtags_obj.setLeadPhotonType(lead_photon_type);
+                    tthhtags_obj.setSubleadPhotonType(sublead_photon_type); 
                 }
                 else {
                     tthhtags_obj.setnGoodEls(-1);
@@ -541,6 +593,8 @@ namespace flashgg {
                     tthhtags_obj.setnGoodMus(-1);
                     tthhtags_obj.setnGoodMusFromTau(-1);
                     tthhtags_obj.setnGoodTaus(-1);
+                    tthhtags_obj.setLeadPhotonType(-1);
+                    tthhtags_obj.setSubleadPhotonType(-1);
                 }
 
 
