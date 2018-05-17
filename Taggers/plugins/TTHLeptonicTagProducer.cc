@@ -337,6 +337,49 @@ namespace flashgg {
             TTHLepTagMuon = false;
             TTHLepTagElectron = false;
 
+            std::vector<double> lepEtas;
+            std::vector<double> lepPhis;
+            if (hasGoodMuons) {
+              for (unsigned int i = 0; i < goodMuons.size(); i++) {
+                Ptr<flashgg::Muon> muon = goodMuons[i];
+                lepEtas.push_back(muon->eta());
+                lepPhis.push_back(muon->phi());
+              }
+            }
+
+            if (hasGoodElec) {
+              for (unsigned int i = 0; i < goodElectrons.size(); i++) {
+                Ptr<flashgg::Electron> elec = goodElectrons[i];
+                lepEtas.push_back(elec->eta());
+                lepPhis.push_back(elec->phi());
+              }
+            }
+
+            for (unsigned int j = 0; j < Jets[jetCollectionIndex]->size(); j++) {
+                edm::Ptr<flashgg::Jet> thejet = Jets[jetCollectionIndex]->ptrAt(j);
+
+                // good jet?
+                if(!thejet->passesJetID  ( flashgg::Loose ) ) { continue; }
+                if( fabs( thejet->eta() ) > jetEtaThreshold_ ) { continue; }
+                if( thejet->pt() < jetPtThreshold_ ) { continue; }
+                float dRPhoLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->leadingPhoton()->superCluster()->eta(), dipho->leadingPhoton()->superCluster()->phi() ) ;
+                float dRPhoSubLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->subLeadingPhoton()->superCluster()->eta(),
+                                                dipho->subLeadingPhoton()->superCluster()->phi() );
+                if( dRPhoLeadJet < deltaRJetLeadPhoThreshold_ || dRPhoSubLeadJet < deltaRJetSubLeadPhoThreshold_ ) { continue;}
+                for (unsigned int i = 0; i < lepEtas.size(); i++) {
+                  double dRJetLep = deltaR( thejet->eta(), thejet->phi(), lepEtas[i], lepPhis[i] );
+                  if (dRJetLep < deltaRJetLepThreshold_)
+                    continue; 
+                }
+
+                // sort by btag value
+                double bDiscriminatorValue = thejet->bDiscriminator( bTag_.c_str() );
+
+                if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
+                if( bDiscriminatorValue > bDiscriminator_[1] ) njets_btagmedium_++;
+                if( bDiscriminatorValue > bDiscriminator_[2] ) njets_btagtight_++;
+            }
+
             if( hasGoodMuons ) {
 
                 for( unsigned int muonIndex = 0; muonIndex < goodMuons.size(); muonIndex++ ) {
@@ -373,13 +416,13 @@ namespace flashgg {
 
                         bDiscriminatorValue = thejet->bDiscriminator( bTag_.c_str() );
 
-                        if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
+                        //if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
                         if( bDiscriminatorValue > bDiscriminator_[1] ) {
                             deltaRMuonBJetcount++;
-                            njets_btagmedium_++;
+                            //njets_btagmedium_++;
                             muonBJets.push_back( thejet );
                         }
-                        if( bDiscriminatorValue > bDiscriminator_[2] ) njets_btagtight_++;
+                        //if( bDiscriminatorValue > bDiscriminator_[2] ) njets_btagtight_++;
 
                     }//end of jets loop
 
@@ -457,13 +500,13 @@ namespace flashgg {
                     
                         bDiscriminatorValue = thejet->bDiscriminator( bTag_.c_str() );
                     
-                        if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
+                        //if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
                         if( bDiscriminatorValue > bDiscriminator_[1] ) {
                             deltaRElectronBJetcount++;
-                            njets_btagmedium_++;
+                            //njets_btagmedium_++;
                             ElectronBJets.push_back( thejet );
                         }
-                        if( bDiscriminatorValue > bDiscriminator_[2] ) njets_btagtight_++;
+                        //if( bDiscriminatorValue > bDiscriminator_[2] ) njets_btagtight_++;
 
                     }//end of jets loop
 
