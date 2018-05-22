@@ -374,7 +374,7 @@ namespace flashgg {
                         bDiscriminatorValue = thejet->bDiscriminator( bTag_.c_str() );
 
                         //if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
-                        if( bDiscriminatorValue > bDiscriminator_[1] ) {
+                        if( bDiscriminatorValue > bDiscriminator_[0] ) {
                             deltaRMuonBJetcount++;
                             //njets_btagmedium_++;
                             muonBJets.push_back( thejet );
@@ -417,7 +417,7 @@ namespace flashgg {
                                     if( bDiscriminatorValue > bDiscriminator_[2] ) njets_btagtight_++;
                                 }
                             }
-                        }                        
+                        }
 
                     }
 
@@ -466,7 +466,7 @@ namespace flashgg {
                         bDiscriminatorValue = thejet->bDiscriminator( bTag_.c_str() );
                     
                         //if( bDiscriminatorValue > bDiscriminator_[0] ) njets_btagloose_++;
-                        if( bDiscriminatorValue > bDiscriminator_[1] ) {
+                        if( bDiscriminatorValue > bDiscriminator_[0] ) {
                             deltaRElectronBJetcount++;
                             //njets_btagmedium_++;
                             ElectronBJets.push_back( thejet );
