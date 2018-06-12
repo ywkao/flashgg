@@ -625,6 +625,29 @@ namespace flashgg {
                 Ptr<flashgg::Met> Met = theMet_->ptrAt( 0 );
                 tthltags_obj.setMetPt((float)Met->pt());
                 tthltags_obj.setMetPhi((float)Met->phi());
+
+                // find highest pT lep for mT calc
+                bool single_lepton = tagMuons.size() + tagElectrons.size() == 1;
+                if (single_lepton) {
+                    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep = tagMuons.size() == 1 ? tagMuons[0]->p4() : tagElectrons[0]->p4();
+                    float MT_ = (Met->p4() + lep).Mt();
+                    tthltags_obj.setMT(MT_);
+                }
+                else
+                    tthltags_obj.setMT(-999);
+                /*
+                ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep(0,0,0,0);
+                for (unsigned int i = 0; i < tagMuons.size(); i++) {
+                    if (tagMuons[i]->p4().pt() > lep.pt())
+                        lep = tagMuons[i]->p4();
+                }
+                for (unsigned int i = 0; i < tagElectrons.size(); i++) {
+                    if (tagElectrons[i]->p4().pt() > lep.pt())
+                        lep = tagElectrons[i]->p4();
+                }
+                float MT_ = (Met->p4() + lep).Mt(); 
+                tthltags_obj.setMT(MT_);
+                */
                 tthltags_obj.setDiphoMVARes((float)mvares->result);
                 tthltags_obj.setNBLoose( njets_btagloose_ );
                 tthltags_obj.setNBMedium( njets_btagmedium_ );

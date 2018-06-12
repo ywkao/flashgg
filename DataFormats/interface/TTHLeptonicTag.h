@@ -30,6 +30,7 @@ namespace flashgg {
 
         float MetPt() const {return MetPt_;}
         float MetPhi() const {return MetPhi_;}
+        float MT() const {return mT_;}
         int nGoodEls() const {return nGoodEls_;}
         int nGoodElsFromTau() const {return nGoodElsFromTau_;}
         int nGoodMus() const {return nGoodMus_;}
@@ -39,6 +40,7 @@ namespace flashgg {
         float diphoMVARes() const { return diphoMVARes_; }
         int leadPhotonType() const { return leadPhotonType_; }
         int subleadPhotonType() const { return subleadPhotonType_; }
+
 
         void setJets( std::vector<edm::Ptr<Jet> > Jets ) { Jets_ = Jets; }
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
@@ -51,6 +53,8 @@ namespace flashgg {
 
         void setMetPt(float metPt) {MetPt_ = (float)metPt;}
         void setMetPhi(float metPhi) {MetPhi_ = (float)metPhi;}
+        void setMT(float mT) {mT_ = (float)mT;}
+
     
         void setnGoodEls(int nGoodEls) {nGoodEls_ = nGoodEls;}
         void setnGoodElsFromTau(int nGoodElsFromTau) {nGoodElsFromTau_ = nGoodElsFromTau;}
@@ -75,6 +79,7 @@ namespace flashgg {
         std::vector<edm::Ptr<Jet> > BJets_;
         float MetPt_;
         float MetPhi_;
+        float mT_;
         int nGoodEls_;
         int nGoodElsFromTau_;
         int nGoodMus_;
