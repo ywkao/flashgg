@@ -630,7 +630,12 @@ namespace flashgg {
                 bool single_lepton = tagMuons.size() + tagElectrons.size() == 1;
                 if (single_lepton) {
                     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep = tagMuons.size() == 1 ? tagMuons[0]->p4() : tagElectrons[0]->p4();
-                    float MT_ = (Met->p4() + lep).Mt();
+                    //float MT_ = (Met->p4() + lep).Mt();
+                    float pt1 = lep.pt();
+                    float pt2 = Met->p4().pt();
+                    float phi1 = lep.phi();
+                    float phi2 = Met->p4().phi();
+                    float MT_ = sqrt( 2 * pt1 * pt2 * ( 1 - cos( phi1 - phi2 ) ) );
                     tthltags_obj.setMT(MT_);
                 }
                 else
