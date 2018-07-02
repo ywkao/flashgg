@@ -494,8 +494,29 @@ namespace flashgg {
                 tthhtags_obj.setMetPt((float)Met->pt());
                 tthhtags_obj.setMetPhi((float)Met->phi());
 
-                // Gen info
+                // Gen photon info
+                /*
+                if( ! evt.isRealData() ) {
+                    evt.getByToken( genParticleToken_, genParticles );
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+                        if (abs(pdgid) != 22)   continue;
+                        double pt = genParticles->ptrAt( genLoop )->p4().pt();
+                        bool isPromptFinalState = genParticles->ptrAt( genLoop )->isPromptFinalState();
+                        if (!isPromptFinalState)    continue;
+                        if (pt < 10)            continue;
+                        double deltaR_pho1 = deltaR( genParticles->ptrAt( genLoop )->p4().eta(), genParticles->ptrAt( genLoop )->p4().phi(), dipho->leadingPhoton()->superCluster()->eta(), dipho->leadingPhoton()->superCluster()->phi() ) ; 
+                        double deltaR_pho2 = deltaR( genParticles->ptrAt( genLoop )->p4().eta(), genParticles->ptrAt( genLoop )->p4().phi(), dipho->subLeadingPhoton()->superCluster()->eta(), dipho->subLeadingPhoton()->superCluster()->phi() ) ;
+                        if (deltaR_pho1 < gen_photon_deltaR_thresh) {
+                          
+                        }
+                        else if (deltaR_pho2 < gen_photon_deltaR_thresh) {
 
+                        }
+ 
+                    }
+                } */
+                // Gen lepton info
                 if( ! evt.isRealData() ) {
                     evt.getByToken( genParticleToken_, genParticles );
                     int nGoodEls(0), nGoodMus(0), nGoodElsFromTau(0), nGoodMusFromTau(0), nGoodTaus(0);
