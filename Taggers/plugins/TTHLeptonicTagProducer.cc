@@ -745,10 +745,13 @@ namespace flashgg {
                     // Do our own gen-matching
                     double lead_photon_closest_match = dipho->leadingPhoton()->genMatchType() == 1 ? sqrt( pow(lead_photon_eta - dipho->leadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(lead_photon_phi - dipho->leadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
                     double sublead_photon_closest_match = dipho->subLeadingPhoton()->genMatchType() == 1 ? sqrt( pow(sublead_photon_eta - dipho->subLeadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(sublead_photon_phi - dipho->subLeadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
+                    double lead_photon_closest_match_pt = dipho->leadingPhoton()->genMatchType() == 1 ? dipho->leadingPhoton()->pt() : -1;
+                    double sublead_photon_closest_match_pt = dipho->subLeadingPhoton()->genMatchType() == 1 ? dipho->subLeadingPhoton()->pt() : -1;
+
                     for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
                         int pdgid = genParticles->ptrAt( genLoop )->pdgId();
                         if (abs(pdgid) != 22) continue;
-                        string prompt = genParticles->ptrAt( genLoop )->isPromptFinalState() ? "prompt" : "fake";
+                        if (genParticles->ptrAt( genLoop )->p4().pt() < 10) continue;
                         if (!genParticles->ptrAt( genLoop )->isPromptFinalState()) continue;
                         double gen_photon_candidate_eta = genParticles->ptrAt( genLoop )->p4().eta();
                         double gen_photon_candidate_phi = genParticles->ptrAt( genLoop )->p4().phi();
@@ -756,11 +759,14 @@ namespace flashgg {
                         double deltaR_lead = sqrt( pow(gen_photon_candidate_eta - lead_photon_eta, 2) + pow(gen_photon_candidate_phi - lead_photon_phi, 2));
                         double deltaR_sublead = sqrt( pow(gen_photon_candidate_eta - sublead_photon_eta, 2) + pow(gen_photon_candidate_phi - sublead_photon_phi, 2));
 
-                        cout << deltaR_lead << endl;
-                        if (deltaR_lead < lead_photon_closest_match)
+                        if (deltaR_lead < lead_photon_closest_match) {
                             lead_photon_closest_match = deltaR_lead;
-                        if (deltaR_sublead < sublead_photon_closest_match)
+                            lead_photon_closest_match_pt = genParticles->ptrAt( genLoop )->p4().pt();
+                        }
+                        if (deltaR_sublead < sublead_photon_closest_match) {
                             sublead_photon_closest_match = deltaR_sublead;
+                            sublead_photon_closest_match_pt = genParticles->ptrAt( genLoop )->p4().pt();
+                        }
                     } // end gen loop
                     string lead_fake = dipho->leadingPhoton()->genMatchType() == 1 ? "prompt" : "fake";
                     //cout << "Leading photon is " << lead_fake << ". Closest match:" << lead_photon_closest_match << endl;
@@ -778,6 +784,8 @@ namespace flashgg {
                     tthltags_obj.setSubleadPhotonType(sublead_photon_type);
                     tthltags_obj.setLeadPhotonClosestDeltaR(lead_photon_closest_match);
                     tthltags_obj.setSubleadPhotonClosestDeltaR(sublead_photon_closest_match);
+                    tthltags_obj.setLeadPhotonClosestPt(lead_photon_closest_match_pt);
+                    tthltags_obj.setSubleadPhotonClosestPt(sublead_photon_closest_match_pt);
                 }
                 else {
                     tthltags_obj.setnGoodEls(-1);
@@ -789,6 +797,8 @@ namespace flashgg {
                     tthltags_obj.setSubleadPhotonType(-1);
                     tthltags_obj.setLeadPhotonClosestDeltaR(-1);
                     tthltags_obj.setSubleadPhotonClosestDeltaR(-1);
+                    tthltags_obj.setLeadPhotonClosestPt(-1);
+                    tthltags_obj.setSubleadPhotonClosestPt(-1);
                 }
                 tthltags->push_back( tthltags_obj );
                 if( ! evt.isRealData() ) {
