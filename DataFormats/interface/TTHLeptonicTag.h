@@ -41,6 +41,9 @@ namespace flashgg {
         int leadPhotonType() const { return leadPhotonType_; }
         int subleadPhotonType() const { return subleadPhotonType_; }
 
+        double leadPhotonClosestDeltaR() const { return leadPhotonClosestDeltaR_; }
+        double subleadPhotonClosestDeltaR() const { return subleadPhotonClosestDeltaR_; }
+
 
         void setJets( std::vector<edm::Ptr<Jet> > Jets ) { Jets_ = Jets; }
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
@@ -66,6 +69,10 @@ namespace flashgg {
         void setLeadPhotonType(int leadPhotonType) {leadPhotonType_ = leadPhotonType; }
         void setSubleadPhotonType(int subleadPhotonType) {subleadPhotonType_ = subleadPhotonType; }
 
+        void setLeadPhotonClosestDeltaR(double leadPhotonClosestDeltaR) { leadPhotonClosestDeltaR_ = leadPhotonClosestDeltaR;}
+        void setSubleadPhotonClosestDeltaR(double subleadPhotonClosestDeltaR) { subleadPhotonClosestDeltaR_ = subleadPhotonClosestDeltaR;}
+
+
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHLeptonic; }
 
     private:
@@ -89,6 +96,9 @@ namespace flashgg {
 
         int leadPhotonType_;
         int subleadPhotonType_;
+
+        double leadPhotonClosestDeltaR_;
+        double subleadPhotonClosestDeltaR_;
     };
 }
 

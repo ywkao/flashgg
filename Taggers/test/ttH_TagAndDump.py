@@ -206,7 +206,9 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "nb_medium        := nBMedium",
                  "nb_tight         := nBTight",
                  "lead_photon_type := leadPhotonType",
-                 "sublead_photon_type := subleadPhotonType"
+                 "sublead_photon_type := subleadPhotonType",
+		 "lead_closest_gen_dR := leadPhotonClosestDeltaR",
+                 "sublead_closest_gen_dR := subleadPhotonClosestDeltaR"
 ]
 
 ## TTH leptonic ##

@@ -693,6 +693,10 @@ namespace flashgg {
                         }
                     }
                     bool lead_photon_is_electron(false), sublead_photon_is_electron(false);
+                    double lead_photon_eta = dipho->leadingPhoton()->eta();
+                    double lead_photon_phi = dipho->leadingPhoton()->phi();
+                    double sublead_photon_eta = dipho->subLeadingPhoton()->eta();
+                    double sublead_photon_phi = dipho->subLeadingPhoton()->phi();
                     for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
                         int pdgid = genParticles->ptrAt( genLoop )->pdgId();
                         if (abs(pdgid) != 11) continue;
@@ -700,10 +704,6 @@ namespace flashgg {
                         if (!genParticles->ptrAt( genLoop )->isPromptFinalState()) continue;
                         double electron_eta = genParticles->ptrAt( genLoop )->p4().eta();
                         double electron_phi = genParticles->ptrAt( genLoop )->p4().phi();
-                        double lead_photon_eta = dipho->leadingPhoton()->superCluster()->eta();
-                        double lead_photon_phi = dipho->leadingPhoton()->superCluster()->phi();
-                        double sublead_photon_eta = dipho->subLeadingPhoton()->superCluster()->eta();
-                        double sublead_photon_phi = dipho->subLeadingPhoton()->superCluster()->phi();
 
                         cout << "Found an electron with pT: " << genParticles->ptrAt( genLoop )->p4().pt() << endl;
 
@@ -741,6 +741,34 @@ namespace flashgg {
                     else
                         sublead_photon_type = 1; // prompt
 
+
+                    // Do our own gen-matching
+                    double lead_photon_closest_match = dipho->leadingPhoton()->genMatchType() == 1 ? sqrt( pow(lead_photon_eta - dipho->leadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(lead_photon_phi - dipho->leadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
+                    double sublead_photon_closest_match = dipho->subLeadingPhoton()->genMatchType() == 1 ? sqrt( pow(sublead_photon_eta - dipho->subLeadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(sublead_photon_phi - dipho->subLeadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+                        if (abs(pdgid) != 22) continue;
+                        string prompt = genParticles->ptrAt( genLoop )->isPromptFinalState() ? "prompt" : "fake";
+                        if (!genParticles->ptrAt( genLoop )->isPromptFinalState()) continue;
+                        double gen_photon_candidate_eta = genParticles->ptrAt( genLoop )->p4().eta();
+                        double gen_photon_candidate_phi = genParticles->ptrAt( genLoop )->p4().phi();
+
+                        double deltaR_lead = sqrt( pow(gen_photon_candidate_eta - lead_photon_eta, 2) + pow(gen_photon_candidate_phi - lead_photon_phi, 2));
+                        double deltaR_sublead = sqrt( pow(gen_photon_candidate_eta - sublead_photon_eta, 2) + pow(gen_photon_candidate_phi - sublead_photon_phi, 2));
+
+                        cout << deltaR_lead << endl;
+                        if (deltaR_lead < lead_photon_closest_match)
+                            lead_photon_closest_match = deltaR_lead;
+                        if (deltaR_sublead < sublead_photon_closest_match)
+                            sublead_photon_closest_match = deltaR_sublead;
+                    } // end gen loop
+                    string lead_fake = dipho->leadingPhoton()->genMatchType() == 1 ? "prompt" : "fake";
+                    //cout << "Leading photon is " << lead_fake << ". Closest match:" << lead_photon_closest_match << endl;
+
+                    string sublead_fake = dipho->subLeadingPhoton()->genMatchType() == 1 ? "prompt" : "fake";
+                    //cout << "Subleading photon is " << sublead_fake << ". Closest match:" << sublead_photon_closest_match << endl;                     
+
+
                     tthltags_obj.setnGoodEls(nGoodEls);
                     tthltags_obj.setnGoodElsFromTau(nGoodElsFromTau);
                     tthltags_obj.setnGoodMus(nGoodMus);
@@ -748,6 +776,8 @@ namespace flashgg {
                     tthltags_obj.setnGoodTaus(nGoodTaus);
                     tthltags_obj.setLeadPhotonType(lead_photon_type);
                     tthltags_obj.setSubleadPhotonType(sublead_photon_type);
+                    tthltags_obj.setLeadPhotonClosestDeltaR(lead_photon_closest_match);
+                    tthltags_obj.setSubleadPhotonClosestDeltaR(sublead_photon_closest_match);
                 }
                 else {
                     tthltags_obj.setnGoodEls(-1);
@@ -757,6 +787,8 @@ namespace flashgg {
                     tthltags_obj.setnGoodTaus(-1);
                     tthltags_obj.setLeadPhotonType(-1);
                     tthltags_obj.setSubleadPhotonType(-1);
+                    tthltags_obj.setLeadPhotonClosestDeltaR(-1);
+                    tthltags_obj.setSubleadPhotonClosestDeltaR(-1);
                 }
                 tthltags->push_back( tthltags_obj );
                 if( ! evt.isRealData() ) {

@@ -40,6 +40,9 @@ namespace flashgg {
         float diphoMVARes() const { return diphoMVARes_; }
         int leadPhotonType() const { return leadPhotonType_; }
         int subleadPhotonType() const { return subleadPhotonType_; }
+        double leadPhotonClosestDeltaR() const { return leadPhotonClosestDeltaR_; }
+        double subleadPhotonClosestDeltaR() const { return subleadPhotonClosestDeltaR_; } 
+
 
         void setNjet( int nb ) { Njet_ = nb; }
         void setNBLoose( int nb ) { Nbtagloose_ = nb; }
@@ -62,7 +65,8 @@ namespace flashgg {
         void setDiphoMVARes(float diphoMVARes) {diphoMVARes_ = diphoMVARes;}
         void setLeadPhotonType(int leadPhotonType) {leadPhotonType_ = leadPhotonType; }
         void setSubleadPhotonType(int subleadPhotonType) {subleadPhotonType_ = subleadPhotonType; }
-
+        void setLeadPhotonClosestDeltaR(double leadPhotonClosestDeltaR) { leadPhotonClosestDeltaR_ = leadPhotonClosestDeltaR;}
+        void setSubleadPhotonClosestDeltaR(double subleadPhotonClosestDeltaR) { subleadPhotonClosestDeltaR_ = subleadPhotonClosestDeltaR;}
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHHadronic; }
 
@@ -92,6 +96,9 @@ namespace flashgg {
         float diphoMVARes_;
         int leadPhotonType_;
         int subleadPhotonType_;
+
+        double leadPhotonClosestDeltaR_;
+        double subleadPhotonClosestDeltaR_;
     };
 }
 
