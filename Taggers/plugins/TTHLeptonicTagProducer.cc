@@ -627,19 +627,39 @@ namespace flashgg {
                 tthltags_obj.setMetPhi((float)Met->phi());
 
                 // find highest pT lep for mT calc
+                ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep;
                 bool single_lepton = tagMuons.size() + tagElectrons.size() == 1;
-                if (single_lepton) {
-                    ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep = tagMuons.size() == 1 ? tagMuons[0]->p4() : tagElectrons[0]->p4();
-                    //float MT_ = (Met->p4() + lep).Mt();
-                    float pt1 = lep.pt();
-                    float pt2 = Met->p4().pt();
-                    float phi1 = lep.phi();
-                    float phi2 = Met->p4().phi();
-                    float MT_ = sqrt( 2 * pt1 * pt2 * ( 1 - cos( phi1 - phi2 ) ) );
-                    tthltags_obj.setMT(MT_);
+                if (single_lepton)
+                    lep = tagMuons.size() == 1 ? tagMuons[0]->p4() : tagElectrons[0]->p4();
+                else { // find the highest pT lep
+                    bool ele = 1; // highest pt comes from an elec
+                    int idx = -1; // idx of highest pt lep
+                    double highest_pt = -1;
+
+                    for (unsigned int i = 0; i < tagElectrons.size(); i++) {
+                        if (tagElectrons[i]->p4().pt() > highest_pt) {
+                            highest_pt = tagElectrons[i]->p4().pt();
+                            ele = true;
+                            idx = i;
+                        }
+                    }
+                    for (unsigned int i = 0; i < tagMuons.size(); i++) {
+                        if (tagMuons[i]->p4().pt() > highest_pt) {
+                            highest_pt = tagMuons[i]->p4().pt();
+                            ele = false;
+                            idx = i;
+                        }
+                    }
+                    lep = ele ? tagElectrons[idx]->p4() : tagMuons[idx]->p4();
                 }
-                else
-                    tthltags_obj.setMT(-999);
+                     
+                float pt1 = lep.pt();
+                float pt2 = Met->p4().pt();
+                float phi1 = lep.phi();
+                float phi2 = Met->p4().phi();
+                float MT_ = sqrt( 2 * pt1 * pt2 * ( 1 - cos( phi1 - phi2 ) ) );
+                tthltags_obj.setMT(MT_);
+
                 /*
                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep(0,0,0,0);
                 for (unsigned int i = 0; i < tagMuons.size(); i++) {
