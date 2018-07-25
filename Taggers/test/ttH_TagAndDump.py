@@ -5,6 +5,8 @@ import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
 from flashgg.Systematics.SystematicDumperDefaultVariables import minimalVariables,minimalHistograms,minimalNonSignalVariables,systematicVariables
 
+import random
+
 process = cms.Process("FLASHggTag")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -205,6 +207,7 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "nb_loose         := nBLoose",
                  "nb_medium        := nBMedium",
                  "nb_tight         := nBTight",
+		 "rand             := rand", 
                  "lead_photon_type := leadPhotonType",
                  "sublead_photon_type := subleadPhotonType",
 		 "lead_closest_gen_Pt := leadPhotonClosestPt",

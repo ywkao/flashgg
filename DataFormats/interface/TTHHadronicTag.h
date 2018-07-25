@@ -5,7 +5,6 @@
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
-
 namespace flashgg {
 
     class TTHHadronicTag: public DiPhotonTagBase
@@ -44,7 +43,7 @@ namespace flashgg {
         double subleadPhotonClosestDeltaR() const { return subleadPhotonClosestDeltaR_; } 
         double leadPhotonClosestPt() const { return leadPhotonClosestPt_; }
         double subleadPhotonClosestPt() const { return subleadPhotonClosestPt_; }
-
+        double rand() const { return rand_; }
 
         void setNjet( int nb ) { Njet_ = nb; }
         void setNBLoose( int nb ) { Nbtagloose_ = nb; }
@@ -71,6 +70,7 @@ namespace flashgg {
         void setSubleadPhotonClosestDeltaR(double subleadPhotonClosestDeltaR) { subleadPhotonClosestDeltaR_ = subleadPhotonClosestDeltaR;}
         void setLeadPhotonClosestPt(double leadPhotonClosestPt) { leadPhotonClosestPt_ = leadPhotonClosestPt;}
         void setSubleadPhotonClosestPt(double subleadPhotonClosestPt) { subleadPhotonClosestPt_ = subleadPhotonClosestPt;}
+        void setRand(double rand) { rand_ = rand; }
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHHadronic; }
 
@@ -105,6 +105,8 @@ namespace flashgg {
         double subleadPhotonClosestDeltaR_;
         double leadPhotonClosestPt_;
         double subleadPhotonClosestPt_;
+
+        double rand_;
     };
 }
 

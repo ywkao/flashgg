@@ -31,10 +31,12 @@
 #include <utility>
 #include "TLorentzVector.h"
 #include "TMath.h"
+#include "TRandom.h"
+
+TRandom* myRandLeptonic = new TRandom();
 
 using namespace std;
 using namespace edm;
-
 
 namespace flashgg {
     class TTHLeptonicTagProducer : public EDProducer
@@ -248,6 +250,7 @@ namespace flashgg {
 
         edm::RefProd<vector<TagTruthBase> > rTagTruth = evt.getRefBeforePut<vector<TagTruthBase> >();
         unsigned int idx = 0;
+
 
 
         assert( diPhotons->size() == mvaResults->size() );
@@ -625,6 +628,8 @@ namespace flashgg {
                 Ptr<flashgg::Met> Met = theMet_->ptrAt( 0 );
                 tthltags_obj.setMetPt((float)Met->pt());
                 tthltags_obj.setMetPhi((float)Met->phi());
+                tthltags_obj.setRand(myRandLeptonic->Rndm()); 
+
 
                 // find highest pT lep for mT calc
                 ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > lep;

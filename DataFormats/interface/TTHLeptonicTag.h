@@ -5,6 +5,7 @@
 #include "flashgg/DataFormats/interface/Muon.h"
 #include "flashgg/DataFormats/interface/Electron.h"
 #include "flashgg/DataFormats/interface/Jet.h"
+#include "TRandom.h"
 
 namespace flashgg {
 
@@ -45,7 +46,8 @@ namespace flashgg {
         double subleadPhotonClosestDeltaR() const { return subleadPhotonClosestDeltaR_; }
         double leadPhotonClosestPt() const { return leadPhotonClosestPt_; }
         double subleadPhotonClosestPt() const { return subleadPhotonClosestPt_; }
-
+        double rand() const { return rand_; }
+        
         void setJets( std::vector<edm::Ptr<Jet> > Jets ) { Jets_ = Jets; }
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
         void setMuons( std::vector<edm::Ptr<Muon> > Muons ) {Muons_ = Muons;}
@@ -74,6 +76,7 @@ namespace flashgg {
         void setSubleadPhotonClosestDeltaR(double subleadPhotonClosestDeltaR) { subleadPhotonClosestDeltaR_ = subleadPhotonClosestDeltaR;}
         void setLeadPhotonClosestPt(double leadPhotonClosestPt) { leadPhotonClosestPt_ = leadPhotonClosestPt;}
         void setSubleadPhotonClosestPt(double subleadPhotonClosestPt) { subleadPhotonClosestPt_ = subleadPhotonClosestPt;}
+        void setRand(double rand) { rand_ = rand; }
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHLeptonic; }
 
@@ -103,6 +106,8 @@ namespace flashgg {
         double subleadPhotonClosestDeltaR_;
         double leadPhotonClosestPt_;
         double subleadPhotonClosestPt_;
+
+         double rand_;
     };
 }
 

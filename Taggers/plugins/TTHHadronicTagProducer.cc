@@ -28,6 +28,9 @@
 #include <utility>
 
 #include "TMVA/Reader.h"
+#include "TRandom.h"
+
+TRandom* myRandHadronic = new TRandom();
 
 using namespace std;
 using namespace edm;
@@ -326,7 +329,6 @@ namespace flashgg {
                                                   rho_, evt.isRealData() );
             //}
         
-        
         for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ ) {
 
             if( goodElectrons.size() > 0 ||  goodMuons.size() > 0 )  continue; 
@@ -487,6 +489,8 @@ namespace flashgg {
                 tthhtags_obj.setSystLabel( systLabel_ );
                 tthhtags_obj.setMVAres(tthMvaVal_);
                 tthhtags_obj.setDiphoMVARes(mvares->mvaValue());
+                cout << "random number: " << myRandHadronic->Rndm() << endl;   
+                tthhtags_obj.setRand(myRandHadronic->Rndm());
 
                 if( theMet_ -> size() != 1 )
                   std::cout << "WARNING number of MET is not equal to 1" << std::endl;
