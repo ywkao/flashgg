@@ -33,7 +33,7 @@
 #include "TMath.h"
 #include "TRandom.h"
 
-TRandom* myRandLeptonic = new TRandom();
+TRandom* myRandLeptonic = new TRandom(0);
 
 using namespace std;
 using namespace edm;

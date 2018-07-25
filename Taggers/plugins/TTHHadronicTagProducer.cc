@@ -30,7 +30,7 @@
 #include "TMVA/Reader.h"
 #include "TRandom.h"
 
-TRandom* myRandHadronic = new TRandom();
+TRandom* myRandHadronic = new TRandom(0);
 
 using namespace std;
 using namespace edm;
