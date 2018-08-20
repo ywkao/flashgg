@@ -4,6 +4,7 @@
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
 #include "flashgg/DataFormats/interface/DiPhotonMVAResult.h"
 #include "flashgg/DataFormats/interface/TagTruthBase.h"
+#include "TRandom.h"
 
 namespace flashgg {
 
