@@ -96,6 +96,8 @@ namespace flashgg {
         string bTag_;
         //leptons
         double leptonPtThreshold_;
+        double muonPtThreshold_;
+        double electronPtThreshold_;
         double muonEtaThreshold_;
         vector<double> nonTrigMVAThresholds_;
         vector<double> nonTrigMVAEtaCuts_;
@@ -161,6 +163,8 @@ namespace flashgg {
         PhoMVAThreshold_ = iConfig.getParameter<double>( "PhoMVAThreshold");
 
         leptonPtThreshold_ = iConfig.getParameter<double>( "leptonPtThreshold");
+        muonPtThreshold_ = iConfig.getParameter<double>( "muonPtThreshold");
+        electronPtThreshold_ = iConfig.getParameter<double>( "electronPtThreshold");
         muonEtaThreshold_ = iConfig.getParameter<double>( "muonEtaThreshold");
         leadPhoPtThreshold_ = iConfig.getParameter<double>( "leadPhoPtThreshold");
         leadPhoUseVariableTh_ = iConfig.getParameter<bool>( "leadPhoUseVariableThreshold");
@@ -304,9 +308,9 @@ namespace flashgg {
 
         std::vector<edm::Ptr<flashgg::Muon> > goodMuons;
         if( !useStdLeptonID_) {
-            goodMuons = selectAllMuonsSum16( theMuons->ptrs(), vertices->ptrs(), muonEtaThreshold_ , leptonPtThreshold_, muMiniIsoSumRelThreshold_ );
+            goodMuons = selectAllMuonsSum16( theMuons->ptrs(), vertices->ptrs(), muonEtaThreshold_ , muonPtThreshold_, muMiniIsoSumRelThreshold_ );
         } else {
-            goodMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muonEtaThreshold_ , leptonPtThreshold_, muPFIsoSumRelThreshold_ );
+            goodMuons = selectAllMuons( theMuons->ptrs(), vertices->ptrs(), muonEtaThreshold_ , muonPtThreshold_, muPFIsoSumRelThreshold_ );
         }
         
        
@@ -324,7 +328,7 @@ namespace flashgg {
             //                                         TransverseImpactParam_EB, LongitudinalImpactParam_EB, TransverseImpactParam_EE, LongitudinalImpactParam_EE,
             //                                         rho_, evt.isRealData() );
         //} else {
-            goodElectrons = selectStdAllElectrons(theElectrons->ptrs(), vertices->ptrs(), leptonPtThreshold_, electronEtaThresholds_,
+            goodElectrons = selectStdAllElectrons(theElectrons->ptrs(), vertices->ptrs(), electronPtThreshold_, electronEtaThresholds_,
                                                   useElectronMVARecipe_, useElectronLooseID_,
                                                   rho_, evt.isRealData() );
             //}

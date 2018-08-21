@@ -69,6 +69,8 @@ namespace flashgg {
 
         //Thresholds
         double leptonPtThreshold_;
+        double muonPtThreshold_;
+        double electronPtThreshold_;
         double muonEtaThreshold_;
         double leadPhoOverMassThreshold_;
         double subleadPhoOverMassThreshold_;
@@ -131,6 +133,8 @@ namespace flashgg {
     {
 
         leptonPtThreshold_ = iConfig.getParameter<double>( "leptonPtThreshold");
+        muonPtThreshold_ = iConfig.getParameter<double>( "muonPtThreshold");
+        electronPtThreshold_ = iConfig.getParameter<double>( "electronPtThreshold");
         muonEtaThreshold_ = iConfig.getParameter<double>( "muonEtaThreshold");
         leadPhoOverMassThreshold_ = iConfig.getParameter<double>( "leadPhoOverMassThreshold");
         subleadPhoOverMassThreshold_ = iConfig.getParameter<double>( "subleadPhoOverMassThreshold");
@@ -306,10 +310,10 @@ namespace flashgg {
             std::vector<edm::Ptr<flashgg::Muon> > goodMuons;
             if( !useStdLeptonID_) {
                 goodMuons = selectMuonsSum16( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_ , 
-                         leptonPtThreshold_,muMiniIsoSumRelThreshold_, deltaRMuonPhoThreshold_, deltaRMuonPhoThreshold_ );
+                         muonPtThreshold_,muMiniIsoSumRelThreshold_, deltaRMuonPhoThreshold_, deltaRMuonPhoThreshold_ );
             } else {
                 goodMuons = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_ , 
-                                     leptonPtThreshold_,muPFIsoSumRelThreshold_, deltaRMuonPhoThreshold_, deltaRMuonPhoThreshold_ );
+                                     muonPtThreshold_,muPFIsoSumRelThreshold_, deltaRMuonPhoThreshold_, deltaRMuonPhoThreshold_ );
             }
             
             
@@ -325,7 +329,7 @@ namespace flashgg {
             //                                        TransverseImpactParam_EB, LongitudinalImpactParam_EB, TransverseImpactParam_EE, LongitudinalImpactParam_EE,
             //                                         rho_, evt.isRealData() );
             //} else {
-                goodElectrons = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), leptonPtThreshold_,  electronEtaThresholds_ ,
+                goodElectrons = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_,  electronEtaThresholds_ ,
                                                     useElectronMVARecipe_,useElectronLooseID_,
                                                    deltaRPhoElectronThreshold_,DeltaRTrkElec_,deltaMassElectronZThreshold_,
                                                    rho_, evt.isRealData() );

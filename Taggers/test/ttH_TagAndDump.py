@@ -138,16 +138,6 @@ from flashgg.Taggers.flashggTagOutputCommands_cff import tagDefaultOutputCommand
 #                               outputCommands = tagDefaultOutputCommand			       
 #                               )
 
-process.p = cms.Path(process.dataRequirements*
-		     process.flashggUpdatedIdMVADiPhotons*
-		     process.flashggDiPhotonSystematics*
-		     process.flashggMetSystematics*
-		     process.flashggMuonSystematics*process.flashggElectronSystematics*
-		     (process.flashggUnpackedJets*process.jetSystematicsSequence)*
-		     (process.flashggTagSequence*process.systematicsTagSequences)*
-		     process.flashggTagSequence*
-		     process.flashggTagTester)
-
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("merged_ntuple.root"))
 
@@ -245,9 +235,9 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                         "muon2_energy := ?(muons.size>1)? muons.at(1).energy : -999",
                         "n_bjets  := bJets.size",
                         "n_jets   := jets.size",
-                        "bjet1_pt := bJets.at(0).pt",
+                        "bjet1_pt := ?bJets.size>0? bJets.at(0).pt : -1",
                         "bjet2_pt := ?bJets.size>1? bJets.at(1).pt : -1",
-                        "bjet1_csv:= bJets.at(0).bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",
+                        "bjet1_csv:= ?bJets.size>0? bJets.at(0).bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags') : -1",
                         "bjet2_csv:= ?bJets.size>1? bJets.at(1).bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags') : -1",
                         "Mjj      := ?(jets.size>1)?"
                         +"sqrt((jets.at(0).energy+jets.at(1).energy)^2-(jets.at(0).px+jets.at(1).px)^2-(jets.at(0).py+jets.at(1).py)^2-(jets.at(0).pz+jets.at(1).pz)^2)"
@@ -432,6 +422,14 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
                        histograms=[]
 )
 
-process.p1 = cms.Path(process.dataRequirements*
-		      (process.tthLeptonicTagDumper
+process.p = cms.Path(process.dataRequirements*
+                     process.flashggUpdatedIdMVADiPhotons*
+                     process.flashggDiPhotonSystematics*
+                     process.flashggMetSystematics*
+                     process.flashggMuonSystematics*process.flashggElectronSystematics*
+                     (process.flashggUnpackedJets*process.jetSystematicsSequence)*
+                     (process.flashggTagSequence*process.systematicsTagSequences)*
+                     process.flashggTagSequence*
+                     process.flashggTagTester*
+		     (process.tthLeptonicTagDumper
                       +process.tthHadronicTagDumper))
