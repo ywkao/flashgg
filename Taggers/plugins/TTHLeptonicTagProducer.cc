@@ -658,8 +658,10 @@ namespace flashgg {
                         cout << "Found an electron with pT: " << genParticles->ptrAt( genLoop )->p4().pt() << endl;
 
 
-                        double deltaR_lead = sqrt( pow(electron_eta - lead_photon_eta, 2) + pow(electron_phi - lead_photon_phi, 2));
-                        double deltaR_sublead = sqrt( pow(electron_eta - sublead_photon_eta, 2) + pow(electron_phi - sublead_photon_phi, 2));
+                        double deltaR_lead = deltaR(electron_eta, electron_phi, lead_photon_eta, lead_photon_phi);
+                        double deltaR_sublead = deltaR(electron_eta, electron_phi, sublead_photon_eta, sublead_photon_phi);
+                        //double deltaR_lead = sqrt( pow(electron_eta - lead_photon_eta, 2) + pow(electron_phi - lead_photon_phi, 2));
+                        //double deltaR_sublead = sqrt( pow(electron_eta - sublead_photon_eta, 2) + pow(electron_phi - sublead_photon_phi, 2));
 
                         cout << "Delta R with leading photon: " << deltaR_lead << endl;
                         cout << "Delta R with subleading photon: " << deltaR_sublead << endl;
@@ -693,8 +695,11 @@ namespace flashgg {
 
 
                     // Do our own gen-matching
-                    double lead_photon_closest_match = dipho->leadingPhoton()->genMatchType() == 1 ? sqrt( pow(lead_photon_eta - dipho->leadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(lead_photon_phi - dipho->leadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
-                    double sublead_photon_closest_match = dipho->subLeadingPhoton()->genMatchType() == 1 ? sqrt( pow(sublead_photon_eta - dipho->subLeadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(sublead_photon_phi - dipho->subLeadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
+                    double lead_photon_closest_match = dipho->leadingPhoton()->genMatchType() == 1 ? deltaR(lead_photon_eta, lead_photon_phi, dipho->leadingPhoton()->matchedGenPhoton()->eta(), dipho->leadingPhoton()->matchedGenPhoton()->phi()) : 999;
+                    double sublead_photon_closest_match = dipho->subLeadingPhoton()->genMatchType() == 1 ? deltaR(sublead_photon_eta, sublead_photon_phi, dipho->subLeadingPhoton()->matchedGenPhoton()->eta(), dipho->subLeadingPhoton()->matchedGenPhoton()->phi()) : 999; 
+
+                    //double lead_photon_closest_match = dipho->leadingPhoton()->genMatchType() == 1 ? sqrt( pow(lead_photon_eta - dipho->leadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(lead_photon_phi - dipho->leadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
+                    //double sublead_photon_closest_match = dipho->subLeadingPhoton()->genMatchType() == 1 ? sqrt( pow(sublead_photon_eta - dipho->subLeadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(sublead_photon_phi - dipho->subLeadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
                     double lead_photon_closest_match_pt = dipho->leadingPhoton()->genMatchType() == 1 ? dipho->leadingPhoton()->pt() : -1;
                     double sublead_photon_closest_match_pt = dipho->subLeadingPhoton()->genMatchType() == 1 ? dipho->subLeadingPhoton()->pt() : -1;
 
@@ -706,8 +711,11 @@ namespace flashgg {
                         double gen_photon_candidate_eta = genParticles->ptrAt( genLoop )->p4().eta();
                         double gen_photon_candidate_phi = genParticles->ptrAt( genLoop )->p4().phi();
 
-                        double deltaR_lead = sqrt( pow(gen_photon_candidate_eta - lead_photon_eta, 2) + pow(gen_photon_candidate_phi - lead_photon_phi, 2));
-                        double deltaR_sublead = sqrt( pow(gen_photon_candidate_eta - sublead_photon_eta, 2) + pow(gen_photon_candidate_phi - sublead_photon_phi, 2));
+
+                        double deltaR_lead = deltaR(gen_photon_candidate_eta, gen_photon_candidate_phi, lead_photon_eta, lead_photon_phi);
+                        //double deltaR_lead = sqrt( pow(gen_photon_candidate_eta - lead_photon_eta, 2) + pow(gen_photon_candidate_phi - lead_photon_phi, 2));
+                        double deltaR_sublead = deltaR(gen_photon_candidate_eta, gen_photon_candidate_phi, sublead_photon_eta, sublead_photon_phi); 
+                        //double deltaR_sublead = sqrt( pow(gen_photon_candidate_eta - sublead_photon_eta, 2) + pow(gen_photon_candidate_phi - sublead_photon_phi, 2));
 
                         if (deltaR_lead < lead_photon_closest_match) {
                             lead_photon_closest_match = deltaR_lead;
