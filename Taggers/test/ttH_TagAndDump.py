@@ -15,6 +15,7 @@ dropVBFInNonGold = False
 
 process = cms.Process("FLASHggTag")
 process.load("FWCore.MessageService.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = 100
 process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
@@ -192,7 +193,32 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
 		 "lead_closest_gen_Pt := leadPhotonClosestPt",
                  "sublead_closest_gen_Pt := subleadPhotonClosestPt",
 		 "lead_closest_gen_dR := leadPhotonClosestDeltaR",
-                 "sublead_closest_gen_dR := subleadPhotonClosestDeltaR"
+                 "sublead_closest_gen_dR := subleadPhotonClosestDeltaR",
+		 "lead_PhoGenPt := leadPhoGenPt",
+		 "lead_PhoGenEta := leadPhoGenEta",
+		 "lead_PhoGenPhi := leadPhoGenPhi",
+		 "lead_Prompt := leadPrompt",
+		 "lead_Mad := leadMad",
+		 "lead_Pythia := leadPythia",
+		 "lead_SimpleMomID := leadSimpleMomID",
+		 "lead_SimpleMomStatus := leadSimpleMomStatus",
+		 "lead_MomID := leadMomID",
+		 "lead_MomMomID := leadMomMomID",
+		 "lead_PassFrix := leadPassFrix",
+		 "lead_SmallestDr := leadSmallestDr",
+		 "sublead_PhoGenPt := subleadPhoGenPt",
+		 "sublead_PhoGenEta := subleadPhoGenEta",
+		 "sublead_PhoGenPhi := subleadPhoGenPhi",
+		 "sublead_Prompt := subleadPrompt",
+		 "sublead_Mad := subleadMad",
+		 "sublead_Pythia := subleadPythia",
+		 "sublead_SimpleMomID := subleadSimpleMomID",
+		 "sublead_SimpleMomStatus := subleadSimpleMomStatus",
+		 "sublead_MomID := subleadMomID",
+		 "sublead_MomMomID := subleadMomMomID",
+		 "sublead_PassFrix := subleadPassFrix",
+		 "sublead_SmallestDr := subleadSmallestDr",
+		
 ]
 
 ## TTH leptonic ##
