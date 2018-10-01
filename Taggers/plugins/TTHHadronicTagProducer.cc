@@ -680,6 +680,8 @@ namespace flashgg {
 
             double leadPhoPtCut = leadPhoPtThreshold_;
             double subleadPhoPtCut = subleadPhoPtThreshold_;
+
+            
             if( leadPhoUseVariableTh_ )
             { 
                 leadPhoPtCut = leadPhoOverMassThreshold_ * dipho->mass(); 
@@ -693,6 +695,7 @@ namespace flashgg {
             if(useTTHHadronicMVA_){
                     diphoMVAcut = MVATTHHMVAThreshold_;
             }
+	    
 
             if( dipho->leadingPhoton()->pt() < leadPhoPtCut || dipho->subLeadingPhoton()->pt() < subleadPhoPtCut ) { continue; }
             if( mvares->mvaValue() < diphoMVAcut ) { continue; }
@@ -719,6 +722,9 @@ namespace flashgg {
                 if(bTag_ == "pfDeepCSV") bDiscriminatorValue = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
                 else  bDiscriminatorValue = thejet->bDiscriminator( bTag_ );
 
+		cout << "jet number: " << jetIndex + 1 << endl;
+		cout << "b tag value (deep csv): " << thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") << endl;
+		cout << "b tag value (csvv2): " << thejet->bDiscriminator( bTag_ ) << endl;
                 
 
                 float jetPt = thejet->pt();
@@ -875,7 +881,7 @@ namespace flashgg {
                 }
 
 
-
+		cout << "Second max b-tag value is:" << secondMaxBTagVal_ << endl;
                 if(secondMaxBTagVal_ >= secondMaxBTagTTHHMVAThreshold_ && njets_btagloose_ >= bjetsLooseNumberTTHHMVAThreshold_ && njets_btagmedium_ >= bjetsNumberTTHHMVAThreshold_ && jetcount_ >= jetsNumberTTHHMVAThreshold_ && _MVAMethod != ""){
                     
 		  if(debug_){
@@ -937,6 +943,7 @@ namespace flashgg {
                  }
             }
 
+	    //bool isTTHHadronicTagged = true;
             bool isTTHHadronicTagged = false;
             int catnum =-1;
             if( !useTTHHadronicMVA_ && njets_btagloose_ >= bjetsLooseNumberThreshold_ && njets_btagmedium_ >= bjetsNumberThreshold_ && jetcount_ >= jetsNumberThreshold_ ) {
@@ -949,10 +956,10 @@ namespace flashgg {
                 
                 catnum = chooseCategory( tthMvaVal_ );                
                 //                cout<<" catNum="<<catnum<<endl;
-                if(catnum>=0){
+                //if(catnum>=0){
                     isTTHHadronicTagged = true;
                     //                    cout<<" TAGGED "<< endl;
-                }
+                //}
             }
             
             if( isTTHHadronicTagged ) {
