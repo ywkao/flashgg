@@ -960,8 +960,8 @@ namespace flashgg {
                  }
             }
 
-            //bool isTTHHadronicTagged = false;
-	    bool isTTHHadronicTagged = true; // FIXME
+            bool isTTHHadronicTagged = false;
+	    //bool isTTHHadronicTagged = true; // FIXME
             int catnum =-1;
             if( !useTTHHadronicMVA_ && njets_btagloose_ >= bjetsLooseNumberThreshold_ && njets_btagmedium_ >= bjetsNumberThreshold_ && jetcount_ >= jetsNumberThreshold_ ) {
 
