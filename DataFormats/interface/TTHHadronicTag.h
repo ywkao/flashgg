@@ -24,6 +24,7 @@ namespace flashgg {
 
         // Getters
         int nJet() const {return Njet_;}
+        int nGenJet() const {return NGenJet_;}
         int nBLoose() const {return Nbtagloose_;}
         int nBMedium() const {return Nbtagmedium_;}
         int nBTight() const {return Nbtagtight_;}
@@ -79,6 +80,7 @@ namespace flashgg {
 
         // Setters
         void setNjet( int nb ) { Njet_ = nb; }
+        void setNGenJet ( int nb ) {NGenJet_ = nb; }
         void setNBLoose( int nb ) { Nbtagloose_ = nb; }
         void setNBMedium( int nb ) { Nbtagmedium_ = nb; }
         void setNBTight( int nb ) { Nbtagtight_ = nb; }
@@ -138,6 +140,7 @@ namespace flashgg {
 
     private:
         int Njet_;
+        int NGenJet_;
         int Nbtagloose_;
         int Nbtagmedium_;
         int Nbtagtight_;

@@ -71,6 +71,7 @@ namespace flashgg {
         EDGetTokenT<int> stage0catToken_, stage1catToken_, njetsToken_;
         EDGetTokenT<HTXS::HiggsClassification> newHTXSToken_;
         EDGetTokenT<float> pTHToken_,pTVToken_;
+	EDGetTokenT<View<reco::GenJet>> genJetToken_;
         EDGetTokenT<double> rhoTag_;
         string systLabel_;
 
@@ -124,6 +125,7 @@ namespace flashgg {
 
         int jetcount_;
         float nJets_;
+        int nGenJets_;
         int njets_btagloose_;
         int njets_btagmedium_;
         int njets_btagtight_;
@@ -321,6 +323,7 @@ namespace flashgg {
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag>( "MVAResultTag" ) ) ),
         METToken_( consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ( "METTag" ) ) ),
         genParticleToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
+	genJetToken_( consumes<View<reco::GenJet> >( iConfig.getParameter<InputTag> ("GenJetTag"))),
         rhoTag_( consumes<double>( iConfig.getParameter<InputTag>( "rhoTag" ) ) ),
         systLabel_( iConfig.getParameter<string> ( "SystLabel" ) ),
         _MVAMethod( iConfig.getParameter<string> ( "MVAMethod" ) )
@@ -382,6 +385,7 @@ namespace flashgg {
         tthMVAweightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVAweightfile" ); 
 
         nJets_ = 0;
+	nGenJets_ = 0;
         leadJetPt_ = 0.;
         leadJetBTag_ = -1.;
         subLeadJetPt_ = 0.;
@@ -525,6 +529,9 @@ namespace flashgg {
         Handle<View<flashgg::Electron> > theElectrons;
         evt.getByToken( electronToken_, theElectrons );
 
+	Handle<View<reco::GenJet>> theGenJets;
+        evt.getByToken( genJetToken_, theGenJets );
+
         edm::Handle<double>  rho;
         evt.getByToken(rhoTag_,rho);
         double rho_    = *rho;
@@ -579,6 +586,8 @@ namespace flashgg {
         
         for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ ) {
 
+	    cout << "number of gen jets: " << theGenJets->size() << endl;
+
             edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
 
             std::vector<edm::Ptr<flashgg::Muon> >     Muons;
@@ -594,6 +603,7 @@ namespace flashgg {
             jetcount_ = 0;
 
             nJets_ = 0;
+	    nGenJets_ = 0;
             njets_btagloose_ = 0;
             njets_btagmedium_ = 0;
             njets_btagtight_ = 0;
@@ -696,6 +706,20 @@ namespace flashgg {
 
             if( dipho->leadingPhoton()->pt() < leadPhoPtCut || dipho->subLeadingPhoton()->pt() < subleadPhoPtCut ) { continue; }
             if( mvares->mvaValue() < diphoMVAcut ) { continue; }
+
+	    for( unsigned int jetIndex = 0; jetIndex < theGenJets->size(); jetIndex++) {
+	      edm::Ptr<reco::GenJet> thejet = theGenJets->ptrAt(jetIndex);
+	      if( fabs( thejet->eta() ) > jetEtaThreshold_ ) { continue; }
+	      float dRPhoLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->leadingPhoton()->superCluster()->eta(), dipho->leadingPhoton()->superCluster()->phi() ) ;
+              float dRPhoSubLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->subLeadingPhoton()->superCluster()->eta(),
+                                                dipho->subLeadingPhoton()->superCluster()->phi() );
+
+              if( dRPhoLeadJet < dRJetPhoLeadCut_ || dRPhoSubLeadJet < dRJetPhoSubleadCut_ ) { continue; }
+              if( thejet->pt() < jetPtThreshold_ ) { continue; }
+		
+	      nGenJets_++;
+
+	    } 
 
             for( unsigned int jetIndex = 0; jetIndex < Jets[jetCollectionIndex]->size() ; jetIndex++ ) {
                 edm::Ptr<flashgg::Jet> thejet = Jets[jetCollectionIndex]->ptrAt( jetIndex );
@@ -874,8 +898,7 @@ namespace flashgg {
                     jetPhi_4_=JetVect[3]->phi();
                 }
 
-
-
+		cout << "Second max b-tag value is:" << secondMaxBTagVal_ << endl;
                 if(secondMaxBTagVal_ >= secondMaxBTagTTHHMVAThreshold_ && njets_btagloose_ >= bjetsLooseNumberTTHHMVAThreshold_ && njets_btagmedium_ >= bjetsNumberTTHHMVAThreshold_ && jetcount_ >= jetsNumberTTHHMVAThreshold_ && _MVAMethod != ""){
                     
 		  if(debug_){
@@ -937,7 +960,8 @@ namespace flashgg {
                  }
             }
 
-            bool isTTHHadronicTagged = false;
+            //bool isTTHHadronicTagged = false;
+	    bool isTTHHadronicTagged = true; // FIXME
             int catnum =-1;
             if( !useTTHHadronicMVA_ && njets_btagloose_ >= bjetsLooseNumberThreshold_ && njets_btagmedium_ >= bjetsNumberThreshold_ && jetcount_ >= jetsNumberThreshold_ ) {
 
@@ -960,6 +984,7 @@ namespace flashgg {
                 TTHHadronicTag tthhtags_obj( dipho, mvares, JetVect, BJetVect );
                 tthhtags_obj.setCategoryNumber(catnum  );
                 tthhtags_obj.setNjet( jetcount_ );
+		tthhtags_obj.setNGenJet ( nGenJets_ );
                 tthhtags_obj.setNBLoose( njets_btagloose_ );
                 tthhtags_obj.setNBMedium( njets_btagmedium_ );
                 tthhtags_obj.setNBTight( njets_btagtight_ );
@@ -995,13 +1020,13 @@ namespace flashgg {
                         bool isDirectPromptTauDecayProductFinalState = genParticles->ptrAt( genLoop )->isDirectPromptTauDecayProductFinalState();
                         if (pt < 20) continue;
                         if (abs(pdgid) == 11 || abs(pdgid) == 13 || abs(pdgid) == 15) {
-                            cout << "Found a gen lepton/tau with pT > 20" << endl;
-                            cout << "pdgid: " << pdgid << endl;
-                            cout << "pt: " << pt << endl;
-                            cout << "status: " << status << endl;
-                            cout << "isPromptFinalState: " << isPromptFinalState << endl;
-                            cout << "isPromptDecayed: " << isPromptDecayed << endl;
-                            cout << "isDirectPromptTauDecayProductFinalState: " << isDirectPromptTauDecayProductFinalState << endl;
+                            //cout << "Found a gen lepton/tau with pT > 20" << endl;
+                            //cout << "pdgid: " << pdgid << endl;
+                            //cout << "pt: " << pt << endl;
+                            //cout << "status: " << status << endl;
+                            //cout << "isPromptFinalState: " << isPromptFinalState << endl;
+                            //cout << "isPromptDecayed: " << isPromptDecayed << endl;
+                            //cout << "isDirectPromptTauDecayProductFinalState: " << isDirectPromptTauDecayProductFinalState << endl;
                         }
                         if (abs(pdgid) == 11 && status == 1 && (isPromptFinalState || isDirectPromptTauDecayProductFinalState)) {
                             nGoodEls++;
@@ -1032,15 +1057,15 @@ namespace flashgg {
                         double electron_eta = genParticles->ptrAt( genLoop )->p4().eta();
                         double electron_phi = genParticles->ptrAt( genLoop )->p4().phi();
 
-                        cout << "Found an electron with pT: " << genParticles->ptrAt( genLoop )->p4().pt() << endl;
+                        //cout << "Found an electron with pT: " << genParticles->ptrAt( genLoop )->p4().pt() << endl;
 
 			double deltaR_lead = deltaR(electron_eta, electron_phi, lead_photon_eta, lead_photon_phi);
                         double deltaR_sublead = deltaR(electron_eta, electron_phi, sublead_photon_eta, sublead_photon_phi);
                         //double deltaR_lead = sqrt( pow(electron_eta - lead_photon_eta, 2) + pow(electron_phi - lead_photon_phi, 2));
                         //double deltaR_sublead = sqrt( pow(electron_eta - sublead_photon_eta, 2) + pow(electron_phi - sublead_photon_phi, 2));
 
-                        cout << "Delta R with leading photon: " << deltaR_lead << endl;
-                        cout << "Delta R with subleading photon: " << deltaR_sublead << endl;
+                        //cout << "Delta R with leading photon: " << deltaR_lead << endl;
+                        //cout << "Delta R with subleading photon: " << deltaR_sublead << endl;
 
                         const double deltaR_thresh = 0.1;
                         if (deltaR_lead < deltaR_thresh)
