@@ -133,15 +133,15 @@ process.flashggTagSequence.remove(process.flashggVBFDiPhoDiJetMVA)
 print 'here we print the tag sequence after'
 print process.flashggTagSequence
 
-#process.p = cms.Path(process.dataRequirements*
-#		     process.flashggUpdatedIdMVADiPhotons*
+process.p = cms.Path(process.dataRequirements*
+		     process.flashggUpdatedIdMVADiPhotons*
 #		     process.flashggDiPhotonSystematics*
-#		     process.flashggMetSystematics*
-#		     process.flashggMuonSystematics*process.flashggElectronSystematics*
-#		     (process.flashggUnpackedJets*process.jetSystematicsSequence)*
-#		     (process.flashggTagSequence*process.systematicsTagSequences)*
-#		     process.flashggTagSequence*
-#		     process.flashggTagTester)
+		     process.flashggMetSystematics*
+		     process.flashggMuonSystematics*process.flashggElectronSystematics*
+		     (process.flashggUnpackedJets*process.jetSystematicsSequence)*
+		     (process.flashggTagSequence*process.systematicsTagSequences)*
+		     process.flashggTagSequence*
+		     process.flashggTagTester)
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("merged_ntuple.root"))
@@ -413,7 +413,8 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
                        variables=dipho_variables+
                        ["n_bjets  := nBMedium",
                         "n_jets   := jetVector.size",
-                        "bjet1_pt := bJetVector.at(0).pt",
+			"nGenJets := nGenJet",
+                        "bjet1_pt := ?nBMedium>0? bJetVector.at(0).pt : -1",
                         "bjet2_pt := ?nBMedium>1? bJetVector.at(1).pt : -1",
                         "MetPt  := MetPt",
                         "MetPhi := MetPhi",
