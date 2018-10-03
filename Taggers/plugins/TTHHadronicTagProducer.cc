@@ -71,7 +71,7 @@ namespace flashgg {
         EDGetTokenT<int> stage0catToken_, stage1catToken_, njetsToken_;
         EDGetTokenT<HTXS::HiggsClassification> newHTXSToken_;
         EDGetTokenT<float> pTHToken_,pTVToken_;
-	EDGetTokenT<View<reco::GenJet>> genJetToken_;
+	//EDGetTokenT<View<reco::GenJet>> genJetToken_;
         EDGetTokenT<double> rhoTag_;
         string systLabel_;
 
@@ -323,7 +323,7 @@ namespace flashgg {
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag>( "MVAResultTag" ) ) ),
         METToken_( consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ( "METTag" ) ) ),
         genParticleToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
-	genJetToken_( consumes<View<reco::GenJet> >( iConfig.getParameter<InputTag> ("GenJetTag"))),
+	//genJetToken_( consumes<View<reco::GenJet> >( iConfig.getParameter<InputTag> ("GenJetTag"))),
         rhoTag_( consumes<double>( iConfig.getParameter<InputTag>( "rhoTag" ) ) ),
         systLabel_( iConfig.getParameter<string> ( "SystLabel" ) ),
         _MVAMethod( iConfig.getParameter<string> ( "MVAMethod" ) )
@@ -529,8 +529,8 @@ namespace flashgg {
         Handle<View<flashgg::Electron> > theElectrons;
         evt.getByToken( electronToken_, theElectrons );
 
-	Handle<View<reco::GenJet>> theGenJets;
-        evt.getByToken( genJetToken_, theGenJets );
+	//Handle<View<reco::GenJet>> theGenJets;
+        //evt.getByToken( genJetToken_, theGenJets );
 
         edm::Handle<double>  rho;
         evt.getByToken(rhoTag_,rho);
@@ -586,7 +586,7 @@ namespace flashgg {
         
         for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ ) {
 
-	    cout << "number of gen jets: " << theGenJets->size() << endl;
+	    //cout << "number of gen jets: " << theGenJets->size() << endl;
 
             edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
 
@@ -707,6 +707,7 @@ namespace flashgg {
             if( dipho->leadingPhoton()->pt() < leadPhoPtCut || dipho->subLeadingPhoton()->pt() < subleadPhoPtCut ) { continue; }
             if( mvares->mvaValue() < diphoMVAcut ) { continue; }
 
+	    /*
 	    for( unsigned int jetIndex = 0; jetIndex < theGenJets->size(); jetIndex++) {
 	      edm::Ptr<reco::GenJet> thejet = theGenJets->ptrAt(jetIndex);
 	      if( fabs( thejet->eta() ) > jetEtaThreshold_ ) { continue; }
@@ -719,7 +720,7 @@ namespace flashgg {
 		
 	      nGenJets_++;
 
-	    } 
+	    } */
 
             for( unsigned int jetIndex = 0; jetIndex < Jets[jetCollectionIndex]->size() ; jetIndex++ ) {
                 edm::Ptr<flashgg::Jet> thejet = Jets[jetCollectionIndex]->ptrAt( jetIndex );
