@@ -175,6 +175,7 @@ flashggTTHLeptonicTag = cms.EDProducer("FlashggTTHLeptonicTagProducer",
                                        GenParticleTag=cms.InputTag( "flashggPrunedGenParticles" ),
 				       rhoTag = cms.InputTag('fixedGridRhoFastjetAll'),
                                        MVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_BDT_training_v2.json.weights.xml"),
+				       topTaggerXMLfile = cms.FileInPath("flashgg/Taggers/data/resTop_xgb_csv_order_deepCTag.xml"),
                                        leadPhoOverMassThreshold = cms.double(0.33),
                                        subleadPhoOverMassThreshold = cms.double(0.25),
                                        MVAThreshold = cms.vdouble(-1.0, -1.0), # set these to -1 (previously 0.7, 0.3)

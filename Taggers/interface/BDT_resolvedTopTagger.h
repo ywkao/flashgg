@@ -1,3 +1,6 @@
+#ifndef _TOPTAGGER_H_
+#define _TOPTAGGER_H_
+
 #include <memory>
 #include <vector>
 #include <string>
@@ -7,6 +10,8 @@
 #include "TMVA/Reader.h"
 #include <iostream>
 #include <algorithm>
+
+namespace flashgg {
 
 typedef math::PtEtaPhiMLorentzVectorD BDT_rTT_ptvec;
 
@@ -116,6 +121,7 @@ private:
 
 };
 
+inline
 void BDT_resolvedTopTagger::Init(std::string weight_file_name){
 
   TMVAReader_ = std::make_shared<TMVA::Reader>( "!Color:!Silent" );
@@ -160,6 +166,7 @@ void BDT_resolvedTopTagger::Init(std::string weight_file_name){
 
 };
 
+inline
 void BDT_resolvedTopTagger::clear(){
 
   jets.clear();
@@ -202,6 +209,7 @@ void BDT_resolvedTopTagger::clear(){
 
 }
 
+inline
 std::vector<float> BDT_resolvedTopTagger::EvalMVA(){
 
   int njets = jets.size();
@@ -251,6 +259,7 @@ std::vector<float> BDT_resolvedTopTagger::EvalMVA(){
 
 };
 
+inline
 float BDT_resolvedTopTagger::EvalScore(const std::shared_ptr<BDT_rTT_top> top){
 
   var_b_pt = top->b->pt();
@@ -333,3 +342,7 @@ float BDT_resolvedTopTagger::EvalScore(const std::shared_ptr<BDT_rTT_top> top){
   return score;
 
 };
+
+}
+
+#endif // _TOPTAGGER_H_
