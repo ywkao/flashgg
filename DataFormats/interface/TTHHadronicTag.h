@@ -53,6 +53,10 @@ namespace flashgg {
         double subleadPhotonClosestPt() const { return subleadPhotonClosestPt_; }
         double rand() const { return rand_; }
 
+        float topTagScore() const { return topTagScore_; }
+        float topTagTopMass() const { return topTagTopMass_; }
+        float topTagWMass() const { return topTagWMass_; }
+
         double leadPhoGenPt() const { return leadPhoGenPt_; }
         double leadPhoGenEta() const { return leadPhoGenEta_; }
         double leadPhoGenPhi() const { return leadPhoGenPhi_; }
@@ -110,6 +114,10 @@ namespace flashgg {
         void setLeadPhotonClosestPt(double leadPhotonClosestPt) { leadPhotonClosestPt_ = leadPhotonClosestPt;}
         void setSubleadPhotonClosestPt(double subleadPhotonClosestPt) { subleadPhotonClosestPt_ = subleadPhotonClosestPt;}
         void setRand(double rand) { rand_ = rand; }
+
+        void setTopTagScore(float toptagScore) { topTagScore_ = toptagScore; }
+        void setTopTagTopMass(float toptagTopMass) { topTagTopMass_ = toptagTopMass; }
+        void setTopTagWMass(float toptagWMass) { topTagWMass_ = toptagWMass; }
 
         void setLeadPhoGenPt(double leadPhoGenPt) { leadPhoGenPt_ = leadPhoGenPt; }
         void setLeadPhoGenEta(double leadPhoGenEta) { leadPhoGenEta_ = leadPhoGenEta; }
@@ -199,6 +207,10 @@ namespace flashgg {
         int sublead_motherMotherID_;
         int sublead_passFrix_;
         double sublead_smallestDr_;
+
+        float topTagScore_;
+        float topTagTopMass_;
+        float topTagWMass_;
 
         double rand_;       
 

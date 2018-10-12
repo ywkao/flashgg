@@ -25,6 +25,7 @@
 #include "DataFormats/Common/interface/RefToPtr.h"
 #include "SimDataFormats/HTXS/interface/HiggsTemplateCrossSections.h"
 
+#include "BDT_resolvedTopTagger.C"
 
 #include <vector>
 #include <algorithm>
@@ -74,7 +75,7 @@ namespace flashgg {
 	//EDGetTokenT<View<reco::GenJet>> genJetToken_;
         EDGetTokenT<double> rhoTag_;
         string systLabel_;
-
+	FileInPath topTaggerXMLfile_;
 
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
         bool useTTHHadronicMVA_;
@@ -182,6 +183,7 @@ namespace flashgg {
         float tthMvaVal_;
 
         vector<double> boundaries;
+	BDT_resolvedTopTagger *topTagger;
 
     };
 
@@ -383,6 +385,7 @@ namespace flashgg {
 
   
         tthMVAweightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVAweightfile" ); 
+	topTaggerXMLfile_ = iConfig.getParameter<edm::FileInPath>( "topTaggerXMLfile" );
 
         nJets_ = 0;
 	nGenJets_ = 0;
@@ -485,6 +488,8 @@ namespace flashgg {
 
         produces<vector<TTHHadronicTag> >();
         produces<vector<TagTruthBase> >();
+
+	topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
     }
 
     int TTHHadronicTagProducer::chooseCategory( float tthmvavalue )
@@ -714,12 +719,10 @@ namespace flashgg {
 	      float dRPhoLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->leadingPhoton()->superCluster()->eta(), dipho->leadingPhoton()->superCluster()->phi() ) ;
               float dRPhoSubLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->subLeadingPhoton()->superCluster()->eta(),
                                                 dipho->subLeadingPhoton()->superCluster()->phi() );
-
               if( dRPhoLeadJet < dRJetPhoLeadCut_ || dRPhoSubLeadJet < dRJetPhoSubleadCut_ ) { continue; }
               if( thejet->pt() < jetPtThreshold_ ) { continue; }
 		
 	      nGenJets_++;
-
 	    } */
 
             for( unsigned int jetIndex = 0; jetIndex < Jets[jetCollectionIndex]->size() ; jetIndex++ ) {
@@ -744,7 +747,13 @@ namespace flashgg {
                 if(bTag_ == "pfDeepCSV") bDiscriminatorValue = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
                 else  bDiscriminatorValue = thejet->bDiscriminator( bTag_ );
 
-                
+     		float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
+                float cvsb = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+                float ptD = thejet->userFloat("ptD") ;
+                float axis1 = thejet->userFloat("axis1") ;
+                int mult = thejet->userFloat("totalMult") ;
+
+                topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue, cvsl, cvsb, ptD, axis1, mult);           
 
                 float jetPt = thejet->pt();
                 if(jetPt > leadJetPt_){
@@ -799,6 +808,15 @@ namespace flashgg {
         
             if( METs->size() != 1 ) { std::cout << "WARNING - #MET is not 1" << std::endl;}
             Ptr<flashgg::Met> theMET = METs->ptrAt( 0 );
+
+	    vector<float> mvaEval = topTagger->EvalMVA(); 
+	    cout << "eval top tagger: " << mvaEval.size() << endl;
+	    for (unsigned topt = 0; topt < mvaEval.size(); topt++)  {
+	      if (topt < mvaEval.size() - 1) cout << mvaEval[topt] << ", ";
+	      else cout << mvaEval[topt];
+	    }
+	    cout << endl;
+	    topTagger->clear();	
 
             if(useTTHHadronicMVA_){
 
@@ -1006,6 +1024,17 @@ namespace flashgg {
 		
                 tthhtags_obj.setMetPt((float)theMET->pt());
                 tthhtags_obj.setMetPhi((float)theMET->phi());
+
+		if (mvaEval.size() > 0) {
+		  tthhtags_obj.setTopTagScore(mvaEval[0] != -99 ? mvaEval[0] : -1);
+		  tthhtags_obj.setTopTagTopMass(mvaEval[4]);
+		  tthhtags_obj.setTopTagWMass(mvaEval[8]);
+		} else
+		  {
+		  tthhtags_obj.setTopTagScore(-999);
+		  tthhtags_obj.setTopTagTopMass(-999);
+		  tthhtags_obj.setTopTagWMass(-999);
+		  }
 			
 		// Gen lepton info
                 if( ! evt.isRealData() ) {
