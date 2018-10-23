@@ -39,6 +39,10 @@ namespace flashgg {
         int subleadPassFrix() const { return sublead_passFrix_; }
         double subleadSmallestDr() const { return sublead_smallestDr_; }
 
+        float topTagScore() const { return topTagScore_; }
+        float topTagTopMass() const { return topTagTopMass_; }
+        float topTagWMass() const { return topTagWMass_; }
+
         int nJet() const {return Njet_;}
         int nBLoose() const {return Nbtagloose_;}
         int nBMedium() const {return Nbtagmedium_;}
@@ -91,6 +95,10 @@ namespace flashgg {
         void setLeadPhotonClosestPt(double leadPhotonClosestPt) { leadPhotonClosestPt_ = leadPhotonClosestPt;}
         void setSubleadPhotonClosestPt(double subleadPhotonClosestPt) { subleadPhotonClosestPt_ = subleadPhotonClosestPt;}
         void setRand(double rand) { rand_ = rand; }
+
+        void setTopTagScore(float toptagScore) { topTagScore_ = toptagScore; }
+        void setTopTagTopMass(float toptagTopMass) { topTagTopMass_ = toptagTopMass; }
+        void setTopTagWMass(float toptagWMass) { topTagWMass_ = toptagWMass; }
 
         void setLeadPrompt(int leadPrompt) { leadPrompt_ = leadPrompt; }
         void setSubleadPrompt(int subleadPrompt) { subleadPrompt_ = subleadPrompt; }
@@ -163,6 +171,10 @@ namespace flashgg {
         int sublead_motherMotherID_;
         int sublead_passFrix_;
         double sublead_smallestDr_;
+
+        float topTagScore_;
+        float topTagTopMass_;
+        float topTagWMass_;
 
         double rand_;
     };

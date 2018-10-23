@@ -224,6 +224,9 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
 		 "sublead_MomMomID := subleadMomMomID",
 		 "sublead_PassFrix := subleadPassFrix",
 		 "sublead_SmallestDr := subleadSmallestDr",
+		 "topTag_score := topTagScore",
+		 "topTag_topMass := topTagTopMass",
+		 "topTag_WMass := topTagWMass",
 ]
 
 ## TTH leptonic ##

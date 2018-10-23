@@ -25,6 +25,8 @@
 #include "flashgg/DataFormats/interface/TagTruthBase.h"
 #include "DataFormats/Common/interface/RefToPtr.h"
 
+#include "flashgg/Taggers/interface/BDT_resolvedTopTagger.h"
+
 #include <vector>
 #include <algorithm>
 #include <string>
@@ -70,6 +72,8 @@ namespace flashgg {
         EDGetTokenT<float> pTHToken_,pTVToken_;
         EDGetTokenT<double> rhoTag_;
         string systLabel_;
+
+        FileInPath topTaggerXMLfile_;
 
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
 
@@ -122,6 +126,9 @@ namespace flashgg {
         int njets_btagloose_;
         int njets_btagmedium_;
         int njets_btagtight_;
+
+        BDT_resolvedTopTagger *topTagger;
+
     };
 
     const reco::GenParticle* TTHLeptonicTagProducer::motherID(const reco::GenParticle* gp)
@@ -280,6 +287,8 @@ namespace flashgg {
         jetPtThreshold_ = iConfig.getParameter<double>( "jetPtThreshold");
         jetEtaThreshold_ = iConfig.getParameter<double>( "jetEtaThreshold");
 
+        topTaggerXMLfile_ = iConfig.getParameter<edm::FileInPath>( "topTaggerXMLfile" );
+
         diphotonMassThreshold_ = iConfig.getParameter<double>( "diphotonMassThreshold");
 
         deltaRJetLeadPhoThreshold_ = iConfig.getParameter<double>( "deltaRJetLeadPhoThreshold");
@@ -325,6 +334,8 @@ namespace flashgg {
         }
         produces<vector<TTHLeptonicTag> >();
         produces<vector<TagTruthBase> >();
+
+        topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
     }
 
     void TTHLeptonicTagProducer::produce( Event &evt, const EventSetup & )
@@ -612,6 +623,8 @@ namespace flashgg {
                             //njets_btagmedium_++;
                             ElectronBJets.push_back( thejet );
                         }
+
+
                         //if( bDiscriminatorValue > bDiscriminator_[2] ) njets_btagtight_++;
 
                     }//end of jets loop
@@ -655,6 +668,17 @@ namespace flashgg {
                     }
                     
                 }//end of electron loop
+
+                for (unsigned int jIndex = 0; jIndex < tagJets.size(); jIndex++) {
+                    edm::Ptr<flashgg::Jet> thejet = tagJets.at(jIndex);
+                    float bDiscDeepCSV = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+                    float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
+                    float cvsb = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+                    float ptD = thejet->userFloat("ptD") ;
+                    float axis1 = thejet->userFloat("axis1") ;
+                    int mult = thejet->userFloat("totalMult") ;
+                    topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscDeepCSV, cvsl, cvsb, ptD, axis1, mult);
+                }
 
             }
 
@@ -767,6 +791,26 @@ namespace flashgg {
                 tthltags_obj.setMetPt((float)Met->pt());
                 tthltags_obj.setMetPhi((float)Met->phi());
                 tthltags_obj.setRand(myRandLeptonic->Rndm()); 
+
+                vector<float> mvaEval = topTagger->EvalMVA(); 
+                cout << "eval top tagger: " << mvaEval.size() << endl;
+                for (unsigned topt = 0; topt < mvaEval.size(); topt++)  {
+                  if (topt < mvaEval.size() - 1) cout << mvaEval[topt] << ", ";
+                  else cout << mvaEval[topt];
+                }
+                cout << endl;
+                topTagger->clear(); 
+
+                if (mvaEval.size() > 0) {
+                  tthltags_obj.setTopTagScore(mvaEval[0] != -99 ? mvaEval[0] : -1);
+                  tthltags_obj.setTopTagTopMass(mvaEval[4]);
+                  tthltags_obj.setTopTagWMass(mvaEval[8]);
+                } else
+                {
+                  tthltags_obj.setTopTagScore(-999);
+                  tthltags_obj.setTopTagTopMass(-999);
+                  tthltags_obj.setTopTagWMass(-999);
+                }
 
 
                 // find highest pT lep for mT calc
