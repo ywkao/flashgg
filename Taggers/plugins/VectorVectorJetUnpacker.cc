@@ -54,9 +54,10 @@ namespace flashgg {
         Handle<View<vector<flashgg::Jet> > > theJets;
         evt.getByToken( jetsToken_, theJets );
 
-        if( theJets->size() > nCollections_ ) {
-            throw cms::Exception( "Configuration" ) << " Too many collections in input vector - inconsistency with MicroAOD";
-        }
+        // NOTE: commented these lines out as when we produced our own microAOD, Bennett found that he had to increase the number of maxJetCollections past 12 for some files
+        //if( theJets->size() > nCollections_ ) {
+        //    throw cms::Exception( "Configuration" ) << " Too many collections in input vector - inconsistency with MicroAOD";
+        //}
 
         for( unsigned int i = 0 ; i < nCollections_ ; i++ ) {
             unique_ptr<vector<Jet> > result( new vector<Jet> );
