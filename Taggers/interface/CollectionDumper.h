@@ -363,7 +363,7 @@ namespace flashgg {
                     event.getByLabel(genInfo_,genInfo);
                 }
 
-                weight = lumiWeight_;
+                //weight = lumiWeight_;
 
                 if( genInfo.isValid() ) {
                     const auto &weights = genInfo->weights();
@@ -373,9 +373,9 @@ namespace flashgg {
                     }
                 }
                 
-                if( globalVarsDumper_ && globalVarsDumper_->puReWeight() ) {
-                    weight *= globalVarsDumper_->cache().puweight;
-                }
+                //if( globalVarsDumper_ && globalVarsDumper_->puReWeight() ) {
+                //    weight *= globalVarsDumper_->cache().puweight;
+                //}
             }
             return weight;
         }
