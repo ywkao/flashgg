@@ -64,6 +64,8 @@ def set_pileup_reweighting(obj, filename):
     obj.puReWeight = False
   elif sample_map[sample]["n_match"] == 0:
     obj.puReWeight = False
+  elif "DY" in filename: # we have a different DY sample than the one in their catalog
+    obj.puReWeight = False
   elif sample_map[sample]["n_match"] == 1:
     mcPu = grep_info_from_file(sample_map[sample]["pu_mix"])
     print mcPu
