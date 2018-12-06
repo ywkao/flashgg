@@ -25,7 +25,7 @@
 #include "DataFormats/Common/interface/RefToPtr.h"
 #include "SimDataFormats/HTXS/interface/HiggsTemplateCrossSections.h"
 
-#include "BDT_resolvedTopTagger.C"
+#include "flashgg/Taggers/interface/BDT_resolvedTopTagger.h"
 
 #include <vector>
 #include <algorithm>
@@ -747,13 +747,17 @@ namespace flashgg {
                 if(bTag_ == "pfDeepCSV") bDiscriminatorValue = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
                 else  bDiscriminatorValue = thejet->bDiscriminator( bTag_ );
 
-     		float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
-                float cvsb = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                float ptD = thejet->userFloat("ptD") ;
-                float axis1 = thejet->userFloat("axis1") ;
-                int mult = thejet->userFloat("totalMult") ;
+		bool eval_top_tagger = false;
 
-                topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue, cvsl, cvsb, ptD, axis1, mult);           
+		if (eval_top_tagger) {
+		  float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
+		  float cvsb = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+		  float ptD = thejet->userFloat("ptD") ;
+		  float axis1 = thejet->userFloat("axis1") ;
+		  int mult = thejet->userFloat("totalMult") ;
+
+		  topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue, cvsl, cvsb, ptD, axis1, mult);           
+		}
 
                 float jetPt = thejet->pt();
                 if(jetPt > leadJetPt_){
