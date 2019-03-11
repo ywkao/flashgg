@@ -469,14 +469,19 @@ namespace flashgg {
 
             if(!passDiphotonSelection) continue;
 
-            std::vector<edm::Ptr<flashgg::Muon> >     Muons;
-            std::vector<edm::Ptr<flashgg::Electron> > Electrons;
+            std::vector<edm::Ptr<flashgg::Muon> >     Muons, MuonsMed, MuonsTight;
+            std::vector<edm::Ptr<flashgg::Electron> > Electrons, ElectronsMed, ElectronsTight;
 
-            if(theMuons->size()>0)
-                Muons = selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), MuonPtCut_, MuonEtaCut_, MuonIsoCut_, MuonPhotonDrCut_, debug_);
-            if(theElectrons->size()>0)
-                Electrons = selectElectrons(theElectrons->ptrs(), dipho, ElePtCut_, EleEtaCuts_, ElePhotonDrCut_, ElePhotonZMassCut_, DeltaRTrkEle_, debug_);
-
+            if(theMuons->size()>0) {
+                Muons = selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), MuonPtCut_, MuonEtaCut_, MuonIsoCut_, MuonPhotonDrCut_, debug_, 1);
+                MuonsMed = selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), MuonPtCut_, MuonEtaCut_, MuonIsoCut_, MuonPhotonDrCut_, debug_, 2);
+                MuonsTight = selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), MuonPtCut_, MuonEtaCut_, MuonIsoCut_, MuonPhotonDrCut_, debug_, 3);
+            }
+            if(theElectrons->size()>0) {
+                Electrons = selectElectrons(theElectrons->ptrs(), dipho, ElePtCut_, EleEtaCuts_, ElePhotonDrCut_, ElePhotonZMassCut_, DeltaRTrkEle_, debug_, 1);
+                ElectronsMed = selectElectrons(theElectrons->ptrs(), dipho, ElePtCut_, EleEtaCuts_, ElePhotonDrCut_, ElePhotonZMassCut_, DeltaRTrkEle_, debug_, 2);
+                ElectronsTight = selectElectrons(theElectrons->ptrs(), dipho, ElePtCut_, EleEtaCuts_, ElePhotonDrCut_, ElePhotonZMassCut_, DeltaRTrkEle_, debug_, 3);
+            }
             if( (Muons.size() + Electrons.size()) < 1) continue;
  
             int njet_ = 0;
@@ -548,7 +553,7 @@ namespace flashgg {
                 }
 
                 
-                bool eval_top_tagger = false;
+                bool eval_top_tagger = true;
                 if (eval_top_tagger) {               
                     float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
                     float cvsb = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
@@ -787,6 +792,14 @@ namespace flashgg {
                 tthltags_obj.setNBLoose( njets_btagloose_ );
                 tthltags_obj.setNBMedium( njets_btagmedium_ );
                 tthltags_obj.setNBTight( njets_btagtight_ );
+
+                tthltags_obj.setNMuonLoose( Muons.size() );
+                tthltags_obj.setNMuonMedium( MuonsMed.size() );
+                tthltags_obj.setNMuonTight( MuonsTight.size() );
+
+                tthltags_obj.setNElecLoose( Electrons.size() );
+                tthltags_obj.setNElecMedium( ElectronsMed.size() );
+                tthltags_obj.setNElecTight( ElectronsTight.size() );
 
                 if( ! evt.isRealData() ) {
                     evt.getByToken( genParticleToken_, genParticles );

@@ -747,7 +747,7 @@ namespace flashgg {
                 if(bTag_ == "pfDeepCSV") bDiscriminatorValue = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
                 else  bDiscriminatorValue = thejet->bDiscriminator( bTag_ );
 
-		bool eval_top_tagger = false;
+		bool eval_top_tagger = true;
 
 		if (eval_top_tagger) {
 		  float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;

@@ -28,6 +28,14 @@ namespace flashgg {
         int nBMedium() const {return Nbtagmedium_;}
         int nBTight() const {return Nbtagtight_;}
 
+        int nMuonLoose() const {return NMuonloose_;}
+        int nMuonMedium() const {return NMuonmedium_;}
+        int nMuonTight() const {return NMuontight_;}
+
+        int nElecLoose() const {return NElecloose_;}
+        int nElecMedium() const {return NElecmedium_;}
+        int nElecTight() const {return NElectight_;}
+
         float MetPt() const {return MetPt_;}
         float MetPhi() const {return MetPhi_;}
         float MT() const {return mT_;}
@@ -84,6 +92,14 @@ namespace flashgg {
         void setNBLoose( int nb ) { Nbtagloose_ = nb; }
         void setNBMedium( int nb ) { Nbtagmedium_ = nb; }
         void setNBTight( int nb ) { Nbtagtight_ = nb; }
+
+        void setNMuonLoose( int nb ) { NMuonloose_ = nb; }
+        void setNMuonMedium( int nb ) { NMuonmedium_ = nb; }
+        void setNMuonTight( int nb ) { NMuontight_ = nb; }
+
+        void setNElecLoose( int nb ) { NElecloose_ = nb; }
+        void setNElecMedium( int nb ) { NElecmedium_ = nb; }
+        void setNElecTight( int nb ) { NElectight_ = nb; }
 
         void setMetPt(float metPt) {MetPt_ = (float)metPt;}
         void setMetPhi(float metPhi) {MetPhi_ = (float)metPhi;}
@@ -150,6 +166,14 @@ namespace flashgg {
         int Nbtagloose_;
         int Nbtagmedium_;
         int Nbtagtight_;
+
+        int NMuonloose_;
+        int NMuonmedium_;
+        int NMuontight_;
+
+        int NElecloose_;
+        int NElecmedium_;
+        int NElectight_;
 
         float MetPt_;
         float MetPhi_;
