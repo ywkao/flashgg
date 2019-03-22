@@ -68,6 +68,10 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32( -1 ) )
     if [[ $ARGS = *"DoubleEG"* ]]; then
         sed -i 's/isMC = True/isMC = False/g' Skimming/test/skim_cfg.py
     fi
+
+    if [[ $ARGS = *"EGamma"* ]]; then
+        sed -i 's/isMC = True/isMC = False/g' Skimming/test/skim_cfg.py
+    fi
     
     echo "[wrapper `date +\"%Y%m%d %k:%M:%S\"`] running: cmsRun -n 4 Skimming/test/skim_cfg.py ${ARGS//|/ }"
     cmsRun -n 4 Skimming/test/skim_cfg.py ${ARGS//|/ }
