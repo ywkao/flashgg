@@ -63,7 +63,8 @@ rediscoveryHLTcutsV1 = cms.VPSet(
 #Also included: the super-loose ID MVA cuts
 flashggPreselectedDiPhotons = cms.EDFilter(
     "GenericDiPhotonCandidateSelector",
-    src = cms.InputTag("flashggUpdatedIdMVADiPhotons"),
+    #src = cms.InputTag("flashggUpdatedIdMVADiPhotons"),
+    src = cms.InputTag("flashggDiPhotons"),
     rho = cms.InputTag("fixedGridRhoAll"),
     cut = cms.string(
         "    (leadingPhoton.full5x5_r9>0.8||leadingPhoton.egChargedHadronIso<20||leadingPhoton.egChargedHadronIso/leadingPhoton.pt<0.3)"
