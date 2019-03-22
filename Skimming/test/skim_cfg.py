@@ -20,7 +20,8 @@ else:
     process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_data')
 
 process.source = cms.Source("PoolSource",
-                            fileNames = cms.untracked.vstring("PUTFILENAMEHERE")
+			    fileNames = cms.untracked.vstring("file:myMicroAODOutputFile.root")		
+                            # fileNames = cms.untracked.vstring("PUTFILENAMEHERE")
                             # fileNames = cms.untracked.vstring("file:../myMicroAODOutputFile_99.root")
                             # fileNames = cms.untracked.vstring("/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1741.root","/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1742.root","/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1743.root","/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1744.root","/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1745.root","/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1746.root","/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1747.root","/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1748.root","/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1749.root","/store/group/phys_higgs/cmshgg/sethzenz/flashgg/ReMiniAOD-03Feb2017-2_5_4/2_5_1/DoubleEG/ReMiniAOD-03Feb2017-2_5_4-2_5_1-v0-Run2016H-03Feb2017_ver2-v1/170310_111930/0001/myMicroAODOutputFile_1750.root")
 )
@@ -42,17 +43,15 @@ process.skimFilter = cms.EDFilter("SkimFilter",
                                   rhoTag = cms.InputTag('fixedGridRhoFastjetAll'),
                                   btagDiscName = cms.string(flashggBTag),
 
-                                  acceptIfNLeptons = cms.int32(1),
-                                  dRLeadPhoLepCut = flashggTTHLeptonicTag.deltaRMuonPhoThreshold,
-                                  dRSubLeadPhoLepCut = flashggTTHLeptonicTag.deltaRMuonPhoThreshold,
-                                  leptonPtThreshold = flashggTTHLeptonicTag.leptonPtThreshold,
-                                  muonEtaThreshold = flashggTTHLeptonicTag.muonEtaThreshold,
-                                  muPFIsoSumRelThreshold = flashggTTHLeptonicTag.muPFIsoSumRelThreshold,
-                                  muMiniIsoSumRelThreshold = flashggTTHLeptonicTag.muMiniIsoSumRelThreshold,
-                                  electronEtaThresholds = flashggTTHLeptonicTag.electronEtaThresholds,
-                                  useStdLeptonID = flashggTTHLeptonicTag.useStdLeptonID,
-                                  useElectronMVARecipe = flashggTTHLeptonicTag.useElectronMVARecipe,
-                                  useElectronLooseID = flashggTTHLeptonicTag.useElectronLooseID,
+                                  acceptIfNLeptons = cms.int32(2),
+				  dRPhoLepCut = cms.double(0.4),
+                                  leptonPtThreshold = cms.double(5.0),
+                                  muonEtaThreshold = cms.double(2.4), 
+				  muonIsoCut = flashggTTHLeptonicTag.MuonIsoCut,
+
+                                  electronEtaThresholds = flashggTTHLeptonicTag.EleEtaCuts,
+				  ElePhotonZMassCut = flashggTTHLeptonicTag.ElePhotonZMassCut,
+				  DeltaRTrkEle = flashggTTHLeptonicTag.DeltaRTrkEle,
 
                                   diphotonMVAcut = cms.double(-999.0),
                                   diphotonLeadPtOverMassCut = cms.double(0.0),

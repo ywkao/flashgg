@@ -32,7 +32,7 @@
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
 #include "flashgg/DataFormats/interface/DiPhotonMVAResult.h"
 
-#include "flashgg/Taggers/interface/LeptonSelection.h"
+#include "flashgg/Taggers/interface/LeptonSelection2018.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 
@@ -52,11 +52,12 @@ class SkimFilter : public edm::stream::EDFilter<> {
 
   private:
     virtual bool filter(edm::Event&, const edm::EventSetup&) override;
-    bool CheckJetCollection(uint jetCollectionIdx, const std::vector< std::vector< flashgg::Jet> >* jets, const flashgg::DiPhotonCandidate& diphotons);
+    bool CheckJetCollection(uint jetCollectionIdx, const std::vector< std::vector< flashgg::Jet> >* jets, const flashgg::DiPhotonCandidate& diphotons, const int nJetThresh_ = 2);
 
       // ----------member data ---------------------------
     edm::EDGetTokenT<std::vector< std::vector< flashgg::Jet> > > jetToken_;
     edm::EDGetTokenT< std::vector< flashgg::DiPhotonCandidate> > diphoToken_;
+    edm::EDGetTokenT<View<flashgg::DiPhotonCandidate> > diPhotonToken_;
     edm::EDGetTokenT< std::vector< flashgg::DiPhotonMVAResult> > diphoMVAToken_;
     edm::EDGetTokenT< edm::View< flashgg::Electron> > electronToken_;
     edm::EDGetTokenT< edm::View< flashgg::Muon> > muonToken_;
@@ -68,16 +69,14 @@ class SkimFilter : public edm::stream::EDFilter<> {
     string btagDiscName_;
 
     int acceptIfNLeptons_;
-    double dRLeadPhoLepCut_;
-    double dRSubLeadPhoLepCut_;
+    double dRPhoLepCut_;
     double leptonPtThreshold_;
     double muonEtaThreshold_;
-    double muPFIsoSumRelThreshold_;
-    double muMiniIsoSumRelThreshold_;
+    double muonIsoCut_;
     vector<double>  electronEtaThresholds_;
-    bool useStdLeptonID_;
-    bool useElectronMVARecipe_;
-    bool useElectronLooseID_;
+    double ElePhotonZMassCut_;
+    double DeltaRTrkEle_;
+
 
     double jetPtThresh_;
     double jetEtaThresh_;
@@ -100,6 +99,7 @@ class SkimFilter : public edm::stream::EDFilter<> {
 SkimFilter::SkimFilter(const edm::ParameterSet& iConfig) :
     jetToken_( consumes< std::vector< std::vector< flashgg::Jet> > >(iConfig.getParameter<edm::InputTag>("inputJets"))),
     diphoToken_( consumes< std::vector< flashgg::DiPhotonCandidate> >(iConfig.getParameter<edm::InputTag>("inputDiPhotons"))),
+    diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "inputDiPhotons" ) ) ),
     diphoMVAToken_( consumes< std::vector< flashgg::DiPhotonMVAResult> >(iConfig.getParameter<edm::InputTag>("inputDiPhotonMVA"))),
     electronToken_( consumes< edm::View< flashgg::Electron> >(iConfig.getParameter<edm::InputTag>("inputElectrons"))),
     muonToken_( consumes< edm::View< flashgg::Muon> >(iConfig.getParameter<edm::InputTag>("inputMuons"))),
@@ -111,14 +111,14 @@ SkimFilter::SkimFilter(const edm::ParameterSet& iConfig) :
     btagDiscName_ = iConfig.getParameter<string>("btagDiscName");
 
     acceptIfNLeptons_ = iConfig.getParameter<int>("acceptIfNLeptons");
-    dRLeadPhoLepCut_ = iConfig.getParameter<double>("dRLeadPhoLepCut");    
-    dRSubLeadPhoLepCut_ = iConfig.getParameter<double>("dRSubLeadPhoLepCut");    
-    muPFIsoSumRelThreshold_ = iConfig.getParameter<double>( "muPFIsoSumRelThreshold");
-    muMiniIsoSumRelThreshold_ = iConfig.getParameter<double>( "muMiniIsoSumRelThreshold");
+    dRPhoLepCut_ = iConfig.getParameter<double>("dRPhoLepCut");
+    leptonPtThreshold_ = iConfig.getParameter<double>("leptonPtThreshold");
+    muonEtaThreshold_ = iConfig.getParameter<double>("muonEtaThreshold");
+    muonIsoCut_ = iConfig.getParameter<double>("muonIsoCut");
     electronEtaThresholds_ = iConfig.getParameter<vector<double > >( "electronEtaThresholds");
-    useStdLeptonID_ = iConfig.getParameter<bool>("useStdLeptonID");
-    useElectronMVARecipe_ = iConfig.getParameter<bool>("useElectronMVARecipe");
-    useElectronLooseID_ = iConfig.getParameter<bool>("useElectronLooseID");
+    ElePhotonZMassCut_ = iConfig.getParameter<double>("ElePhotonZMassCut");
+    DeltaRTrkEle_ = iConfig.getParameter<double>("DeltaRTrkEle");
+
 
     jetPtThresh_ = iConfig.getParameter<double>("jetPtThresh");
     jetEtaThresh_ = iConfig.getParameter<double>("jetEtaThresh");
@@ -157,6 +157,9 @@ SkimFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     iEvent.getByToken(diphoToken_, diphos_h);
     const std::vector< flashgg::DiPhotonCandidate >* diphotons = diphos_h.product();
 
+    Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
+    iEvent.getByToken(diPhotonToken_, diPhotons);
+
     edm::Handle< std::vector< flashgg::DiPhotonMVAResult> > diphomva_h;
     iEvent.getByToken(diphoMVAToken_, diphomva_h);
     const std::vector< flashgg::DiPhotonMVAResult >* diphotonMVAs = diphomva_h.product();
@@ -175,7 +178,11 @@ SkimFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double rho    = *rho_h;
 
     // select loose leptons
+    //goodMuons = selectMuons(muons_h->ptrs(), 
+ 
+
     std::vector<edm::Ptr<flashgg::Muon> > goodMuons;
+    /*
     if( !useStdLeptonID_) {
         goodMuons = selectAllMuonsSum16( muons_h->ptrs(), vertices_h->ptrs(), muonEtaThreshold_ , 
                                          leptonPtThreshold_, muMiniIsoSumRelThreshold_ );
@@ -183,16 +190,22 @@ SkimFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         goodMuons = selectAllMuons( muons_h->ptrs(), vertices_h->ptrs(), muonEtaThreshold_ , 
                                     leptonPtThreshold_, muPFIsoSumRelThreshold_ );
     }
-
+    */
     std::vector<edm::Ptr<flashgg::Electron> > goodElectrons ;
-    goodElectrons = selectStdAllElectrons(electrons_h->ptrs(), vertices_h->ptrs(), leptonPtThreshold_, electronEtaThresholds_,
-                                          useElectronMVARecipe_, useElectronLooseID_,
-                                          rho, iEvent.isRealData() );
+    //goodElectrons = selectStdAllElectrons(electrons_h->ptrs(), vertices_h->ptrs(), leptonPtThreshold_, electronEtaThresholds_,
+    //                                      useElectronMVARecipe_, useElectronLooseID_,
+    //                                      rho, iEvent.isRealData() );
 
 
     // loop over all diphoton pairs and check if good. If none good, return false
     uint nDiPhotons = diphotons->size();
     for(uint idp=0; idp < nDiPhotons; idp++){
+
+        // Select leps
+	edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt(idp);
+        goodMuons = selectMuons( muons_h->ptrs(), dipho, vertices_h->ptrs(), leptonPtThreshold_, muonEtaThreshold_, muonIsoCut_, dRPhoLepCut_, 0);
+
+        goodElectrons = selectElectrons( electrons_h->ptrs(), dipho, leptonPtThreshold_, electronEtaThresholds_, dRPhoLepCut_, ElePhotonZMassCut_, DeltaRTrkEle_, 0); 
 
         float leadPt = diphotons->at(idp).leadingPhoton()->pt();
         float subleadPt = diphotons->at(idp).subLeadingPhoton()->pt();
@@ -207,7 +220,7 @@ SkimFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         if( mva < diphotonMVAcut_ )
             continue;
 
-        
+        /*       
         if(verbose_) std::cout << "    n loose electrons: " << goodElectrons.size() << std::endl;
         int nGoodLep = 0;
         for(uint ilep=0; ilep < goodElectrons.size(); ilep++){
@@ -221,16 +234,25 @@ SkimFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
                deltaR(goodMuons.at(ilep)->eta(), goodMuons.at(ilep)->phi(), diphotons->at(idp).subLeadingPhoton()->eta(), diphotons->at(idp).subLeadingPhoton()->phi()) > dRSubLeadPhoLepCut_ )
                 nGoodLep++;                
         }
+        */
+
+	int nGoodLep = goodMuons.size() + goodElectrons.size();
 
         if(nGoodLep >= acceptIfNLeptons_)
-            return true;
+            return true; // accept if >= 2 good leps
 
         uint jetCollectionIdx = diphotons->at(idp).jetCollectionIndex();
 
+	if (nGoodLep >= 1) {
+	  if (CheckJetCollection(jetCollectionIdx, jets, diphotons->at(idp), 1) || (jetCollectionIdx==0 || !CheckJetCollection(0, jets, diphotons->at(idp), 1)))
+	    return true; // accepts if >= 1 good leps and >=1 good jets
+        }
+
+
         // check jet collections
-        if(!CheckJetCollection(jetCollectionIdx, jets, diphotons->at(idp)) && (jetCollectionIdx==0 || !CheckJetCollection(0, jets, diphotons->at(idp))))
+        if(!CheckJetCollection(jetCollectionIdx, jets, diphotons->at(idp), nJetCut_) && (jetCollectionIdx==0 || !CheckJetCollection(0, jets, diphotons->at(idp), nJetCut_)))
         // if(!CheckJetCollection(jetCollectionIdx, jets, diphotons->at(idp)))
-            continue;
+            continue; // continue if not >= 2 good jets
         
         // if we've made it here, then it is a good photon pair.
         return true;
@@ -239,7 +261,7 @@ SkimFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    return false;
 }
 
-bool SkimFilter::CheckJetCollection(uint jetCollectionIdx, const std::vector< std::vector< flashgg::Jet> >* jets, const flashgg::DiPhotonCandidate& diphoton){
+bool SkimFilter::CheckJetCollection(uint jetCollectionIdx, const std::vector< std::vector< flashgg::Jet> >* jets, const flashgg::DiPhotonCandidate& diphoton, const int nJetThresh_){
 
     if (jetCollectionIdx > jets->size() - 1){
         if(verbose_) std::cout << "SHOULDN'T GET HERE" << std::endl;
@@ -268,7 +290,7 @@ bool SkimFilter::CheckJetCollection(uint jetCollectionIdx, const std::vector< st
     if(verbose_) std::cout << "     nJet: " << nGoodJet << std::endl;
     if(verbose_) std::cout << "    nBJet: " << nGoodBJet << std::endl;
 
-    if(nGoodJet < nJetCut_)
+    if(nGoodJet < nJetThresh_)
         return false;
         
     if(nGoodBJet < nBJetCut_)
