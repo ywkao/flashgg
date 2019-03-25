@@ -18,14 +18,21 @@ cmssw_ver = "CMSSW_10_2_9"
 DOSKIM = True
 
 def getArgs(pid, dataset, json):
-    args = "processType={0} datasetName={1} conditionsJSON={2}".format(pid, dataset.split("/")[1], json)
+    datasetName = dataset.split("/")[1]
+    if "EGamma" in datasetName:
+      datasetName += "_2018"
+    args = "processType={0} datasetName={1} conditionsJSON={2}".format(pid, datasetName, json)
     return args
 
 dsdefs = []
 
-conds_dict = {"datasets_RunIISummer16.json" : "MetaData/data/MetaConditions/Era2016_RR-17Jul2018_v1.json"}
+conds_dict = {
+	"datasets_RunIISummer16.json" : "MetaData/data/MetaConditions/Era2016_RR-17Jul2018_v1.json",
+	"datasets_RunIIFall17.json" : "MetaData/data/MetaConditions/Era2017_RR-31Mar2018_v1.json",
+	"datasets_RunIIAutumn18.json" : "MetaData/data/MetaConditions/Era2018_RR-17Sep2018_v1.json" 
+}
 
-job_jsons = ["datasets_RunIISummer16.json"]
+job_jsons = ["datasets_RunIISummer16.json", "datasets_RunIIFall17.json", "datasets_RunIIAutumn18.json"]
 for js in job_jsons:
     jobs = json.load(open(js))
     for pid in jobs["processes"]:
@@ -34,6 +41,7 @@ for js in job_jsons:
         fpo = jobs["processes"][pid]["filesPerOutput"]
         for ds in jobs["processes"][pid]["datasets"]:
             args = getArgs(pid, ds, conds_dict[js])                
+	    print args
             dsdefs.append((ds, fpo, args))
 
 total_summary = {}

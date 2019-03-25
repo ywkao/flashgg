@@ -1,15 +1,5 @@
 import sys, os
 
-#import argparse
-#parser = argparse.ArgumentParser()
-#parser.add_argument("--file_names", help = "csv list of input filenames", type=str)
-#parser.add_argument("--conditionsJSON", help = "MetaConditions JSON file", type=str)
-#parser.add_argument("--max_events", help = "number of events to loop over", type=int, default = -1)
-#args = parser.parse_args()
-
-for arg in sys.argv:
-  print arg
-
 n_events = -1 
 file_names = "DoubleEG"
 #file_names = sys.argv[1].replace("/hadoop", "file:/hadoop").split(",")
@@ -24,8 +14,6 @@ import os
 from flashgg.MetaData.MetaConditionsReader import *
 
 # SYSTEMATICS SECTION
-dropVBFInNonGold = False  # for 2015 only!
-
 process = cms.Process("FLASHggTag")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -36,7 +24,9 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1000 )
 
 
-process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/DoubleEG_Run2016B-17Jul2018_ver2-v1_MINIAOD_RunII/test_skim_1.root"))
+#process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/DoubleEG_Run2016B-17Jul2018_ver2-v1_MINIAOD_RunII/test_skim_1.root"))
+process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/DoubleEG_Run2017C-31Mar2018-v1_MINIAOD_RunII/test_skim_2.root"))
+
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(n_events))
 
 
@@ -50,7 +40,9 @@ musystlabels = []
 from flashgg.MetaData.MetaConditionsReader import *
 
 # set default options if needed
-metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2016_RR-17Jul2018_v1.json")
+#metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2016_RR-17Jul2018_v1.json")
+metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2017_RR-31Mar2018_v1.json")
+#metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2018_RR-17Sep2018_v1.json")
 
 ISDATA = False
 if "DoubleEG" in file_names[0] or "EGamma" in file_names[0]:
