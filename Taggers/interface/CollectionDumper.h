@@ -423,7 +423,7 @@ namespace flashgg {
                     event.getByLabel(genInfo_,genInfo);
                 }
 
-                weight = lumiWeight_;
+                //weight = lumiWeight_; // we do our own lumi scaling in flat ntuples
 
                 if( LHEWeightName != ""){
                     edm::Handle<LHEEventProduct> product_lhe;
@@ -459,6 +459,7 @@ namespace flashgg {
                     weight *= *reweight;
                 }
 
+                /* // do pu reweighting separately
                 if( globalVarsDumper_ && globalVarsDumper_->puReWeight() ) {
                     if (globalVarsDumper_->cache().puweight > 999999. || globalVarsDumper_->cache().puweight < -999999.) {
                         weight = 0.;
@@ -471,7 +472,7 @@ namespace flashgg {
                     } else {
                         weight *= globalVarsDumper_->cache().puweight;
                     }
-                }
+                } */ 
             }
             return weight;
         }
