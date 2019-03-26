@@ -516,7 +516,14 @@ namespace flashgg {
             if(!passDiphotonSelection) continue;
 
             std::vector<edm::Ptr<flashgg::Muon> >     Muons;
+            std::vector<edm::Ptr<flashgg::Muon> >     MuonsLoose;
+            std::vector<edm::Ptr<flashgg::Muon> >     MuonsMedium;
+            std::vector<edm::Ptr<flashgg::Muon> >     MuonsTight;
+
             std::vector<edm::Ptr<flashgg::Electron> > Electrons;
+            std::vector<edm::Ptr<flashgg::Electron> > ElectronsLoose;
+            std::vector<edm::Ptr<flashgg::Electron> > ElectronsMedium;
+            std::vector<edm::Ptr<flashgg::Electron> > ElectronsTight;
 
             std::vector<double> lepPt;
             std::vector<double> lepEta;
@@ -524,10 +531,18 @@ namespace flashgg {
             std::vector<double> lepE;
             std::vector<int>    lepType;
 
-            if(theMuons->size()>0)
-                Muons = selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), MuonPtCut_, MuonEtaCut_, MuonIsoCut_, MuonPhotonDrCut_, debug_);
-            if(theElectrons->size()>0)
-                Electrons = selectElectrons(theElectrons->ptrs(), dipho, ElePtCut_, EleEtaCuts_, ElePhotonDrCut_, ElePhotonZMassCut_, DeltaRTrkEle_, debug_);
+            if(theMuons->size()>0) {
+                Muons = selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), MuonPtCut_, MuonEtaCut_, MuonIsoCut_, MuonPhotonDrCut_, debug_, 1); // loosened this from medium -> loose
+                MuonsLoose = selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), MuonPtCut_, MuonEtaCut_, MuonIsoCut_, MuonPhotonDrCut_, debug_, 1);
+                MuonsMedium = selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), MuonPtCut_, MuonEtaCut_, MuonIsoCut_, MuonPhotonDrCut_, debug_, 2);
+                MuonsTight = selectMuons(theMuons->ptrs(), dipho, vertices->ptrs(), MuonPtCut_, MuonEtaCut_, MuonIsoCut_, MuonPhotonDrCut_, debug_, 3);
+            }
+            if(theElectrons->size()>0) {
+                Electrons = selectElectrons(theElectrons->ptrs(), dipho, ElePtCut_, EleEtaCuts_, ElePhotonDrCut_, ElePhotonZMassCut_, DeltaRTrkEle_, debug_, 1); // loosened this from medium -> loose
+                ElectronsLoose = selectElectrons(theElectrons->ptrs(), dipho, ElePtCut_, EleEtaCuts_, ElePhotonDrCut_, ElePhotonZMassCut_, DeltaRTrkEle_, debug_, 1);
+                ElectronsMedium = selectElectrons(theElectrons->ptrs(), dipho, ElePtCut_, EleEtaCuts_, ElePhotonDrCut_, ElePhotonZMassCut_, DeltaRTrkEle_, debug_, 2);
+                ElectronsTight = selectElectrons(theElectrons->ptrs(), dipho, ElePtCut_, EleEtaCuts_, ElePhotonDrCut_, ElePhotonZMassCut_, DeltaRTrkEle_, debug_, 3);
+            }
 
             if( (Muons.size() + Electrons.size()) < (unsigned) MinNLep_ || (Muons.size() + Electrons.size()) > (unsigned) MaxNLep_) continue;
  
@@ -1032,13 +1047,13 @@ namespace flashgg {
                 tthltags_obj.setNBMedium( njets_btagmedium_ );
                 tthltags_obj.setNBTight( njets_btagtight_ );
 
-                tthltags_obj.setNMuonLoose( Muons.size() );
-                tthltags_obj.setNMuonMedium( Muons.size() );
-                tthltags_obj.setNMuonTight( Muons.size() );
+                tthltags_obj.setNMuonLoose( MuonsLoose.size() );
+                tthltags_obj.setNMuonMedium( MuonsMedium.size() );
+                tthltags_obj.setNMuonTight( MuonsTight.size() );
 
-                tthltags_obj.setNElecLoose( Electrons.size() );
-                tthltags_obj.setNElecMedium( Electrons.size() );
-                tthltags_obj.setNElecTight( Electrons.size() );
+                tthltags_obj.setNElecLoose( ElectronsLoose.size() );
+                tthltags_obj.setNElecMedium( ElectronsMedium.size() );
+                tthltags_obj.setNElecTight( ElectronsTight.size() );
                             
                 tthltags->push_back( tthltags_obj );
  
