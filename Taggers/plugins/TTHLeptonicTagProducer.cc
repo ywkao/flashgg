@@ -725,6 +725,9 @@ namespace flashgg {
                 tthltags_obj.setSystLabel( systLabel_ );
                 tthltags_obj.setMvaRes(mvaValue);
 
+                tthltags_obj.setMuonLeadIso( Muons.size() > 0 ? (Muons[0]->pfIsolationR04().sumChargedHadronPt + max(0., Muons[0]->pfIsolationR04().sumNeutralHadronEt + Muons[0]->pfIsolationR04().sumPhotonEt - 0.5*Muons[0]->pfIsolationR04().sumPUPt)) : -999);
+                tthltags_obj.setMuonSubleadIso( Muons.size() > 1 ? (Muons[1]->pfIsolationR04().sumChargedHadronPt + max(0., Muons[1]->pfIsolationR04().sumNeutralHadronEt + Muons[1]->pfIsolationR04().sumPhotonEt - 0.5*Muons[1]->pfIsolationR04().sumPUPt)) : -999);
+
                 Ptr<flashgg::Met> Met = theMet_->ptrAt( 0 );
                 tthltags_obj.setMetPt((float)Met->pt());
                 tthltags_obj.setMetPhi((float)Met->phi());
