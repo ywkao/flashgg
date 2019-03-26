@@ -62,6 +62,8 @@ flashggTTHHadronicTag = cms.EDProducer("FlashggTTHHadronicTagProducer",
                                        rhoTag = cms.InputTag('fixedGridRhoFastjetAll'),
 #                                       tthMVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_tth_hadronic_2017Data_35vars_v0.weights.xml"),
                                        tthMVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_tth_hadronic_2017Data_30vars_v0.weights.xml"),
+				       topTaggerXMLfile = cms.FileInPath("flashgg/Taggers/data/resTop_xgb_csv_order_deepCTag.xml"),
+
                                        MVAMethod = cms.string("BDT"),     
                                        RECOfilters = cms.InputTag('TriggerResults::RECO'),
                                        leadPhoOverMassThreshold = cms.double(0.2), # changed from 0.5
@@ -175,6 +177,8 @@ flashggTTHLeptonicTag = cms.EDProducer("FlashggTTHLeptonicTagProducer",
                                        GenParticleTag=cms.InputTag( "flashggPrunedGenParticles" ),
 				       rhoTag = cms.InputTag('fixedGridRhoFastjetAll'),
                                        MVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_BDT_training_v2.json.weights.xml"),
+				       topTaggerXMLfile = cms.FileInPath("flashgg/Taggers/data/resTop_xgb_csv_order_deepCTag.xml"),
+
                                        leadPhoOverMassThreshold = cms.double(0.2), # changed from 0.33
                                        subleadPhoOverMassThreshold = cms.double(0.2), # changed from 0.25
                                        MVAThreshold = cms.vdouble(-999, -999), # changed from (0.6, 0.3)

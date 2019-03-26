@@ -26,6 +26,8 @@
 #include "DataFormats/Common/interface/RefToPtr.h"
 #include "SimDataFormats/HTXS/interface/HiggsTemplateCrossSections.h"
 
+#include "flashgg/Taggers/interface/BDT_resolvedTopTagger.h"
+
 #include <vector>
 #include <algorithm>
 #include <string>
@@ -83,6 +85,7 @@ namespace flashgg {
         EDGetTokenT<float> pTHToken_,pTVToken_;
         EDGetTokenT<double> rhoTag_;
         string systLabel_;
+        FileInPath topTaggerXMLfile_;
 
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
 
@@ -147,6 +150,7 @@ namespace flashgg {
         float lepton_leadPt_;
         float lepton_leadEta_;
         float lepton_leadPhi_;
+        BDT_resolvedTopTagger *topTagger;
     };
 
     const reco::GenParticle* TTHLeptonicTagProducer::motherID(const reco::GenParticle* gp)
@@ -359,6 +363,7 @@ namespace flashgg {
         newHTXSToken_ = consumes<HTXS::HiggsClassification>( HTXSps.getParameter<InputTag>("ClassificationObj") );
 
         MVAweightfile_ = iConfig.getParameter<edm::FileInPath>( "MVAweightfile" );
+        topTaggerXMLfile_ = iConfig.getParameter<edm::FileInPath>( "topTaggerXMLfile" );
 
         DiphotonMva_.reset( new TMVA::Reader( "!Color:Silent" ) );
         DiphotonMva_->AddVariable( "dipho_leadEta", &leadeta_ );
@@ -393,6 +398,8 @@ namespace flashgg {
 
         produces<vector<TTHLeptonicTag> >();
         produces<vector<TagTruthBase> >();
+
+        topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
     }
 
     int TTHLeptonicTagProducer::chooseCategory( float tthmvavalue )
@@ -643,8 +650,19 @@ namespace flashgg {
 
                     if( bDiscriminatorValue > bDiscriminator_[1] )
                         tagBJets.push_back( thejet );
+
+                    bool eval_top_tagger = true;
+
+                    if (eval_top_tagger) {
+                      float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
+                      float cvsb = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+                      float ptD = thejet->userFloat("ptD") ;
+                      float axis1 = thejet->userFloat("axis1") ;
+                      int mult = thejet->userFloat("totalMult") ;
+
+                      topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue, cvsl, cvsb, ptD, axis1, mult);           
+                    }
                 }
-                 
             }
 
             if(njet_ < jetsNumberThreshold_ || njets_btagmedium_ < bjetsNumberThreshold_) continue;
@@ -721,6 +739,15 @@ namespace flashgg {
                 std::cout << "WARNING number of MET is not equal to 1" << std::endl;
              MetPt_ = theMet_->ptrAt( 0 ) -> pt();
              MetPhi_ = theMet_->ptrAt( 0 ) -> phi();
+
+            vector<float> mvaEval = topTagger->EvalMVA();
+            cout << "eval top tagger: " << mvaEval.size() << endl;
+            for (unsigned topt = 0; topt < mvaEval.size(); topt++)  {
+              if (topt < mvaEval.size() - 1) cout << mvaEval[topt] << ", ";
+              else cout << mvaEval[topt];
+            }
+            cout << endl;
+            topTagger->clear(); 
 
             int leadMuIndex = 0;
             float leadMuPt = -1;
@@ -989,16 +1016,17 @@ namespace flashgg {
                 tthltags_obj.setMetPt(MetPt_);
                 tthltags_obj.setMetPhi(MetPhi_); 
 
-                vector<float> mvaEval; // FIXME: add top-tagger implementation
+
                 if (mvaEval.size() > 0) {
                   tthltags_obj.setTopTagScore(mvaEval[0] != -99 ? mvaEval[0] : -1);
                   tthltags_obj.setTopTagTopMass(mvaEval[4]);
                   tthltags_obj.setTopTagWMass(mvaEval[8]);
-                } else {
+                } else
+                  {
                   tthltags_obj.setTopTagScore(-999);
                   tthltags_obj.setTopTagTopMass(-999);
                   tthltags_obj.setTopTagWMass(-999);
-                }
+                  }
 
                 tthltags_obj.setNBLoose( njets_btagloose_ );
                 tthltags_obj.setNBMedium( njets_btagmedium_ );
