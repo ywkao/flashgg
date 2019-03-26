@@ -2,8 +2,12 @@ import sys, os
 
 n_events = -1 
 file_names = "DoubleEG"
-#file_names = sys.argv[1].replace("/hadoop", "file:/hadoop").split(",")
-#meta_conditions = sys.argv[2]
+meta_conditions = "MetaData/data/MetaConditions/Era2018_RR-17Sep2018_v1.json"
+
+if len(sys.argv) >= 4:
+  file_names = sys.argv[2].replace("/hadoop", "file:/hadoop").split(",")
+  meta_conditions = sys.argv[3]
+  print "Found at least 4 args, setting filenames to %s and meta conditions to %s" % (file_names, meta_conditions)
 
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
@@ -25,8 +29,11 @@ process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1000 )
 
 
 #process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/DoubleEG_Run2016B-17Jul2018_ver2-v1_MINIAOD_RunII/test_skim_1.root"))
-process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/DoubleEG_Run2017C-31Mar2018-v1_MINIAOD_RunII/test_skim_2.root"))
+#process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/DoubleEG_Run2017C-31Mar2018-v1_MINIAOD_RunII/test_skim_2.root"))
+#process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/EGamma_Run2018B-17Sep2018-v1_MINIAOD_RunII/test_skim_1.root"))
+#process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:myMicroAODOutputFile.root"))
 
+process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(file_names))
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(n_events))
 
 
@@ -41,15 +48,16 @@ from flashgg.MetaData.MetaConditionsReader import *
 
 # set default options if needed
 #metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2016_RR-17Jul2018_v1.json")
-metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2017_RR-31Mar2018_v1.json")
+#metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2017_RR-31Mar2018_v1.json")
 #metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2018_RR-17Sep2018_v1.json")
+metaConditions = MetaConditionsReader(meta_conditions)
 
 ISDATA = False
 if "DoubleEG" in file_names[0] or "EGamma" in file_names[0]:
   ISDATA = True
 
 ISSIGNAL = False
-if "ttH" in file_names[0]:
+if "ttHJet" in file_names[0]:
   ISSIGNAL = True
 
 
@@ -554,10 +562,10 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
 )
 
 process.p = cms.Path(process.dataRequirements*
-                         #process.genFilter*
+                         #process.genFilter* # revisit later
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
                          process.flashggUpdatedIdMVADiPhotons*
-                         #process.flashggDiPhotonSystematics*
+                         #process.flashggDiPhotonSystematics* # just omitting for time being until systematics are ready for all 3 years
                          process.flashggMetSystematics*
                          process.flashggMuonSystematics*process.flashggElectronSystematics*
                          (process.flashggUnpackedJets*process.jetSystematicsSequence)*

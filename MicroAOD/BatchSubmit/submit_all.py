@@ -11,7 +11,7 @@ from metis.StatsParser import StatsParser
 job_tag = "RunII"
 exec_path = "condor_exe.sh"
 tar_path = "package.tar.xz"
-hadoop_path = "ttH/MicroAOD/{0}".format(job_tag)
+hadoop_path = "ttH/{0}".format(job_tag)
 
 cmssw_ver = "CMSSW_10_2_9"
 
