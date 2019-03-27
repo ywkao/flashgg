@@ -1054,7 +1054,10 @@ namespace flashgg {
                 tthltags_obj.setNElecLoose( ElectronsLoose.size() );
                 tthltags_obj.setNElecMedium( ElectronsMedium.size() );
                 tthltags_obj.setNElecTight( ElectronsTight.size() );
-                            
+
+                tthltags_obj.setMuonLeadIso( Muons.size() > 0 ? (Muons[0]->pfIsolationR04().sumChargedHadronPt + max(0., Muons[0]->pfIsolationR04().sumNeutralHadronEt + Muons[0]->pfIsolationR04().sumPhotonEt - 0.5*Muons[0]->pfIsolationR04().sumPUPt)) : -999);
+                tthltags_obj.setMuonSubleadIso( Muons.size() > 1 ? (Muons[1]->pfIsolationR04().sumChargedHadronPt + max(0., Muons[1]->pfIsolationR04().sumNeutralHadronEt + Muons[1]->pfIsolationR04().sumPhotonEt - 0.5*Muons[1]->pfIsolationR04().sumPUPt)) : -999);
+
                 tthltags->push_back( tthltags_obj );
  
                 if( ! evt.isRealData() )

@@ -61,6 +61,9 @@ namespace flashgg {
         int nElecMedium() const {return NElecmedium_;}
         int nElecTight() const {return NElectight_;}
 
+        float muonLeadIso() const {return muonLeadIso_;}
+        float muonSubleadIso() const {return muonSubleadIso_;}
+
         float MetPt() const {return MetPt_;}
         float MetPhi() const {return MetPhi_;}
         float MT() const {return mT_;}
@@ -132,6 +135,9 @@ namespace flashgg {
         void setNElecLoose( int nb ) { NElecloose_ = nb; }
         void setNElecMedium( int nb ) { NElecmedium_ = nb; }
         void setNElecTight( int nb ) { NElectight_ = nb; }
+
+        void setMuonLeadIso( float iso ) { muonLeadIso_ = iso; }
+        void setMuonSubleadIso( float iso ) { muonSubleadIso_ = iso; }
 
         void setMetPt(float metPt) {MetPt_ = (float)metPt;}
         void setMetPhi(float metPhi) {MetPhi_ = (float)metPhi;}
@@ -211,6 +217,9 @@ namespace flashgg {
         int NElecloose_;
         int NElecmedium_;
         int NElectight_;
+
+        float muonLeadIso_;
+        float muonSubleadIso_;
 
         float MetPt_;
         float MetPhi_;

@@ -142,7 +142,7 @@ process.load('RecoMET.METFilters.eeBadScFilter_cfi')
 process.eeBadScFilter.EERecHitSource = cms.InputTag("reducedEgamma","reducedEERecHits") # Saved MicroAOD Collection (data only)
 process.dataRequirements = cms.Sequence()
 if ISDATA: 
-        process.dataRequirements += process.hltHighLevel
+        #process.dataRequirements += process.hltHighLevel # already require triggers in microAOD production, don't need to require again
         process.dataRequirements += process.eeBadScFilter
 
 
@@ -269,6 +269,8 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                         "muon2_phi := ?(muons.size>1)? muons.at(1).phi : -999",
 			"muon1_energy := ?(muons.size>0)? muons.at(0).energy : -999",
                         "muon2_energy := ?(muons.size>1)? muons.at(1).energy : -999",
+			"muonLeadIso := muonLeadIso",
+			"muonSubleadIso := muonSubleadIso",
 			"nMuonLoose :=  nMuonLoose",
 			"nMuonMedium :=  nMuonMedium",
 			"nMuonTight :=  nMuonTight",

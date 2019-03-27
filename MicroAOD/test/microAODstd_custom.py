@@ -20,7 +20,8 @@ import os
 ### 2016
 process.GlobalTag = GlobalTag(process.GlobalTag, '', '')
 process.source = cms.Source("PoolSource",
-			     fileNames=cms.untracked.vstring("/store/mc/RunIIAutumn18MiniAOD/TTGG_0Jets_TuneCP5_13TeV_amcatnlo_madspin_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v2/00000/7ECD9612-9D1C-0E49-9425-F15E1C53B942.root"))
+			     fileNames=cms.untracked.vstring("/store/data/Run2018D/EGamma/MINIAOD/22Jan2019-v2/120000/E89C1976-07BE-DB4B-8BC9-7762CCEBFA73.root"))
+			     #fileNames=cms.untracked.vstring("/store/mc/RunIIAutumn18MiniAOD/TTGG_0Jets_TuneCP5_13TeV_amcatnlo_madspin_pythia8/MINIAODSIM/102X_upgrade2018_realistic_v15-v2/00000/7ECD9612-9D1C-0E49-9425-F15E1C53B942.root"))
 			     #fileNames=cms.untracked.vstring("/store/data/Run2018B/EGamma/MINIAOD/17Sep2018-v1/00000/ADB4BB53-A766-E546-80C7-E2E0058062CD.root"))
 			     #fileNames=cms.untracked.vstring("/store/data/Run2017C/DoubleEG/MINIAOD/31Mar2018-v1/100000/4650B039-1D37-E811-A8A8-003048CDCDD0.root"))
 			     #fileNames=cms.untracked.vstring("/store/data/Run2016B/DoubleEG/MINIAOD/17Jul2018_ver2-v1/00000/12864328-3D8E-E811-B0CE-008CFA11123C.root"))
