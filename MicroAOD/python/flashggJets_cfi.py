@@ -17,7 +17,7 @@ flashggDeepCSVc  = 'pfDeepCSVJetTags:probc'
 flashggDeepCSVudsg = 'pfDeepCSVJetTags:probudsg'
 flashggDeepCSV= 'pfDeepCSV'
 
-maxJetCollections = 12
+maxJetCollections = 99
 #qgDatabaseVersion = 'v1' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
 if os.environ["CMSSW_VERSION"].count("CMSSW_9") or os.environ["CMSSW_VERSION"].count("CMSSW_10"):
   qgDatabaseVersion = 'cmssw8020_v2'
