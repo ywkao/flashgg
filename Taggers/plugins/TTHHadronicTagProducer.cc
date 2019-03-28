@@ -1033,11 +1033,24 @@ namespace flashgg {
 		  tthhtags_obj.setTopTagScore(mvaEval[0] != -99 ? mvaEval[0] : -1);
 		  tthhtags_obj.setTopTagTopMass(mvaEval[4]);
 		  tthhtags_obj.setTopTagWMass(mvaEval[8]);
+		  tthhtags_obj.setTopTagTopPt(mvaEval[1]);
+                  tthhtags_obj.setWTagWPt(mvaEval[5]);
+		  tthhtags_obj.setTopTagTopPhi(mvaEval[3]);
+                  tthhtags_obj.setWTagWPhi(mvaEval[7]);
+		  tthhtags_obj.setTopTagTopEta(mvaEval[2]);
+                  tthhtags_obj.setWTagWEta(mvaEval[6]);
+		  
 		} else
 		  {
 		  tthhtags_obj.setTopTagScore(-999);
 		  tthhtags_obj.setTopTagTopMass(-999);
 		  tthhtags_obj.setTopTagWMass(-999);
+		  tthhtags_obj.setTopTagTopPt(-999);
+                  tthhtags_obj.setWTagWPt(-999);
+                  tthhtags_obj.setTopTagTopPhi(-999);
+                  tthhtags_obj.setWTagWPhi(-999);
+                  tthhtags_obj.setTopTagTopEta(-999);
+                  tthhtags_obj.setWTagWEta(-999);
 		  }
 			
 		// Gen lepton info

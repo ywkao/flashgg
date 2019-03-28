@@ -57,6 +57,15 @@ namespace flashgg {
         float topTagTopMass() const { return topTagTopMass_; }
         float topTagWMass() const { return topTagWMass_; }
 
+        float topTagTopPt() const { return topTagTopPt_; }
+        float topTagTopEta() const { return topTagTopEta_; }
+        float topTagTopPhi() const { return topTagTopPhi_; }
+        float topTagWPt() const { return topTagWPt_; }
+        float topTagWEta() const { return topTagWEta_; }
+        float topTagWPhi() const { return topTagWPhi_; }
+        float topTagScore2() const { return topTagScore2_; }
+        float topTagScore3() const { return topTagScore3_; }
+
         double leadPhoGenPt() const { return leadPhoGenPt_; }
         double leadPhoGenEta() const { return leadPhoGenEta_; }
         double leadPhoGenPhi() const { return leadPhoGenPhi_; }
@@ -118,6 +127,15 @@ namespace flashgg {
         void setTopTagScore(float toptagScore) { topTagScore_ = toptagScore; }
         void setTopTagTopMass(float toptagTopMass) { topTagTopMass_ = toptagTopMass; }
         void setTopTagWMass(float toptagWMass) { topTagWMass_ = toptagWMass; }
+
+        void setTopTagTopPt(float topTagTopPt) { topTagTopPt_ = topTagTopPt; }
+        void setTopTagTopEta(float topTagTopEta) { topTagTopEta_ = topTagTopEta; }
+        void setTopTagTopPhi(float topTagTopPhi) { topTagTopPhi_ = topTagTopPhi; }
+        void setWTagWPt(float topTagWPt) { topTagWPt_ = topTagWPt; }
+        void setWTagWEta(float topTagWEta) { topTagWEta_ = topTagWEta; }
+        void setWTagWPhi(float topTagWPhi) { topTagWPhi_ = topTagWPhi; }
+        void setTopTagScore2(float toptagScore2) { topTagScore2_ = toptagScore2; }
+        void setTopTagScore3(float toptagScore3) { topTagScore3_ = toptagScore3; }
 
         void setLeadPhoGenPt(double leadPhoGenPt) { leadPhoGenPt_ = leadPhoGenPt; }
         void setLeadPhoGenEta(double leadPhoGenEta) { leadPhoGenEta_ = leadPhoGenEta; }
@@ -211,6 +229,15 @@ namespace flashgg {
         float topTagScore_;
         float topTagTopMass_;
         float topTagWMass_;
+
+        float topTagTopPt_;
+        float topTagTopEta_;
+        float topTagTopPhi_;
+        float topTagWPt_;
+        float topTagWEta_;
+        float topTagWPhi_;
+        float topTagScore2_;
+        float topTagScore3_;
 
         double rand_;       
 
