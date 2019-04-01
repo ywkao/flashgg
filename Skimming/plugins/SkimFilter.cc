@@ -203,9 +203,9 @@ SkimFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
         // Select leps
 	edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt(idp);
-        goodMuons = selectMuons( muons_h->ptrs(), dipho, vertices_h->ptrs(), leptonPtThreshold_, muonEtaThreshold_, muonIsoCut_, dRPhoLepCut_, 0);
+        goodMuons = selectMuons( muons_h->ptrs(), dipho, vertices_h->ptrs(), leptonPtThreshold_, muonEtaThreshold_, muonIsoCut_, dRPhoLepCut_, 0, 1); // 1 means loose ID
 
-        goodElectrons = selectElectrons( electrons_h->ptrs(), dipho, leptonPtThreshold_, electronEtaThresholds_, dRPhoLepCut_, ElePhotonZMassCut_, DeltaRTrkEle_, 0); 
+        goodElectrons = selectElectrons( electrons_h->ptrs(), dipho, leptonPtThreshold_, electronEtaThresholds_, dRPhoLepCut_, ElePhotonZMassCut_, DeltaRTrkEle_, 0, 1); // 1 means loose ID 
 
         float leadPt = diphotons->at(idp).leadingPhoton()->pt();
         float subleadPt = diphotons->at(idp).subLeadingPhoton()->pt();
