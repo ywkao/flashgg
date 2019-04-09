@@ -57,7 +57,8 @@ if "DoubleEG" in file_names[0] or "EGamma" in file_names[0]:
   ISDATA = True
 
 ISSIGNAL = False
-if "ttHJet" in file_names[0]:
+signal_strings = ["ttHJetToGG", "ttHToGG", "THQ", "THW", "VBF", "GluGluHToGG", "VHToGG"]
+if any([x in file_names[0] for x in signal_strings]):
   ISSIGNAL = True
 
 

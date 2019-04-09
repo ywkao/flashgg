@@ -8,10 +8,11 @@ from metis.Sample import DBSSample
 from metis.CondorTask import CondorTask
 from metis.StatsParser import StatsParser
 
+job_dir = "MicroAOD/RunII"
 job_tag = "RunII"
 exec_path = "condor_exe.sh"
 tar_path = "package.tar.xz"
-hadoop_path = "ttH/{0}".format(job_tag)
+hadoop_path = "ttH/{0}".format(job_dir)
 
 cmssw_ver = "CMSSW_10_2_9"
 
@@ -22,6 +23,7 @@ def getArgs(pid, dataset, json):
     if "EGamma" in datasetName:
       datasetName += "_2018"
     args = "processType={0} datasetName={1} conditionsJSON={2}".format(pid, datasetName, json)
+    args = args.replace("processType=sig_vh", "processType=AUTO")
     return args
 
 dsdefs = []
@@ -36,8 +38,8 @@ job_jsons = ["datasets_RunIISummer16.json", "datasets_RunIIFall17.json", "datase
 for js in job_jsons:
     jobs = json.load(open(js))
     for pid in jobs["processes"]:
-        # if pid != "bkg":
-            # continue
+        #if pid == "bkg":
+        #  continue
         fpo = jobs["processes"][pid]["filesPerOutput"]
         for ds in jobs["processes"][pid]["datasets"]:
             args = getArgs(pid, ds, conds_dict[js])                
@@ -58,7 +60,7 @@ while True:
     		cmssw_version = cmssw_ver,
                 executable = exec_path,
                 tarfile = tar_path,
-                condor_submit_params = {"sites" : "T2_US_UCSD"},
+                condor_submit_params = {"sites" : "T2_US_UCSD,T2_US_CALTECH,T2_US_MIT,T2_US_WISCONSIN,T2_US_Nebraska,T2_US_Purdue,T2_US_Vanderbilt,T2_US_Florida"},
                 special_dir = hadoop_path,
                 arguments = args.replace(" ","|")
                 )
@@ -74,5 +76,7 @@ while True:
         print "Job={} finished".format(job_tag)
         print ""
         break
-    print "Sleeping 1800 seconds ..."
-    time.sleep(1800)
+    #print "Sleeping 300 seconds ..."
+    #time.sleep(300)
+    print "Sleeping 10000 seconds ..."
+    time.sleep(10000)
