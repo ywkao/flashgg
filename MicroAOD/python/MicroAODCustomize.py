@@ -144,6 +144,8 @@ class MicroAODCustomize(object):
                 self.customizeTH(process)
 	    elif "fcnc" in customize.datasetName.lower():
 	        print "Customizing for FCNC (just doing generic signal customization and nothing further)"
+            elif "hh" in customize.datasetName.lower():
+                self.customizeHH(process)
             else:
                 raise Exception,"processType=sig but datasetName does not contain recognized production mechanism - see MicroAODCustomize.py"
         if self.processType == "background" or self.processType == "bkg":
@@ -250,6 +252,9 @@ class MicroAODCustomize(object):
 
     def customizePDFs(self,process):     
         process.load("flashgg/MicroAOD/flashggPDFWeightObject_cfi")
+        if "mc2hessianCSV" in self.metaConditions.keys() and self.metaConditions["mc2hessianCSV"] != "":
+            setattr(process.flashggPDFWeightObject, "mc2hessianCSV", str(self.metaConditions["mc2hessianCSV"]))
+#        setattr(process.flashggPDFWeightObject, "pdfset", str(self.metaConditions["PDF"]))
         process.p *= process.flashggPDFWeightObject
 
     # background specific customization
@@ -492,6 +497,11 @@ class MicroAODCustomize(object):
 
     def customizeGGH(self,process):
         process.rivetProducerHTXS.ProductionMode = "GGF"
+
+    def customizeHH(self,process):
+        print "using HH sample, treating them as signals"
+
+
 
     def customizeTH(self,process):
         print "customizeTH"
