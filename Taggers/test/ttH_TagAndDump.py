@@ -105,6 +105,7 @@ for pset in process.flashggDiPhotonSystematics.SystMethods:
     if not pset.Label.value().count("FracRVNvtxWeight") :
 	print  pset.Label.value()
 	newvpset += [pset]
+
 #from flashgg.Systematics.flashggDiPhotonSystematics_cfi import PixelSeedWeight
 #newvpset += [ PixelSeedWeight ]
 
@@ -565,14 +566,15 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
 )
 
 process.p = cms.Path(process.dataRequirements*
-                         #process.genFilter* # revisit later
+                         #process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
                          process.flashggUpdatedIdMVADiPhotons*
-                         #process.flashggDiPhotonSystematics* # just omitting for time being until systematics are ready for all 3 years
+                         process.flashggDiPhotonSystematics* 
                          process.flashggMetSystematics*
                          process.flashggMuonSystematics*process.flashggElectronSystematics*
                          (process.flashggUnpackedJets*process.jetSystematicsSequence)*
                          (process.flashggTagSequence*process.systematicsTagSequences)*
+			 process.flashggSystTagMerger*
 			 process.flashggTagSequence*
                          process.flashggTagTester*
 		         (process.tthLeptonicTagDumper
