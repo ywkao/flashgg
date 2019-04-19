@@ -142,6 +142,8 @@ class MicroAODCustomize(object):
                 self.customizeVBF(process)
             elif "thq" in customize.datasetName.lower() or "thw" in customize.datasetName.lower():
                 self.customizeTH(process)
+	    elif "fcnc" in customize.datasetName.lower():
+	        print "Customizing for FCNC (just doing generic signal customization and nothing further)"
             else:
                 raise Exception,"processType=sig but datasetName does not contain recognized production mechanism - see MicroAODCustomize.py"
         if self.processType == "background" or self.processType == "bkg":
