@@ -66,10 +66,10 @@ flashggTTHHadronicTag = cms.EDProducer("FlashggTTHHadronicTagProducer",
 
                                        MVAMethod = cms.string("BDT"),     
                                        RECOfilters = cms.InputTag('TriggerResults::RECO'),
-                                       leadPhoOverMassThreshold = cms.double(0.2), # changed from 0.5
+                                       leadPhoOverMassThreshold = cms.double(0.0), # changed from 0.5
                                        leadPhoPtThreshold = cms.double(20),  
                                        leadPhoUseVariableThreshold =  cms.bool(True),
-                                       subleadPhoOverMassThreshold = cms.double(0.2), # changed from 0.25
+                                       subleadPhoOverMassThreshold = cms.double(0.0), # changed from 0.25
                                        subleadPhoPtThreshold = cms.double(20),
                                        subleadPhoUseVariableThreshold =  cms.bool(True),
                                        MVAThreshold = cms.double(-1.0),
@@ -179,8 +179,8 @@ flashggTTHLeptonicTag = cms.EDProducer("FlashggTTHLeptonicTagProducer",
                                        MVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_BDT_training_v2.json.weights.xml"),
 				       topTaggerXMLfile = cms.FileInPath("flashgg/Taggers/data/resTop_xgb_csv_order_deepCTag.xml"),
 
-                                       leadPhoOverMassThreshold = cms.double(0.2), # changed from 0.33
-                                       subleadPhoOverMassThreshold = cms.double(0.2), # changed from 0.25
+                                       leadPhoOverMassThreshold = cms.double(0.0), # changed from 0.33
+                                       subleadPhoOverMassThreshold = cms.double(0.0), # changed from 0.25
                                        MVAThreshold = cms.vdouble(-999, -999), # changed from (0.6, 0.3)
                                        PhoMVAThreshold = cms.double(-0.9), # changed from -0.2
                                        jetsNumberThreshold = cms.double(1.),
