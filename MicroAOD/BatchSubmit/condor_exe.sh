@@ -47,7 +47,7 @@ echo ${ARGS//|/ }
 
 # Create tag file
 echo "[wrapper `date +\"%Y%m%d %k:%M:%S\"`] running: cmsRun -n 4 MicroAOD/test/microAODstd_custom.py ${ARGS//|/ }"
-cmsRun -n 4 MicroAOD/test/microAODstd_custom.py ${ARGS//|/ }
+cmsRun MicroAOD/test/microAODstd_custom.py ${ARGS//|/ }
 RETVAL=$?
 if [ $RETVAL -ne 0 ]; then
     echo "CMSSWERROR!! cmsRun crashed with an error. Deleting output file."
@@ -74,7 +74,7 @@ process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32( -1 ) )
     fi
     
     echo "[wrapper `date +\"%Y%m%d %k:%M:%S\"`] running: cmsRun -n 4 Skimming/test/skim_cfg.py ${ARGS//|/ }"
-    cmsRun -n 4 Skimming/test/skim_cfg.py ${ARGS//|/ }
+    cmsRun Skimming/test/skim_cfg.py ${ARGS//|/ }
     RETVAL=$?
     if [ $RETVAL -ne 0 ]; then
         echo "CMSSWERROR!! cmsRun crashed with an error. Deleting output file."
