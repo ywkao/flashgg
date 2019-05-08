@@ -28,6 +28,9 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 
 #include "flashgg/Taggers/interface/BDT_resolvedTopTagger.h"
+#include "flashgg/Taggers/interface/DNN_Helper.h"
+
+#include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 
 #include <vector>
 #include <algorithm>
@@ -77,6 +80,7 @@ namespace flashgg {
         EDGetTokenT<edm::TriggerResults> triggerRECO_;
         string systLabel_;
 	FileInPath topTaggerXMLfile_;
+	FileInPath tthVsDiphoDNNfile_;
 
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
         bool useTTHHadronicMVA_;
@@ -186,6 +190,8 @@ namespace flashgg {
 
         vector<double> boundaries;
 	BDT_resolvedTopTagger *topTagger;
+
+        DNN_Helper* dnn;
     };
 
     const reco::GenParticle* TTHHadronicTagProducer::motherID(const reco::GenParticle* gp)
@@ -386,6 +392,7 @@ namespace flashgg {
   
         tthMVAweightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVAweightfile" ); 
 	topTaggerXMLfile_ = iConfig.getParameter<edm::FileInPath>( "topTaggerXMLfile" );
+	tthVsDiphoDNNfile_ = iConfig.getParameter<edm::FileInPath>( "tthVsDiphoDNNfile" );
 
         nJets_ = 0;
         leadJetPt_ = 0.;
@@ -489,6 +496,8 @@ namespace flashgg {
         produces<vector<TagTruthBase> >();
 
 	topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
+	dnn = new DNN_Helper(tthVsDiphoDNNfile_.fullPath());
+	dnn->SetInputShapes(18, 8, 8);
     }
 
     int TTHHadronicTagProducer::chooseCategory( float tthmvavalue )
@@ -986,6 +995,32 @@ namespace flashgg {
                      
                  }
             }
+
+	    std::vector<double> global_features;
+            global_features.resize(18);
+            global_features[0] = dipho->leadingPhoton()->eta();
+	    global_features[0] = dipho->subLeadingPhoton()->eta();
+	    global_features[0] = dipho->leadingPhoton()->phi();
+            global_features[0] = dipho->subLeadingPhoton()->phi();
+ 	    global_features[0] = pho1_ptoM_; 
+	    global_features[0] = pho2_ptoM_;
+	    global_features[0] = maxPhoID_; 
+            global_features[0] = minPhoID_; 
+            global_features[0] = (float)theMET->pt();
+            global_features[0] = (float)theMET->phi(); 
+            global_features[0] = pho1_hasPixelSeed_; 
+            global_features[0] = pho2_hasPixelSeed_;
+	    global_features[0] = diPhoY_; 
+            global_features[0] = diPhoPtoM_; 
+            global_features[0] = deltaR( dipho->leadingPhoton()->eta(),dipho->leadingPhoton()->phi(), dipho->subLeadingPhoton()->eta(),dipho->subLeadingPhoton()->phi()); 
+            global_features[0] = maxBTagVal_; 
+            global_features[0] = secondMaxBTagVal_; 
+            global_features[0] = nJets_; 
+            dnn->SetInputs(JetVect, global_features);
+
+	    float dnn_score = dnn->EvaluateDNN();
+            cout << "Event dnn score: " << dnn_score << endl;
+
 
             bool isTTHHadronicTagged = false;
             int catnum =-1;
