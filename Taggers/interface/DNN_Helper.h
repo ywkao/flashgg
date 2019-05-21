@@ -16,7 +16,7 @@ bool sortByValue(const std::pair<int,double>& pair1, const std::pair<int,double>
 class DNN_Helper
 {
   public:
-    DNN_Helper(string weight_file);
+    DNN_Helper(string weight_file, bool debug = false);
     ~DNN_Helper();
 
     void SetInputShapes(unsigned int length_global, unsigned int length_object, unsigned int length_object_sequence);
@@ -37,6 +37,8 @@ class DNN_Helper
     unsigned int length_object_sequence_; // number of objects per sequence
 
     bool inputs_set;
+    bool debug_;
+
 };
 
 inline
@@ -46,13 +48,15 @@ DNN_Helper::~DNN_Helper() {
 }
 
 inline
-DNN_Helper::DNN_Helper(string weight_file) {
+DNN_Helper::DNN_Helper(string weight_file, bool debug) {
   weight_file_ = weight_file;
 
   graph_ = tensorflow::loadGraphDef((weight_file_).c_str());
   session_ = tensorflow::createSession(graph_);  
 
   inputs_set = false;
+
+  debug_ = debug;
 }
 
 inline
@@ -116,12 +120,17 @@ float DNN_Helper::EvaluateDNN() {
   tensorflow::Tensor global_input(tensorflow::DT_FLOAT, {1, length_global_});
   tensorflow::Tensor object_input(tensorflow::DT_FLOAT, tensorflow::TensorShape({1, length_object_sequence_, length_object_}));
 
-  for (unsigned int i = 0; i < length_global_; i++)
+  for (unsigned int i = 0; i < length_global_; i++) {
     global_input.matrix<float>()(0,i) = float(global_features_[i]);
+    if (debug_)
+      cout << "Global feature " << i << ": " << float(global_features_[i]) << endl;
+  }
 
   for (unsigned int i = 0; i < length_object_; i++) {
     for (unsigned int j = 0; j < length_object_sequence_; j++) {
       object_input.tensor<float,3>()(0,i,j) = float(object_features_[i][j]);
+      if (debug_)
+	cout << "Object feature " << i << ", " << j << ": " << float(object_features_[i][j]) << endl;
     } 
   }
 
