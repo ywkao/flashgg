@@ -66,6 +66,7 @@ flashggTTHHadronicTag = cms.EDProducer("FlashggTTHHadronicTagProducer",
 				       topTaggerXMLfile = cms.FileInPath("flashgg/Taggers/data/resTop_xgb_csv_order_deepCTag.xml"),
 				       tthVsDiphoDNNfile = cms.FileInPath("flashgg/Taggers/data/ttHHadronic_ttH_vs_dipho_v1.5_13May2019_weights_00.pb"),
 				       tthVsttGGDNNfile = cms.FileInPath("flashgg/Taggers/data/ttHHadronic_ttH_vs_ttGG_v1.5_13May2019_weights.pb"),
+				       tthMVA_RunII_weightfile = cms.FileInPath("flashgg/Taggers/data/ttHHadronic_RunII_MVA.xml"),
 
                                        MVAMethod = cms.string("BDT"),     
                                        RECOfilters = cms.InputTag('TriggerResults::RECO'),

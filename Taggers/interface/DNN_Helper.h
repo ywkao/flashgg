@@ -1,6 +1,10 @@
 #ifndef _DNN_HELPER_H_
 #define _DNN_HELPER_H_
 
+#include <algorithm>
+
+#include "TLorentzVector.h"
+
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "flashgg/DataFormats/interface/Electron.h"
 #include "flashgg/DataFormats/interface/Muon.h"
@@ -11,6 +15,21 @@ const int pad_value = -9;
 
 bool sortByValue(const std::pair<int,double>& pair1, const std::pair<int,double>& pair2 ) {
   return pair1.second > pair2.second;
+}
+
+double helicity(const TLorentzVector particle_1, const TLorentzVector particle_2) {
+  TLorentzVector p1 = particle_1;
+  TLorentzVector parent = particle_1 + particle_2;
+
+  TVector3 boost_to_parent = -(parent.BoostVector());
+  p1.Boost(boost_to_parent);
+
+  TVector3 v1 = p1.Vect();
+  TVector3 vParent = parent.Vect();
+
+  double cos_theta_1 = (v1.Dot(vParent)) / (v1.Mag() * vParent.Mag());
+
+  return abs(cos_theta_1);
 }
 
 class DNN_Helper
@@ -65,10 +84,10 @@ void DNN_Helper::SetInputShapes(unsigned int length_global, unsigned int length_
   length_object_ = length_object;
   length_object_sequence_ = length_object_sequence;
 
-  global_features_.resize(length_global_);
-  object_features_.resize(length_object_sequence_);
-  for (unsigned int i = 0; i < object_features_.size(); i++)
-    object_features_[i].resize(length_object);
+  //global_features_.resize(length_global_);
+  //object_features_.resize(length_object_sequence_);
+  //for (unsigned int i = 0; i < object_features_.size(); i++)
+  //  object_features_[i].resize(length_object_);
 }
 
 inline
@@ -80,15 +99,22 @@ void DNN_Helper::SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector
   global_features_ = global_features;
 
   // Object features //
-  
+
   // First, set all values to the pad value
+  object_features_.resize(length_object_sequence_);
+  for (unsigned int i = 0; i < object_features_.size(); i++)
+    object_features_[i].resize(length_object_);
   for (unsigned int i = 0; i < object_features_.size(); i++) {
     for (unsigned int j = 0; j < object_features_[i].size(); j++)
       object_features_[i][j] = pad_value; 
   }
 
-  std::vector<std::vector<double>> object_features_unordered = object_features_;
-  for (unsigned int i = 0; i < jets.size(); i++) {
+  std::vector<std::vector<double>> object_features_unordered;
+  object_features_unordered.resize(jets.size());
+  for (unsigned int i = 0; i < object_features_unordered.size(); i++)
+    object_features_unordered[i].resize(length_object_);
+
+   for (unsigned int i = 0; i < object_features_unordered.size(); i++) {
     object_features_unordered[i][0] = log(jets[i]->pt());
     object_features_unordered[i][1] = jets[i]->eta();
     object_features_unordered[i][2] = jets[i]->phi();
@@ -101,13 +127,14 @@ void DNN_Helper::SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector
 
   // Third, order jets by pT
   std::vector<std::pair<unsigned int, double> > pt_ordering;
-  
+
   for (unsigned int i = 0; i < jets.size(); i++)
     pt_ordering.push_back(std::pair<unsigned int, double>(i, jets[i]->pt()));
 
   std::sort(pt_ordering.begin(), pt_ordering.end(), sortByValue);
-  for (unsigned int i = 0; i < jets.size(); i++)
+  for (unsigned int i = 0; i < std::min(object_features_.size(), pt_ordering.size()); i++) {
     object_features_[i] = object_features_unordered[pt_ordering[i].first];
+  }
 
   inputs_set = true;
 }
@@ -135,9 +162,11 @@ float DNN_Helper::EvaluateDNN() {
   }
 
   std::vector<tensorflow::Tensor> output;
-  
+ 
   tensorflow::run(session_, {{"input_objects", object_input}, {"input_global", global_input}}, {"output/Sigmoid"}, &output);
 
+  global_features_.clear();
+  object_features_.clear(); 
   inputs_set = false;
 
   return output[0].matrix<float>()(0,0);  
