@@ -993,39 +993,6 @@ namespace flashgg {
                 if(JetVect.size()>0){
                     if(bTag_ == "pfDeepCSV") btag_1_=JetVect[0]->bDiscriminator("pfDeepCSVJetTags:probb")+JetVect[0]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
                     else  btag_1_ = JetVect[0]->bDiscriminator( bTag_ );
-                    jetPt_1_=JetVect[0]->pt();
-                    jetEta_1_=JetVect[0]->eta();
-                    jetPhi_1_=JetVect[0]->phi();
-                }
-
-                if(JetVect.size()>1){
-                    if(bTag_ == "pfDeepCSV") btag_2_=JetVect[1]->bDiscriminator("pfDeepCSVJetTags:probb")+JetVect[1]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                    else  btag_2_ = JetVect[1]->bDiscriminator( bTag_ );
-                    jetPt_2_=JetVect[1]->pt();
-                    jetEta_2_=JetVect[1]->eta();
-                    jetPhi_2_=JetVect[1]->phi();
-                }
-
-                if(JetVect.size()>2){
-                    if(bTag_ == "pfDeepCSV") btag_3_=JetVect[2]->bDiscriminator("pfDeepCSVJetTags:probb")+JetVect[2]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                    else  btag_3_ = JetVect[2]->bDiscriminator( bTag_ );
-                    jetPt_3_=JetVect[2]->pt();
-                    jetEta_3_=JetVect[2]->eta();
-                    jetPhi_3_=JetVect[2]->phi();
-                }
-                if(JetVect.size()>3){
-                    if(bTag_ == "pfDeepCSV") btag_4_=JetVect[3]->bDiscriminator("pfDeepCSVJetTags:probb")+JetVect[3]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                    else  btag_4_ = JetVect[3]->bDiscriminator( bTag_ );
-                    jetPt_4_=JetVect[3]->pt();
-                    jetEta_4_=JetVect[3]->eta();
-                    jetPhi_4_=JetVect[3]->phi();
-                }
-
-
-
-                if(JetVect.size()>0){
-                    if(bTag_ == "pfDeepCSV") btag_1_=JetVect[0]->bDiscriminator("pfDeepCSVJetTags:probb")+JetVect[0]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                    else  btag_1_ = JetVect[0]->bDiscriminator( bTag_ );
 		    if(bTag_ == "pfDeepCSV") btag_noBB_1_=JetVect[0]->bDiscriminator("pfDeepCSVJetTags:probb");
                     else  btag_noBB_1_ = JetVect[0]->bDiscriminator( bTag_ );
                     jetPt_1_=JetVect[0]->pt();
@@ -1176,7 +1143,7 @@ namespace flashgg {
 	      dnn_score_0_ = dnn_score_dipho;	    	   
 	      dnn_score_1_ = dnn_score_ttGG;	    
 
-	      tthMvaVal_RunII_ = TThMva_RunII_->EvaluateMVA( _MVAMethod.c_str() );
+	      tthMvaVal_RunII_ = convert_tmva_to_prob(TThMva_RunII_->EvaluateMVA( _MVAMethod.c_str() ));
 	      bool easy_debug_ = true;
 	      if (debug_ || easy_debug_) {
 		cout << "TTH Hadronic Tag -- input MVA variables for Run II MVA: " << endl;
