@@ -473,7 +473,7 @@ namespace flashgg {
         TThMva_RunII_->AddVariable("jet2_eta_", &jetEta_2_);
         TThMva_RunII_->AddVariable("jet2_btag_", &btag_noBB_2_);
         TThMva_RunII_->AddVariable("jet3_pt_", &jetPt_3_);
-        TThMva_RunII_->AddVariable("jet3_eta_", &jetEta_4_);
+        TThMva_RunII_->AddVariable("jet3_eta_", &jetEta_3_);
         TThMva_RunII_->AddVariable("jet3_btag_", &btag_noBB_3_);
         TThMva_RunII_->AddVariable("jet4_pt_", &jetPt_4_);
         TThMva_RunII_->AddVariable("jet4_eta_", &jetEta_4_);
@@ -507,7 +507,7 @@ namespace flashgg {
         produces<vector<TagTruthBase> >();
 
         topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
-        dnn = new DNN_Helper(tthVsttGGDNNfile_.fullPath());
+        dnn = new DNN_Helper(tthVsttGGDNNfile_.fullPath(), false);
         dnn->SetInputShapes(19, 9, 8);
     }
 
@@ -614,26 +614,26 @@ namespace flashgg {
             if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) { continue; }
 
             ht_ = 0.;
-            btag_1_=-1;
-            btag_noBB_1_ = -1;
-            jetPt_1_=-1;
-            jetEta_1_=-6;
-            jetPhi_1_=-6;
-            btag_2_=-1;
-            btag_noBB_2_ = -1;
-            jetPt_2_=-1;
-            jetEta_2_=-6;
-            jetPhi_2_=-6;
-            btag_3_=-1;
-            btag_noBB_3_ = -1;
-            jetPt_3_=-1;
-            jetEta_3_=-6;
-            jetPhi_3_=-6;
-            btag_4_=-1;
-            btag_noBB_4_ = -1;
-            jetPt_4_=-1;
-            jetEta_4_=-6;
-            jetPhi_4_=-6;
+            btag_1_=-999;
+            btag_noBB_1_ = -999;
+            jetPt_1_=-999;
+            jetEta_1_=-999;
+            jetPhi_1_=-999;
+            btag_2_=-999;
+            btag_noBB_2_ = -999;
+            jetPt_2_=-999;
+            jetEta_2_=-999;
+            jetPhi_2_=-999;
+            btag_3_=-999;
+            btag_noBB_3_ = -999;
+            jetPt_3_=-999;
+            jetEta_3_=-999;
+            jetPhi_3_=-999;
+            btag_4_=-999;
+            btag_noBB_4_ = -999;
+            jetPt_4_=-999;
+            jetEta_4_=-999;
+            jetPhi_4_=-999;
 
             bool passDiphotonSelection = true;
             if(UseCutBasedDiphoId_)
@@ -1012,6 +1012,7 @@ namespace flashgg {
                 jetEta_3_=tagJets[2]->eta();
                 jetPhi_3_=tagJets[2]->phi();
             }
+            /* kinematics of fourth leading jet not currently used in BDT
             if(tagJets.size()>3){
                 if(bTag_ == "pfDeepCSV") btag_4_=tagJets[3]->bDiscriminator("pfDeepCSVJetTags:probb")+tagJets[3]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
                 else  btag_4_ = tagJets[3]->bDiscriminator( bTag_ );
@@ -1020,11 +1021,11 @@ namespace flashgg {
                 jetPt_4_=tagJets[3]->pt();
                 jetEta_4_=tagJets[3]->eta();
                 jetPhi_4_=tagJets[3]->phi();
-            }
+            } */
 
             diPhoY_= dipho->rapidity();
             diPhoPtoM_= dipho->pt()/dipho->mass();
-            diPhoCosPhi_=  TMath::Cos( deltaPhi( dipho->leadingPhoton()->phi(), dipho->subLeadingPhoton()->phi() ) );
+            diPhoCosPhi_=  abs(TMath::Cos( deltaPhi( dipho->leadingPhoton()->phi(), dipho->subLeadingPhoton()->phi() ) ));
             diPhoDeltaR_ = deltaR( dipho->leadingPhoton()->eta(),dipho->leadingPhoton()->phi(), dipho->subLeadingPhoton()->eta(),dipho->subLeadingPhoton()->phi());
 
             leadeta_ = dipho->leadingPhoton()->eta();
@@ -1182,14 +1183,13 @@ namespace flashgg {
 
             float mvaValue = DiphotonMva_-> EvaluateMVA( "BDT" );
             tthMvaVal_RunII_ = convert_tmva_to_prob(TThMva_RunII_->EvaluateMVA( "BDT" )); 
-            bool easy_debug_ = true;
-            if (debug_ || easy_debug_) {
+            if (debug_) {
               cout << "TTH Leptonic Tag -- input MVA variables for Run II MVA: " << endl;
               cout << "--------------------------------------------------------" << endl;
               cout << "maxIDMVA_: " << maxPhoID_ << endl;
               cout << "minIDMVA_: " << minPhoID_ << endl;
-              cout << "max1_btag_: " << maxBTagVal_noBB_ << endl;
               cout << "max2_btag_: " << secondMaxBTagVal_noBB_ << endl;
+              cout << "max1_btag_: " << maxBTagVal_noBB_ << endl;
               cout << "dipho_delta_R_: " << diPhoDeltaR_ << endl;
 
               cout << "njets_: " << nJets_ << endl;

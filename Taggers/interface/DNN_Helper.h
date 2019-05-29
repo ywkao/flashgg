@@ -159,7 +159,7 @@ void DNN_Helper::SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector
     object_features_unordered[i][5] = jets[i]->bDiscriminator("pfDeepCSVJetTags:probbb");
     object_features_unordered[i][6] = jets[i]->bDiscriminator("pfDeepCSVJetTags:probc");
     object_features_unordered[i][7] = jets[i]->bDiscriminator("pfDeepCSVJetTags:probudsg");
-    object_features_unordered[i][8] = -2.;
+    object_features_unordered[i][8] = -2;
   }
 
   for (unsigned int i = jets.size(); i < jets.size() + electrons.size(); i++) {
@@ -216,8 +216,8 @@ float DNN_Helper::EvaluateDNN() {
       cout << "Global feature " << i << ": " << float(global_features_[i]) << endl;
   }
 
-  for (unsigned int i = 0; i < length_object_; i++) {
-    for (unsigned int j = 0; j < length_object_sequence_; j++) {
+  for (unsigned int i = 0; i < length_object_sequence_; i++) {
+    for (unsigned int j = 0; j < length_object_; j++) {
       object_input.tensor<float,3>()(0,i,j) = float(object_features_[i][j]);
       if (debug_)
 	cout << "Object feature " << i << ", " << j << ": " << float(object_features_[i][j]) << endl;
@@ -240,7 +240,7 @@ float DNN_Helper::EvaluateDNN() {
 inline
 double convert_tmva_to_prob(double score) {
   // Undo TMVA transformation
-  double raw_score = -0.5 * log( 0.5 * (( 2 / (score + 1)) - 1));
+  double raw_score = -0.5 * log( (2 / (score + 1)) - 1);
 
   // Apply logistic (sigmoid) transformation
   double prob = 1 / (1 + exp(-raw_score));

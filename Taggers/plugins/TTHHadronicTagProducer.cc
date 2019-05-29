@@ -81,7 +81,7 @@ namespace flashgg {
         string systLabel_;
 	FileInPath topTaggerXMLfile_;
 	FileInPath tthVsDiphoDNNfile_;
-	
+	FileInPath tthVsttGGDNNfile_;	
 
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
         bool useTTHHadronicMVA_;
@@ -213,7 +213,7 @@ namespace flashgg {
         vector<double> boundaries;
 	BDT_resolvedTopTagger *topTagger;
 
-        DNN_Helper* dnn;
+        DNN_Helper* dnn_dipho;
 	DNN_Helper* dnn_ttGG;
     };
 
@@ -416,6 +416,7 @@ namespace flashgg {
         tthMVAweightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVAweightfile" ); 
 	topTaggerXMLfile_ = iConfig.getParameter<edm::FileInPath>( "topTaggerXMLfile" );
 	tthVsDiphoDNNfile_ = iConfig.getParameter<edm::FileInPath>( "tthVsDiphoDNNfile" );
+	tthVsttGGDNNfile_ = iConfig.getParameter<edm::FileInPath>( "tthVsttGGDNNfile" );
 	tthMVA_RunII_weightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVA_RunII_weightfile" );
 
         nJets_ = 0;
@@ -549,7 +550,7 @@ namespace flashgg {
 	    TThMva_RunII_->AddVariable("jet2_eta_", &jetEta_2_);
 	    TThMva_RunII_->AddVariable("jet2_btag_", &btag_noBB_2_);
 	    TThMva_RunII_->AddVariable("jet3_pt_", &jetPt_3_);
-	    TThMva_RunII_->AddVariable("jet3_eta_", &jetEta_4_);
+	    TThMva_RunII_->AddVariable("jet3_eta_", &jetEta_3_);
 	    TThMva_RunII_->AddVariable("jet3_btag_", &btag_noBB_3_);
 	    TThMva_RunII_->AddVariable("jet4_pt_", &jetPt_4_);
 	    TThMva_RunII_->AddVariable("jet4_eta_", &jetEta_4_);
@@ -582,9 +583,11 @@ namespace flashgg {
         produces<vector<TagTruthBase> >();
 
 	topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
-	dnn = new DNN_Helper(tthVsDiphoDNNfile_.fullPath());
-	
-	dnn->SetInputShapes(18, 8, 8);
+	dnn_dipho = new DNN_Helper(tthVsDiphoDNNfile_.fullPath());
+        dnn_ttGG  = new DNN_Helper(tthVsttGGDNNfile_.fullPath());	
+
+	dnn_dipho->SetInputShapes(18, 8, 8);
+	dnn_ttGG->SetInputShapes(18, 8, 8);
     }
 
     int TTHHadronicTagProducer::chooseCategory( float tthmvavalue )
@@ -768,26 +771,26 @@ namespace flashgg {
 	    diPhoDeltaR_ = -999.;
 	    nbloose_=-999;
 
-	    btag_1_=-1;
-	    btag_noBB_1_ = -1;
-	    jetPt_1_=-1;
-	    jetEta_1_=-6;
-	    jetPhi_1_=-6;
-	    btag_2_=-1;
-	    btag_noBB_2_ = -1;
-	    jetPt_2_=-1;
-	    jetEta_2_=-6;
-	    jetPhi_2_=-6;
-	    btag_3_=-1;
-	    btag_noBB_3_ = -1;
-	    jetPt_3_=-1;
-	    jetEta_3_=-6;
-	    jetPhi_3_=-6;
-	    btag_4_=-1;
-	    btag_noBB_4_ = -1;
-	    jetPt_4_=-1;
-	    jetEta_4_=-6;
-	    jetPhi_4_=-6;
+	    btag_1_=-999;
+	    btag_noBB_1_ = -999;
+	    jetPt_1_=-999;
+	    jetEta_1_=-999;
+	    jetPhi_1_=-999;
+	    btag_2_=-999;
+	    btag_noBB_2_ = -999;
+	    jetPt_2_=-999;
+	    jetEta_2_=-999;
+	    jetPhi_2_=-999;
+	    btag_3_=-999;
+	    btag_noBB_3_ = -999;
+	    jetPt_3_=-999;
+	    jetEta_3_=-999;
+	    jetPhi_3_=-999;
+	    btag_4_=-999;
+	    btag_noBB_4_ = -999;
+	    jetPt_4_=-999;
+	    jetEta_4_=-999;
+	    jetPhi_4_=-999;
 
 	    MET_=-1;
 
@@ -985,7 +988,7 @@ namespace flashgg {
 
                 diPhoY_= dipho->rapidity();
                 diPhoPtoM_= dipho->pt()/dipho->mass();
-                diPhoCosPhi_=  TMath::Cos( deltaPhi( dipho->leadingPhoton()->phi(), dipho->subLeadingPhoton()->phi() ) );
+                diPhoCosPhi_=  abs(TMath::Cos( deltaPhi( dipho->leadingPhoton()->phi(), dipho->subLeadingPhoton()->phi() ) ));
 		diPhoDeltaR_ = deltaR( dipho->leadingPhoton()->eta(),dipho->leadingPhoton()->phi(), dipho->subLeadingPhoton()->eta(),dipho->subLeadingPhoton()->phi());
                 nbloose_=float(njets_btagloose_);
 		MET_ = theMET->getCorPt();
@@ -1115,24 +1118,12 @@ namespace flashgg {
 	      global_features[15] = maxBTagVal_noBB_; 
 	      global_features[16] = secondMaxBTagVal_noBB_; 
 	      global_features[17] = nJets_; 
-	      dnn->SetInputs(JetVect, global_features);
 
-	      float dnn_score_dipho = dnn->EvaluateDNN();
-	      if (minPhoID_ > -0.7 && nJets_ > 3 && njets_btagloose_ >= 1) {
-		cout << "Event dnn score: " << dnn_score_dipho << endl;
-		cout << "Mass: " << dipho->mass() << endl;
-		cout << "Lead pho pT: " << dipho->leadingPhoton()->pt() << endl;
-		cout << "Sublead pho pT: " << dipho->subLeadingPhoton()->pt() << endl;
-	      }
+	      dnn_dipho->SetInputs(JetVect, global_features);
+	      float dnn_score_dipho = dnn_dipho->EvaluateDNN();
 
-	      //dnn_ttGG->SetInputs(JetVect, global_features);
-
-	      //float dnn_score_ttGG = dnn_ttGG->EvaluateDNN();
-	      float dnn_score_ttGG = -1;
-	      if (minPhoID_ > -0.7 && nJets_ > 3 && njets_btagloose_ >= 1) {
-		cout << "Event ttGG dnn score: " << dnn_score_ttGG << endl;
-	      }
-
+	      dnn_ttGG->SetInputs(JetVect, global_features);
+	      float dnn_score_ttGG = dnn_ttGG->EvaluateDNN();
 
 	      TLorentzVector pho1, pho2;
 	      pho1.SetPtEtaPhiE(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), dipho->leadingPhoton()->energy());
@@ -1144,8 +1135,7 @@ namespace flashgg {
 	      dnn_score_1_ = dnn_score_ttGG;	    
 
 	      tthMvaVal_RunII_ = convert_tmva_to_prob(TThMva_RunII_->EvaluateMVA( _MVAMethod.c_str() ));
-	      bool easy_debug_ = true;
-	      if (debug_ || easy_debug_) {
+	      if (debug_) {
 		cout << "TTH Hadronic Tag -- input MVA variables for Run II MVA: " << endl;
 		cout << "--------------------------------------------------------" << endl;
 		cout << "maxIDMVA_: " << maxPhoID_ << endl;

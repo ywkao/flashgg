@@ -9,6 +9,10 @@ if len(sys.argv) >= 4:
   meta_conditions = sys.argv[3]
   print "Found at least 4 args, setting filenames to %s and meta conditions to %s" % (file_names, meta_conditions)
 
+if len(sys.argv) >= 5:
+  n_events = int(sys.argv[4])
+  print "Setting max number of events to %d" % (n_events)
+
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
 import FWCore.ParameterSet.VarParsing as VarParsing
@@ -25,7 +29,7 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1000 )
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1 )
 
 
 #process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/DoubleEG_Run2016B-17Jul2018_ver2-v1_MINIAOD_RunII/test_skim_1.root"))
