@@ -1297,6 +1297,7 @@ namespace flashgg {
                 tthltags_obj.setDiPhotonIndex( diphoIndex );
                 tthltags_obj.setSystLabel( systLabel_ );
                 tthltags_obj.setMvaRes(mvaValue);
+                tthltags_obj.setMva_RunII_Res(tthMvaVal_RunII_);
                 tthltags_obj.setLepPt( lepPt );
                 tthltags_obj.setLepE( lepE );
                 tthltags_obj.setLepEta( lepEta );

@@ -1220,6 +1220,7 @@ namespace flashgg {
                 tthhtags_obj.setFourthMaxBTagVal( fourthMaxBTagVal_ );
                 tthhtags_obj.setSystLabel( systLabel_ );
                 tthhtags_obj.setMVAres(tthMvaVal_);
+		tthhtags_obj.setMVA_RunII_res(tthMvaVal_RunII_);
                 tthhtags_obj.setMET( theMET );
 
 		tthhtags_obj.setDiphoMVARes(mvares->mvaValue());

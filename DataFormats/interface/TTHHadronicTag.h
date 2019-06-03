@@ -34,6 +34,7 @@ namespace flashgg {
         float thirdMaxBTagVal() const {return thirdMaxBTagVal_;}
         float fourthMaxBTagVal() const {return fourthMaxBTagVal_;}
         float tthMvaRes() const {return tthMvaRes_;}
+        float tthMva_RunII_Res() const {return tthMva_RunII_Res_;}
         float MetPt() const {return MetPt_;}
         float MetPhi() const {return MetPhi_;}
         int nGoodEls() const {return nGoodEls_;}
@@ -96,6 +97,7 @@ namespace flashgg {
         void setFourthMaxBTagVal( float dval ) { fourthMaxBTagVal_ = dval;}
         void setJetBTagValVec( std::vector<float> vec ) { theJetBTagValVec_ = vec;}
         void setMVAres(float val) {tthMvaRes_ = val;}
+        void setMVA_RunII_res(float val) {tthMva_RunII_Res_ = val;}
         void setMET( edm::Ptr<flashgg::Met> MET ) {MET_ = MET;}
         void setMetPt(float metPt) {MetPt_ = (float)metPt;}
         void setMetPhi(float metPhi) {MetPhi_ = (float)metPhi;}
@@ -164,6 +166,7 @@ namespace flashgg {
         float thirdMaxBTagVal_;
         float fourthMaxBTagVal_;
         float tthMvaRes_;
+        float tthMva_RunII_Res_;
 
         float MetPt_;
         float MetPhi_;

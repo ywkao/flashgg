@@ -173,7 +173,9 @@ namespace flashgg {
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHLeptonic; }
 
         void setMvaRes(float mvaRes) {mvaRes_ = mvaRes;}
+        void setMva_RunII_Res(float mvaRes) {mva_RunII_Res_ = mvaRes;}
         float mvaRes() const {return mvaRes_;}
+        float mva_RunII_Res() const {return mva_RunII_Res_;}
 
         private:
         std::vector<edm::Ptr<Muon> > Muons_;
@@ -253,6 +255,7 @@ namespace flashgg {
         double rand_;
 
         float mvaRes_;
+        float mva_RunII_Res_;
     };
 }
 
