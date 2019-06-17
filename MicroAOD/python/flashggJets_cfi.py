@@ -24,7 +24,7 @@ flashggDeepFlavourc  = 'pfDeepFlavourJetTags:probc'
 flashggDeepFlavouruds = 'pfDeepFlavourJetTags:probuds'
 flashggDeepFlavourg  = 'pfDeepFlavourJetTags:probg'
 flashggDeepFlavourlepb = 'pfDeepFlavourJetTags:problepb'
-flashggDeepFlavour = 'pfDeepFlavour'
+flashggDeepJet = 'pfDeepJet'
 
 qgDatabaseVersion = 'AK4chs_94X'
 
