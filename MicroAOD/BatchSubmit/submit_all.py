@@ -14,7 +14,7 @@ exec_path = "condor_exe.sh"
 tar_path = "package.tar.xz"
 hadoop_path = "ttH/{0}".format(job_dir)
 
-cmssw_ver = "CMSSW_10_2_9"
+cmssw_ver = "CMSSW_10_5_0"
 
 DOSKIM = True
 
@@ -38,8 +38,6 @@ job_jsons = ["datasets_RunIISummer16.json", "datasets_RunIIFall17.json", "datase
 for js in job_jsons:
     jobs = json.load(open(js))
     for pid in jobs["processes"]:
-        #if pid == "bkg":
-        #  continue
         fpo = jobs["processes"][pid]["filesPerOutput"]
         for ds in jobs["processes"][pid]["datasets"]:
             args = getArgs(pid, ds, conds_dict[js])                
@@ -50,6 +48,9 @@ total_summary = {}
 while True:
     allcomplete = True
     for ds,fpo,args in dsdefs[:]:
+	if "ttHJetToGG_M105_13TeV_amcatnloFXFX_madspin_pythia8" in ds:
+	  print "Skipping ttH M105 because of xrootd errors"
+	  continue
         sample = DBSSample( dataset=ds )
         task = CondorTask(
                 sample = sample,
