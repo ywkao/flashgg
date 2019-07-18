@@ -247,7 +247,7 @@ class MicroAODCustomize(object):
         process.p *= process.rivetProducerHTXS
         process.out.outputCommands.append('keep *_rivetProducerHTXS_*_*')
 
-        if not ("tth_cp" in customize.datasetName.lower()):
+        if not ("tthiggs" in customize.datasetName.lower() and "jhu" in customize.datasetName.lower()):
             self.customizePDFs(process)
         self.customizeHLT(process)
 
