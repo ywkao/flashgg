@@ -48,10 +48,12 @@ total_summary = {}
 while True:
     allcomplete = True
     for ds,fpo,args in dsdefs[:]:
-	if "ttHJetToGG_M105_13TeV_amcatnloFXFX_madspin_pythia8" in ds:
-	  print "Skipping ttH M105 because of xrootd errors"
-	  continue
+        if "ttHJetToGG_M105_13TeV_amcatnloFXFX_madspin_pythia8" in ds:
+	        print "Skipping ttH M105 because of xrootd errors"
+	        continue
+        
         sample = DBSSample( dataset=ds )
+        print(ds, args)
         task = CondorTask(
                 sample = sample,
                 open_dataset = False,

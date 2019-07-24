@@ -39,6 +39,14 @@
 		"/VHToGG_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"
                 ]
             },
+        "sig_tth_cp": {
+            "filesPerOutput": 1,
+            "datasets": [
+            "/ttHiggs0MToGG_M125_13TeV_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
+            "/ttHiggs0Mf05ph0ToGG_M125_13TeV_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM",
+            "/ttHiggs0PMToGG_M125_13TeV_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"
+                ]
+            },
         "sig_tth": {
             "filesPerOutput": 1,
             "datasets": [

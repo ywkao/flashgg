@@ -21,7 +21,7 @@ echo "[wrapper] linux timestamp = " `date +%s`
 # Set up environment #
 ######################
 
-export SCRAM_ARCH=slc6_amd64_gcc530
+export SCRAM_ARCH=slc6_amd64_gcc700
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 # Untar
