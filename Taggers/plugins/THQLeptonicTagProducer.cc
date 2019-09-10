@@ -348,7 +348,7 @@ private:
 };
 
 THQLeptonicTagProducer::THQLeptonicTagProducer( const ParameterSet &iConfig ) :
-    processId_( iConfig.getParameter<string>("processId") ),
+    processId_( "blah" ), 
     diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
     inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) ),
     electronToken_( consumes<View<flashgg::Electron> >( iConfig.getParameter<InputTag>( "ElectronTag" ) ) ),
