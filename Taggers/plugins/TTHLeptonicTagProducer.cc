@@ -36,7 +36,9 @@
 #include "TLorentzVector.h"
 #include "TMath.h"
 #include "TMVA/Reader.h"
+#include "TRandom.h"
 
+TRandom* myRandLeptonic = new TRandom();
 
 using namespace std;
 using namespace edm;
@@ -1431,7 +1433,185 @@ namespace flashgg {
                     tthltags_obj.setSubleadMomID(-999);
                     tthltags_obj.setSubleadMomMomID(-999);
                     tthltags_obj.setSubleadSmallestDr(-999);
-                                
+
+                    if( ! evt.isRealData() ) {
+                    evt.getByToken( genParticleToken_, genParticles );
+                    int nGoodEls(0), nGoodMus(0), nGoodElsFromTau(0), nGoodMusFromTau(0), nGoodTaus(0);
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+                        double pt = genParticles->ptrAt( genLoop )->p4().pt();
+                        int status = genParticles->ptrAt( genLoop )->status();
+                        bool isPromptFinalState = genParticles->ptrAt( genLoop )->isPromptFinalState();
+                        bool isPromptDecayed = genParticles->ptrAt( genLoop )->isPromptDecayed();
+                        bool isDirectPromptTauDecayProductFinalState = genParticles->ptrAt( genLoop )->isDirectPromptTauDecayProductFinalState();
+                        if (pt < 20) continue;
+                        if (abs(pdgid) == 11 || abs(pdgid) == 13 || abs(pdgid) == 15) {
+                            //cout << "Found a gen lepton/tau with pT > 20" << endl;
+                            //cout << "pdgid: " << pdgid << endl;
+                            //cout << "pt: " << pt << endl;
+                            //cout << "status: " << status << endl;
+                            //cout << "isPromptFinalState: " << isPromptFinalState << endl;
+                            //cout << "isPromptDecayed: " << isPromptDecayed << endl;
+                            //cout << "isDirectPromptTauDecayProductFinalState: " << isDirectPromptTauDecayProductFinalState << endl;
+                        }
+                        if (abs(pdgid) == 11 && status == 1 && (isPromptFinalState || isDirectPromptTauDecayProductFinalState)) {
+                            nGoodEls++;
+                            if (isDirectPromptTauDecayProductFinalState)
+                                nGoodElsFromTau++;
+                        }
+                        else if (abs(pdgid) == 13 && status == 1 && (isPromptFinalState || isDirectPromptTauDecayProductFinalState)) {
+                            nGoodMus++;
+                            if (isDirectPromptTauDecayProductFinalState)
+                                nGoodMusFromTau++;
+                        }
+                        if (abs(pdgid) == 15 && status == 2 && isPromptDecayed) {
+                            nGoodTaus++;
+                        }
+                    }
+                    bool lead_photon_is_electron(false), sublead_photon_is_electron(false);
+                    double lead_photon_eta = dipho->leadingPhoton()->eta();
+                    double lead_photon_phi = dipho->leadingPhoton()->phi();
+                    double sublead_photon_eta = dipho->subLeadingPhoton()->eta();
+                    double sublead_photon_phi = dipho->subLeadingPhoton()->phi();
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+                        if (abs(pdgid) != 11) continue;
+                        if (genParticles->ptrAt( genLoop )->p4().pt() < 15) continue;
+                        if (!genParticles->ptrAt( genLoop )->isPromptFinalState()) continue;
+                        double electron_eta = genParticles->ptrAt( genLoop )->p4().eta();
+                        double electron_phi = genParticles->ptrAt( genLoop )->p4().phi();
+
+                        double deltaR_lead = deltaR(electron_eta, electron_phi, lead_photon_eta, lead_photon_phi);
+                        double deltaR_sublead = deltaR(electron_eta, electron_phi, sublead_photon_eta, sublead_photon_phi);
+
+                        //cout << "Delta R with leading photon: " << deltaR_lead << endl;
+                        //cout << "Delta R with subleading photon: " << deltaR_sublead << endl;
+
+                        const double deltaR_thresh = 0.1;
+                        if (deltaR_lead < deltaR_thresh)
+                            lead_photon_is_electron = true;
+                        if (deltaR_sublead < deltaR_thresh)
+                            sublead_photon_is_electron = true;
+
+                    } // end gen loop
+     
+                    int lead_photon_type;
+                    if (dipho->leadingPhoton()->genMatchType() != 1) { // fake
+                        if (!lead_photon_is_electron)
+                            lead_photon_type = 3;   // fake
+                        else
+                            lead_photon_type = 2;   // fake from  electron 
+                    }
+                    else
+                        lead_photon_type = 1; // prompt
+                    int sublead_photon_type;
+                    if (dipho->subLeadingPhoton()->genMatchType() != 1) { // fake
+                        if (!sublead_photon_is_electron)
+                            sublead_photon_type = 3;   // fake
+                        else
+                            sublead_photon_type = 2;   // fake from  electron 
+                    }
+                    else
+                        sublead_photon_type = 1; // prompt
+
+                    // Do our own gen-matching
+                    double lead_photon_closest_match = dipho->leadingPhoton()->genMatchType() == 1 ? deltaR(lead_photon_eta, lead_photon_phi, dipho->leadingPhoton()->matchedGenPhoton()->eta(), dipho->leadingPhoton()->matchedGenPhoton()->phi()) : 999;
+                    double sublead_photon_closest_match = dipho->subLeadingPhoton()->genMatchType() == 1 ? deltaR(sublead_photon_eta, sublead_photon_phi, dipho->subLeadingPhoton()->matchedGenPhoton()->eta(), dipho->subLeadingPhoton()->matchedGenPhoton()->phi()) : 999;
+
+                    //double lead_photon_closest_match = dipho->leadingPhoton()->genMatchType() == 1 ? sqrt( pow(lead_photon_eta - dipho->leadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(lead_photon_phi - dipho->leadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
+                    //double sublead_photon_closest_match = dipho->subLeadingPhoton()->genMatchType() == 1 ? sqrt( pow(sublead_photon_eta - dipho->subLeadingPhoton()->matchedGenPhoton()->eta(), 2) + pow(sublead_photon_phi - dipho->subLeadingPhoton()->matchedGenPhoton()->phi(), 2)) : 999;
+                    double lead_photon_closest_match_pt = dipho->leadingPhoton()->genMatchType() == 1 ? dipho->leadingPhoton()->pt() : -1;
+                    double sublead_photon_closest_match_pt = dipho->subLeadingPhoton()->genMatchType() == 1 ? dipho->subLeadingPhoton()->pt() : -1;
+
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+                        if (abs(pdgid) != 22) continue;
+                        if (genParticles->ptrAt( genLoop )->p4().pt() < 10) continue;
+                        if (!genParticles->ptrAt( genLoop )->isPromptFinalState()) continue;
+                        double gen_photon_candidate_eta = genParticles->ptrAt( genLoop )->p4().eta();
+                        double gen_photon_candidate_phi = genParticles->ptrAt( genLoop )->p4().phi();
+
+
+                        double deltaR_lead = deltaR(gen_photon_candidate_eta, gen_photon_candidate_phi, lead_photon_eta, lead_photon_phi);
+                        //double deltaR_lead = sqrt( pow(gen_photon_candidate_eta - lead_photon_eta, 2) + pow(gen_photon_candidate_phi - lead_photon_phi, 2));
+                        double deltaR_sublead = deltaR(gen_photon_candidate_eta, gen_photon_candidate_phi, sublead_photon_eta, sublead_photon_phi);
+                        //double deltaR_sublead = sqrt( pow(gen_photon_candidate_eta - sublead_photon_eta, 2) + pow(gen_photon_candidate_phi - sublead_photon_phi, 2));
+
+                        if (deltaR_lead < lead_photon_closest_match) {
+                            lead_photon_closest_match = deltaR_lead;
+                            lead_photon_closest_match_pt = genParticles->ptrAt( genLoop )->p4().pt();
+                        }
+                        if (deltaR_sublead < sublead_photon_closest_match) {
+                            sublead_photon_closest_match = deltaR_sublead;
+                            sublead_photon_closest_match_pt = genParticles->ptrAt( genLoop )->p4().pt();
+                        }
+                    } // end gen loop
+                    string lead_fake = dipho->leadingPhoton()->genMatchType() == 1 ? "prompt" : "fake";
+                    //cout << "Leading photon is " << lead_fake << ". Closest match:" << lead_photon_closest_match << endl;
+
+                    string sublead_fake = dipho->subLeadingPhoton()->genMatchType() == 1 ? "prompt" : "fake";
+                    //cout << "Subleading photon is " << sublead_fake << ". Closest match:" << sublead_photon_closest_match << endl;                     
+
+                    tthltags_obj.setnGoodEls(nGoodEls);
+                    tthltags_obj.setnGoodElsFromTau(nGoodElsFromTau);
+                    tthltags_obj.setnGoodMus(nGoodMus);
+                    tthltags_obj.setnGoodMusFromTau(nGoodMusFromTau);
+                    tthltags_obj.setnGoodTaus(nGoodTaus);
+                    tthltags_obj.setLeadPhotonType(lead_photon_type);
+                    tthltags_obj.setSubleadPhotonType(sublead_photon_type);
+                    tthltags_obj.setLeadPhotonClosestDeltaR(lead_photon_closest_match);
+                    tthltags_obj.setSubleadPhotonClosestDeltaR(sublead_photon_closest_match);
+                    tthltags_obj.setLeadPhotonClosestPt(lead_photon_closest_match_pt);
+                    tthltags_obj.setSubleadPhotonClosestPt(sublead_photon_closest_match_pt);
+                }
+                else {
+                    tthltags_obj.setnGoodEls(-1);
+                    tthltags_obj.setnGoodElsFromTau(-1);
+                    tthltags_obj.setnGoodMus(-1);
+                    tthltags_obj.setnGoodMusFromTau(-1);
+                    tthltags_obj.setnGoodTaus(-1);
+                    tthltags_obj.setLeadPhotonType(-1);
+                    tthltags_obj.setSubleadPhotonType(-1);
+                    tthltags_obj.setLeadPhotonClosestDeltaR(-1);
+                    tthltags_obj.setSubleadPhotonClosestDeltaR(-1);
+                    tthltags_obj.setLeadPhotonClosestPt(-1);
+                    tthltags_obj.setSubleadPhotonClosestPt(-1);
+                }
+
+
+                tthltags_obj.setRand(myRandLeptonic->Rndm());
+                tthltags_obj.setMT( sqrt(2 * lepton_leadPt_ * MetPt_ * ( 1 - cos( lepton_leadPhi_ - MetPhi_ ) ) ) );
+                tthltags_obj.setMetPt(MetPt_);
+                tthltags_obj.setMetPhi(MetPhi_);
+
+
+                if (mvaEval.size() > 0) {
+                  tthltags_obj.setTopTagScore(mvaEval[0] != -99 ? mvaEval[0] : -1);
+                  tthltags_obj.setTopTagTopMass(mvaEval[4]);
+                  tthltags_obj.setTopTagWMass(mvaEval[8]);
+                } else
+                  {
+                  tthltags_obj.setTopTagScore(-999);
+                  tthltags_obj.setTopTagTopMass(-999);
+                  tthltags_obj.setTopTagWMass(-999);
+                  }
+
+                tthltags_obj.setNBLoose( njets_btagloose_ );
+                tthltags_obj.setNBMedium( njets_btagmedium_ );
+                tthltags_obj.setNBTight( njets_btagtight_ );
+
+                tthltags_obj.setNMuonLoose( -1 );
+                tthltags_obj.setNMuonMedium( Muons.size() );
+                tthltags_obj.setNMuonTight( MuonsTight.size() );
+
+                tthltags_obj.setNElecLoose( -1 );
+                tthltags_obj.setNElecMedium( Electrons.size() );
+                tthltags_obj.setNElecTight( ElectronsTight.size() );
+
+                tthltags_obj.setMuonLeadIso( Muons.size() > 0 ? (Muons[0]->pfIsolationR04().sumChargedHadronPt + max(0., Muons[0]->pfIsolationR04().sumNeutralHadronEt + Muons[0]->pfIsolationR04().sumPhotonEt - 0.5*Muons[0]->pfIsolationR04().sumPUPt)) : -999);
+                tthltags_obj.setMuonSubleadIso( Muons.size() > 1 ? (Muons[1]->pfIsolationR04().sumChargedHadronPt + max(0., Muons[1]->pfIsolationR04().sumNeutralHadronEt + Muons[1]->pfIsolationR04().sumPhotonEt - 0.5*Muons[1]->pfIsolationR04().sumPUPt)) : -999);
+                    
+
                     tthltags->push_back( tthltags_obj );
      
                     if( ! evt.isRealData() )
