@@ -3,11 +3,15 @@ import sys, os
 n_events = -1 
 file_names = "DoubleEG"
 meta_conditions = "MetaData/data/MetaConditions/Era2018_RR-17Sep2018_v1.json"
+processId = "tth_125"
 
 if len(sys.argv) >= 4:
   file_names = sys.argv[2].replace("/hadoop", "file:/hadoop").split(",")
+  for i in range(len(file_names)):
+      if file_names[i].startswith("/store"):
+          file_names[i] = "root://cms-xrd-global.cern.ch/" + file_names[i]
   meta_conditions = sys.argv[3]
-  print "Found at least 4 args, setting filenames to %s and meta conditions to %s" % (file_names, meta_conditions)
+  print "Found at least 5 args, setting filenames to %s and meta conditions %s" % (file_names, meta_conditions)
 
 if len(sys.argv) >= 5:
   n_events = int(sys.argv[4])
@@ -61,10 +65,43 @@ if "DoubleEG" in file_names[0] or "EGamma" in file_names[0]:
   ISDATA = True
 
 ISSIGNAL = False
-signal_strings = ["ttHJetToGG", "ttHToGG", "THQ", "THW", "VBF", "GluGluHToGG", "VHToGG"]
+signal_strings = ["ttHJetToGG", "ttHToGG", "THQ", "THW", "VBF", "GluGluHToGG", "VHToGG", "bbH"]
 if any([x in file_names[0] for x in signal_strings]):
   ISSIGNAL = True
 
+signal_strings_dict = {
+    "ttHJetToGG" : "tth",
+    "ttHToGG" : "powheg_tth",
+    "THQ" : "th",
+    "THW" : "th",
+    "VBF" : "vbf",
+    "GluGluHToGG" : "ggh",
+    "VHToGG" : "vh",
+    "bbH" : "bbh"
+}
+
+mass_dict = {
+    "M120" : "120",
+    "M123" : "123",
+    "M124" : "124",
+    "M125" : "125",
+    "M126" : "126",
+    "M127" : "127",
+    "M128" : "128"
+}
+
+if ISSIGNAL:
+    for signal_string in signal_strings_dict.keys():
+        if signal_string in file_names[0]:
+            processId = signal_strings_dict[signal_string]
+    for mass in mass_dict.keys():
+        if mass in file_names[0]:
+            processId += "_" + mass_dict[mass]
+elif ISDATA:
+    processId = "data"
+else:
+    processId = "bkg"
+print "ProcessId: %s" % processId
 
 ### Global Tag
 from Configuration.AlCa.GlobalTag import GlobalTag
@@ -77,12 +114,7 @@ from flashgg.Systematics.SystematicsCustomize import *
 
 from flashgg.MetaData.JobConfig import customize
 customize.metaConditions = metaConditions
-if ISDATA:
-    customize.processId = "Data"
-elif ISSIGNAL:
-    customize.processId = "sig"
-else:
-    customize.processId = "bkg"
+customize.processId = processId
 
 #class customizer:
 #  def __init__(self, **kwargs):
@@ -152,15 +184,27 @@ process.hltHighLevel= hltHighLevel.clone(HLTPaths = cms.vstring(hlt_paths))
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-# ee bad supercluster filter on data
-process.load('RecoMET.METFilters.eeBadScFilter_cfi')
-process.eeBadScFilter.EERecHitSource = cms.InputTag("reducedEgamma","reducedEERecHits") # Saved MicroAOD Collection (data only)
-process.dataRequirements = cms.Sequence()
-if ISDATA: 
-        #process.dataRequirements += process.hltHighLevel # already require triggers in microAOD production, don't need to require again
-        process.dataRequirements += process.eeBadScFilter
-
 process.genFilter = cms.Sequence()
+# Split WH and ZH
+process.genFilter = cms.Sequence()
+if ((customize.processId.count("wh") or customize.processId.count("zh")) and not (customize.processId.count("powheg"))) and not customize.processId.count("wzh") :
+    print "enabling vh filter!!!!!"
+    process.load("flashgg/Systematics/VHFilter_cfi")
+    process.genFilter += process.VHFilter
+    process.VHFilter.chooseW = bool(customize.processId.count("wh"))
+    process.VHFilter.chooseZ = bool(customize.processId.count("zh"))
+
+if (customize.processId == "th_125" or customize.processId == "bbh_125"):
+    process.load("flashgg/Systematics/CentralHiggsFilter_cfi")
+    process.genFilter += process.CentralHiggsFilter
+
+#pythia8 has an unanticipated EM showering feature, check have two photons from hard scatter
+process.penultimateFilter= cms.Sequence()
+if customize.processId == "th_125": # for this sample the filter removes also H -> ZG
+    process.load("flashgg/Systematics/HardProcessFinalStateFilter_cfi")
+#    process.HardProcessFinalStateFilter.debug = True
+    process.penultimateFilter += process.HardProcessFinalStateFilter
+
 
 # Met Filters
 process.load('flashgg/Systematics/flashggMetFilters_cfi')
@@ -195,7 +239,7 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "mass             := diPhoton.mass",
                  "leadPt           := diPhoton.leadingPhoton.pt",
                  "leadEt           := diPhoton.leadingPhoton.et",
-         "leadEnergy       := diPhoton.leadingPhoton.energy",
+                 "leadEnergy       := diPhoton.leadingPhoton.energy",
                  "leadEta          := diPhoton.leadingPhoton.eta",
                  "leadPhi          := diPhoton.leadingPhoton.phi",
                  "lead_sieie       := diPhoton.leadingPhoton.sigmaIetaIeta",
@@ -203,9 +247,9 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "lead_sigmaEoE    := diPhoton.leadingPhoton.sigEOverE",
                  "lead_ptoM        := diPhoton.leadingPhoton.pt/diPhoton.mass",
                  "leadR9           := diPhoton.leadingPhoton.full5x5_r9",
-         "leadGenMatch     := diPhoton.leadingPhoton.genMatchType",
-         "leadPtGen        := ? diPhoton.leadingPhoton.hasMatchedGenPhoton ? diPhoton.leadingPhoton.matchedGenPhoton.pt : 0",
-         "leadGendeltaR    := ? diPhoton.leadingPhoton.hasMatchedGenPhoton ? sqrt( pow((diPhoton.leadingPhoton.phi -  diPhoton.leadingPhoton.matchedGenPhoton.phi), 2) + pow((diPhoton.leadingPhoton.phi -  diPhoton.leadingPhoton.matchedGenPhoton.phi), 2)) : -999",
+                 "leadGenMatch     := diPhoton.leadingPhoton.genMatchType",
+                 "leadPtGen        := ? diPhoton.leadingPhoton.hasMatchedGenPhoton ? diPhoton.leadingPhoton.matchedGenPhoton.pt : 0",
+                 "leadGendeltaR    := ? diPhoton.leadingPhoton.hasMatchedGenPhoton ? sqrt( pow((diPhoton.leadingPhoton.phi -  diPhoton.leadingPhoton.matchedGenPhoton.phi), 2) + pow((diPhoton.leadingPhoton.phi -  diPhoton.leadingPhoton.matchedGenPhoton.phi), 2)) : -999",
                  "subleadPt        := diPhoton.subLeadingPhoton.pt",
                  "subleadEt        := diPhoton.subLeadingPhoton.et",
                  "subleadEnergy    := diPhoton.subLeadingPhoton.energy",
@@ -217,8 +261,8 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "sublead_ptoM     := diPhoton.subLeadingPhoton.pt/diPhoton.mass",
                  "subleadR9        := diPhoton.subLeadingPhoton.full5x5_r9",
                  "subleadGenMatch  := diPhoton.subLeadingPhoton.genMatchType",
-         "subleadPtGen     := ? diPhoton.subLeadingPhoton.hasMatchedGenPhoton ? diPhoton.subLeadingPhoton.matchedGenPhoton.pt : 0",
-         "subleadGendeltaR := ? diPhoton.subLeadingPhoton.hasMatchedGenPhoton ? sqrt( pow((diPhoton.subLeadingPhoton.phi -  diPhoton.subLeadingPhoton.matchedGenPhoton.phi), 2) + pow((diPhoton.subLeadingPhoton.phi -  diPhoton.subLeadingPhoton.matchedGenPhoton.phi), 2)) : -999",
+                 "subleadPtGen     := ? diPhoton.subLeadingPhoton.hasMatchedGenPhoton ? diPhoton.subLeadingPhoton.matchedGenPhoton.pt : 0",
+                 "subleadGendeltaR := ? diPhoton.subLeadingPhoton.hasMatchedGenPhoton ? sqrt( pow((diPhoton.subLeadingPhoton.phi -  diPhoton.subLeadingPhoton.matchedGenPhoton.phi), 2) + pow((diPhoton.subLeadingPhoton.phi -  diPhoton.subLeadingPhoton.matchedGenPhoton.phi), 2)) : -999",
                  "leadIDMVA        := diPhoton.leadingView.phoIdMvaWrtChosenVtx",
                  "subleadIDMVA     := diPhoton.subLeadingView.phoIdMvaWrtChosenVtx",
                  "dipho_rapidity   := diPhoton.rapidity",
@@ -236,37 +280,37 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "nb_loose         := nBLoose",
                  "nb_medium        := nBMedium",
                  "nb_tight         := nBTight",
-         "rand             := rand",
+                 "rand             := rand",
                  "lead_photon_type := leadPhotonType",
                  "sublead_photon_type := subleadPhotonType",
-         "lead_closest_gen_Pt := leadPhotonClosestPt",
+                 "lead_closest_gen_Pt := leadPhotonClosestPt",
                  "sublead_closest_gen_Pt := subleadPhotonClosestPt",
-         "lead_closest_gen_dR := leadPhotonClosestDeltaR",
+                 "lead_closest_gen_dR := leadPhotonClosestDeltaR",
                  "sublead_closest_gen_dR := subleadPhotonClosestDeltaR",
-         "lead_PhoGenPt := leadPhoGenPt",
-         "lead_PhoGenEta := leadPhoGenEta",
-         "lead_PhoGenPhi := leadPhoGenPhi",
-         "lead_Prompt := leadPrompt",
-         "lead_Mad := leadMad",
-         "lead_Pythia := leadPythia",
-         "lead_SimpleMomID := leadSimpleMomID",
-         "lead_SimpleMomStatus := leadSimpleMomStatus",
-         "lead_MomID := leadMomID",
-         "lead_MomMomID := leadMomMomID",
-         "lead_PassFrix := leadPassFrix",
-         "lead_SmallestDr := leadSmallestDr",
-         "sublead_PhoGenPt := subleadPhoGenPt",
-         "sublead_PhoGenEta := subleadPhoGenEta",
-         "sublead_PhoGenPhi := subleadPhoGenPhi",
-         "sublead_Prompt := subleadPrompt",
-         "sublead_Mad := subleadMad",
-         "sublead_Pythia := subleadPythia",
-         "sublead_SimpleMomID := subleadSimpleMomID",
-         "sublead_SimpleMomStatus := subleadSimpleMomStatus",
-         "sublead_MomID := subleadMomID",
-         "sublead_MomMomID := subleadMomMomID",
-         "sublead_PassFrix := subleadPassFrix",
-         "sublead_SmallestDr := subleadSmallestDr",
+                 "lead_PhoGenPt := leadPhoGenPt",
+                 "lead_PhoGenEta := leadPhoGenEta",
+                 "lead_PhoGenPhi := leadPhoGenPhi",
+                 "lead_Prompt := leadPrompt",
+                 "lead_Mad := leadMad",
+                 "lead_Pythia := leadPythia",
+                 "lead_SimpleMomID := leadSimpleMomID",
+                 "lead_SimpleMomStatus := leadSimpleMomStatus",
+                 "lead_MomID := leadMomID",
+                 "lead_MomMomID := leadMomMomID",
+                 "lead_PassFrix := leadPassFrix",
+                 "lead_SmallestDr := leadSmallestDr",
+                 "sublead_PhoGenPt := subleadPhoGenPt",
+                 "sublead_PhoGenEta := subleadPhoGenEta",
+                 "sublead_PhoGenPhi := subleadPhoGenPhi",
+                 "sublead_Prompt := subleadPrompt",
+                 "sublead_Mad := subleadMad",
+                 "sublead_Pythia := subleadPythia",
+                 "sublead_SimpleMomID := subleadSimpleMomID",
+                 "sublead_SimpleMomStatus := subleadSimpleMomStatus",
+                 "sublead_MomID := subleadMomID",
+                 "sublead_MomMomID := subleadMomMomID",
+                 "sublead_PassFrix := subleadPassFrix",
+                 "sublead_SmallestDr := subleadSmallestDr",
 
 ]
 ## TTH leptonic ##
@@ -276,35 +320,35 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                     ],
                        ## variables to be dumped in trees/datasets. Same variables for all categories
                        variables=dipho_variables+
-               ["n_ele    := electrons.size",
+                        ["n_ele    := electrons.size",
                         "ele1_pt  := ?(electrons.size>0)? electrons.at(0).pt : -1",
                         "ele2_pt  := ?(electrons.size>1)? electrons.at(1).pt : -1",
-            "ele1_eta  := ?(electrons.size>0)? electrons.at(0).eta : -999",
+                        "ele1_eta  := ?(electrons.size>0)? electrons.at(0).eta : -999",
                         "ele2_eta  := ?(electrons.size>1)? electrons.at(1).eta : -999",
-            "ele1_phi  := ?(electrons.size>0)? electrons.at(0).phi : -999",
+                        "ele1_phi  := ?(electrons.size>0)? electrons.at(0).phi : -999",
                         "ele2_phi  := ?(electrons.size>1)? electrons.at(1).phi : -999",
-            "ele1_energy  := ?(electrons.size>0)? electrons.at(0).energy : -999",
+                        "ele1_energy  := ?(electrons.size>0)? electrons.at(0).energy : -999",
                         "ele2_energy  := ?(electrons.size>1)? electrons.at(1).energy : -999",
                         "n_muons  := muons.size",
                         "muon1_pt := ?(muons.size>0)? muons.at(0).pt : -1",
                         "muon2_pt := ?(muons.size>1)? muons.at(1).pt : -1",
-            "muon1_eta := ?(muons.size>0)? muons.at(0).eta : -999",
+                        "muon1_eta := ?(muons.size>0)? muons.at(0).eta : -999",
                         "muon2_eta := ?(muons.size>1)? muons.at(1).eta : -999",
-            "muon1_phi := ?(muons.size>0)? muons.at(0).phi : -999",
+                        "muon1_phi := ?(muons.size>0)? muons.at(0).phi : -999",
                         "muon2_phi := ?(muons.size>1)? muons.at(1).phi : -999",
-            "muon1_energy := ?(muons.size>0)? muons.at(0).energy : -999",
+                        "muon1_energy := ?(muons.size>0)? muons.at(0).energy : -999",
                         "muon2_energy := ?(muons.size>1)? muons.at(1).energy : -999",
-            "muonLeadIso := muonLeadIso",
-            "muonSubleadIso := muonSubleadIso",
-            "nMuonLoose :=  nMuonLoose",
-            "nMuonMedium :=  nMuonMedium",
-            "nMuonTight :=  nMuonTight",
-            "nElecLoose :=  nElecLoose",
+                        "muonLeadIso := muonLeadIso",
+                        "muonSubleadIso := muonSubleadIso",
+                        "nMuonLoose :=  nMuonLoose",
+                        "nMuonMedium :=  nMuonMedium",
+                        "nMuonTight :=  nMuonTight",
+                        "nElecLoose :=  nElecLoose",
                         "nElecMedium :=  nElecMedium",
                         "nElecTight :=  nElecTight",
                         "n_bjets  := bJets.size",
                         "n_jets   := jets.size",
-            "topTag_score := topTagScore",
+                        "topTag_score := topTagScore",
                         "topTag_topMass := topTagTopMass",
                         "topTag_WMass := topTagWMass",
                         #"bjet1_pt := bJets.at(0).pt",
@@ -317,9 +361,9 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                         "MetPt  := MetPt",
                         "MetPhi := MetPhi",
                         "mT     := MT",
-            "tthMVA := mvaRes",
-            "tthMVA_RunII := mva_RunII_Res",
-            "jet_pt1                :=  ? jets.size()>0 ? jets[0].pt() : -100 ",
+                        "tthMVA := mvaRes",
+                        "tthMVA_RunII := mva_RunII_Res",
+                        "jet_pt1                :=  ? jets.size()>0 ? jets[0].pt() : -100 ",
                         "jet_eta1               :=  ? jets.size()>0 ? jets[0].eta() : -100 ",
                         "jet_phi1               :=  ? jets.size()>0 ? jets[0].phi() : -100 ",
                         "jet_bdiscriminant1     :=  ? jets.size()>0 ? jets[0].bDiscriminator('pfDeepCSVJetTags:probb') : -100",
@@ -351,7 +395,7 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                         "jet_eta8               :=  ? jets.size()>7 ? jets[7].eta() : -100 ",
                         "jet_phi8               :=  ? jets.size()>7 ? jets[7].phi() : -100 ",
                         "jet_bdiscriminant8     :=  ? jets.size()>7 ? jets[7].bDiscriminator('pfDeepCSVJetTags:probb') : -100 ",
-"jet_pt9                :=  ? jets.size()>8 ? jets[8].pt() : -100 ",
+                        "jet_pt9                :=  ? jets.size()>8 ? jets[8].pt() : -100 ",
                         "jet_eta9               :=  ? jets.size()>8 ? jets[8].eta() : -100 ",
                         "jet_phi9               :=  ? jets.size()>8 ? jets[8].phi() : -100 ",
                         "jet_bdiscriminant9     :=  ? jets.size()>8 ? jets[8].bDiscriminator('pfDeepCSVJetTags:probb') : -100 ",
@@ -394,7 +438,7 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                         "jet_bbdiscriminant13  := ?(jets.size>12)? jets.at(12).bDiscriminator('pfDeepCSVJetTags:probbb') : -1",
                         "jet_bbdiscriminant14  := ?(jets.size>13)? jets.at(13).bDiscriminator('pfDeepCSVJetTags:probbb') : -1",
                         "jet_bbdiscriminant15  := ?(jets.size>14)? jets.at(14).bDiscriminator('pfDeepCSVJetTags:probbb') : -1",
-            "jet_cdiscriminant1  := ?(jets.size>0)? jets.at(0).bDiscriminator('pfDeepCSVJetTags:probc') : -1",
+                        "jet_cdiscriminant1  := ?(jets.size>0)? jets.at(0).bDiscriminator('pfDeepCSVJetTags:probc') : -1",
                         "jet_cdiscriminant2  := ?(jets.size>1)? jets.at(1).bDiscriminator('pfDeepCSVJetTags:probc') : -1",
                         "jet_cdiscriminant3  := ?(jets.size>2)? jets.at(2).bDiscriminator('pfDeepCSVJetTags:probc') : -1",
                         "jet_cdiscriminant4  := ?(jets.size>3)? jets.at(3).bDiscriminator('pfDeepCSVJetTags:probc') : -1",
@@ -452,13 +496,13 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
                     ],
                        ## variables to be dumped in trees/datasets. Same variables for all categories
                        variables=dipho_variables +
-               ["n_bjets  := nBMedium",
+                        ["n_bjets  := nBMedium",
                         "n_jets   := jetVector.size",
                         "bjet1_pt := ?nBMedium>1? bJetVector.at(0).pt : -1",
                         "bjet2_pt := ?nBMedium>1? bJetVector.at(1).pt : -1",
                         "MetPt  := MetPt",
                         "MetPhi := MetPhi",
-            "topTag_score := topTagScore",
+                        "topTag_score := topTagScore",
                         "topTag_topMass := topTagTopMass",
                         "topTag_WMass := topTagWMass",
                         "jet1_pt  := ?(jetVector.size>0)? jetVector.at(0).pt : -1",
@@ -521,7 +565,7 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
                         "jet13_bdiscriminant  := ?(jetVector.size>12)? jetVector.at(12).bDiscriminator('pfDeepCSVJetTags:probb') : -1",
                         "jet14_bdiscriminant  := ?(jetVector.size>13)? jetVector.at(13).bDiscriminator('pfDeepCSVJetTags:probb') : -1",
                         "jet15_bdiscriminant  := ?(jetVector.size>14)? jetVector.at(14).bDiscriminator('pfDeepCSVJetTags:probb') : -1",
-            "jet1_bbdiscriminant  := ?(jetVector.size>0)? jetVector.at(0).bDiscriminator('pfDeepCSVJetTags:probbb') : -1",
+                        "jet1_bbdiscriminant  := ?(jetVector.size>0)? jetVector.at(0).bDiscriminator('pfDeepCSVJetTags:probbb') : -1",
                         "jet2_bbdiscriminant  := ?(jetVector.size>1)? jetVector.at(1).bDiscriminator('pfDeepCSVJetTags:probbb') : -1",
                         "jet3_bbdiscriminant  := ?(jetVector.size>2)? jetVector.at(2).bDiscriminator('pfDeepCSVJetTags:probbb') : -1",
                         "jet4_bbdiscriminant  := ?(jetVector.size>3)? jetVector.at(3).bDiscriminator('pfDeepCSVJetTags:probbb') : -1",
@@ -547,7 +591,7 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
                         "jet11_cdiscriminant  := ?(jetVector.size>10)? jetVector.at(10).bDiscriminator('pfDeepCSVJetTags:probc') : -1",                        "jet12_cdiscriminant  := ?(jetVector.size>11)? jetVector.at(11).bDiscriminator('pfDeepCSVJetTags:probc') : -1",
                         "jet13_cdiscriminant  := ?(jetVector.size>12)? jetVector.at(12).bDiscriminator('pfDeepCSVJetTags:probc') : -1",                        "jet14_cdiscriminant  := ?(jetVector.size>13)? jetVector.at(13).bDiscriminator('pfDeepCSVJetTags:probc') : -1",
                         "jet15_cdiscriminant  := ?(jetVector.size>14)? jetVector.at(14).bDiscriminator('pfDeepCSVJetTags:probc') : -1",
-            "jet1_udsgdiscriminant  := ?(jetVector.size>0)? jetVector.at(0).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
+                        "jet1_udsgdiscriminant  := ?(jetVector.size>0)? jetVector.at(0).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
                         "jet2_udsgdiscriminant  := ?(jetVector.size>1)? jetVector.at(1).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
                         "jet3_udsgdiscriminant  := ?(jetVector.size>2)? jetVector.at(2).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
                         "jet4_udsgdiscriminant  := ?(jetVector.size>3)? jetVector.at(3).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
@@ -560,7 +604,7 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
                         "jet11_udsgdiscriminant  := ?(jetVector.size>10)? jetVector.at(10).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
                         "jet12_udsgdiscriminant  := ?(jetVector.size>11)? jetVector.at(11).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
                         "jet13_udsgdiscriminant  := ?(jetVector.size>12)? jetVector.at(12).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
-            "jet14_udsgdiscriminant  := ?(jetVector.size>13)? jetVector.at(13).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
+                        "jet14_udsgdiscriminant  := ?(jetVector.size>13)? jetVector.at(13).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
                         "jet15_udsgdiscriminant  := ?(jetVector.size>14)? jetVector.at(14).bDiscriminator('pfDeepCSVJetTags:probudsg') : -1",
                         "jet1_energy  := ?(jetVector.size>0)? jetVector.at(0).energy : -1",
                         "jet2_energy  := ?(jetVector.size>1)? jetVector.at(1).energy : -1",
@@ -582,7 +626,7 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
                         "bjet1_csv:= maxBTagVal",
                         "bjet2_csv:= secondMaxBTagVal",
                         "tthMVA := tthMvaRes",
-            "tthMVA_RunII := tthMva_RunII_Res",
+                        "tthMVA_RunII := tthMva_RunII_Res",
                     ],
                        ## histograms
                        histograms=[]
@@ -590,9 +634,9 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
 
 
 
-process.p = cms.Path(process.dataRequirements*
+process.p = cms.Path(
                          process.flashggMetFilters*
-                         #process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
+                         process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
                          process.flashggUpdatedIdMVADiPhotons*
                          process.flashggDiPhotonSystematics* 
@@ -603,5 +647,6 @@ process.p = cms.Path(process.dataRequirements*
 			             process.flashggSystTagMerger*
 			             process.flashggTagSequence*
                          process.flashggTagTester*
+                         process.penultimateFilter*
 		                 (process.tthLeptonicTagDumper
                           +process.tthHadronicTagDumper))
