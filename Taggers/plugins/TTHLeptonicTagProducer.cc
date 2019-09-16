@@ -1612,6 +1612,9 @@ namespace flashgg {
                 tthltags_obj.setMuonSubleadIso( Muons.size() > 1 ? (Muons[1]->pfIsolationR04().sumChargedHadronPt + max(0., Muons[1]->pfIsolationR04().sumNeutralHadronEt + Muons[1]->pfIsolationR04().sumPhotonEt - 0.5*Muons[1]->pfIsolationR04().sumPUPt)) : -999);
                     
 
+                tthltags_obj.setDNNScorettHVsTtgg(dnn_score_0_);
+
+
                     tthltags->push_back( tthltags_obj );
      
                     if( ! evt.isRealData() )

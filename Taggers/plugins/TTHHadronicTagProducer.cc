@@ -1417,6 +1417,9 @@ namespace flashgg {
                       tthhtags_obj.setTopTagWMass(-999);
                     }
 
+                    tthhtags_obj.setDNNScorettHVsTtgg(dnn_score_1_);
+                    tthhtags_obj.setDNNScorettHVsDipho(dnn_score_0_);
+
                     // Gen lepton info
                     if( ! evt.isRealData() ) {
                     evt.getByToken( genParticleToken_, genParticles );

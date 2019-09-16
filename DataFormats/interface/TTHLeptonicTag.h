@@ -94,6 +94,7 @@ namespace flashgg {
         double subleadPhoGenEta() const { return subleadPhoGenEta_; }
         double subleadPhoGenPhi() const { return subleadPhoGenPhi_; }
 
+        double dnn_score_ttH_vs_ttgg() const { return dnn_score_ttH_vs_ttgg_; }
 
         void setJets( std::vector<edm::Ptr<Jet> > Jets ) { Jets_ = Jets; }
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
@@ -169,6 +170,8 @@ namespace flashgg {
         void setSubleadPhoGenPt(double subleadPhoGenPt) { subleadPhoGenPt_ = subleadPhoGenPt; }
         void setSubleadPhoGenEta(double subleadPhoGenEta) { subleadPhoGenEta_ = subleadPhoGenEta; }
         void setSubleadPhoGenPhi(double subleadPhoGenPhi) { subleadPhoGenPhi_ = subleadPhoGenPhi; }
+
+        void setDNNScorettHVsTtgg(double dnn_score_ttH_vs_ttgg) { dnn_score_ttH_vs_ttgg_ = dnn_score_ttH_vs_ttgg; }
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHLeptonic; }
 
@@ -253,6 +256,8 @@ namespace flashgg {
         float topTagWMass_;
 
         double rand_;
+
+        double dnn_score_ttH_vs_ttgg_;
 
         float mvaRes_;
         float mva_RunII_Res_;

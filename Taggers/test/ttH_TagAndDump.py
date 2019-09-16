@@ -483,7 +483,7 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                         "jet_energy13  := ?(jets.size>12)? jets.at(12).energy : -1",
                         "jet_energy14  := ?(jets.size>13)? jets.at(13).energy : -1",
                         "jet_energy15  := ?(jets.size>14)? jets.at(14).energy : -1",
-                    
+                        "dnn_score_ttgg  := dnn_score_ttH_vs_ttgg", 
                    ],
                        ## histograms
                        histograms=[]
@@ -627,7 +627,10 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
                         "bjet2_csv:= secondMaxBTagVal",
                         "tthMVA := tthMvaRes",
                         "tthMVA_RunII := tthMva_RunII_Res",
-                    ],
+                        "dnn_score_dipho := dnn_score_ttH_vs_dipho",
+                        "dnn_score_ttgg  := dnn_score_ttH_vs_ttgg",
+
+],
                        ## histograms
                        histograms=[]
 )

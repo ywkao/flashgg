@@ -50,6 +50,8 @@ namespace flashgg {
         double leadPhotonClosestPt() const { return leadPhotonClosestPt_; }
         double subleadPhotonClosestPt() const { return subleadPhotonClosestPt_; }
         double rand() const { return rand_; }
+        double dnn_score_ttH_vs_dipho() const { return dnn_score_ttH_vs_dipho_; }
+        double dnn_score_ttH_vs_ttgg() const { return dnn_score_ttH_vs_ttgg_; }
 
         float topTagScore() const { return topTagScore_; }
         float topTagTopMass() const { return topTagTopMass_; }
@@ -114,6 +116,8 @@ namespace flashgg {
         void setLeadPhotonClosestPt(double leadPhotonClosestPt) { leadPhotonClosestPt_ = leadPhotonClosestPt;}
         void setSubleadPhotonClosestPt(double subleadPhotonClosestPt) { subleadPhotonClosestPt_ = subleadPhotonClosestPt;}
         void setRand(double rand) { rand_ = rand; }
+        void setDNNScorettHVsDipho(double dnn_score_ttH_vs_dipho) { dnn_score_ttH_vs_dipho_ = dnn_score_ttH_vs_dipho; }
+        void setDNNScorettHVsTtgg(double dnn_score_ttH_vs_ttgg) { dnn_score_ttH_vs_ttgg_ = dnn_score_ttH_vs_ttgg; }
 
         void setTopTagScore(float toptagScore) { topTagScore_ = toptagScore; }
         void setTopTagTopMass(float toptagTopMass) { topTagTopMass_ = toptagTopMass; }
@@ -215,7 +219,9 @@ namespace flashgg {
         float topTagWMass_;
 
         double rand_;       
-        
+
+        double dnn_score_ttH_vs_dipho_;
+        double dnn_score_ttH_vs_ttgg_;
 
     };
 }
