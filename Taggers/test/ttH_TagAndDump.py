@@ -98,7 +98,7 @@ if ISSIGNAL:
         if mass in file_names[0]:
             processId += "_" + mass_dict[mass]
 elif ISDATA:
-    processId = "data"
+    processId = "Data"
 else:
     processId = "bkg"
 print "ProcessId: %s" % processId
@@ -174,13 +174,20 @@ else:
 
 printSystematicInfo(process)
 
+# Require standard diphoton trigger
 from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
 hlt_paths = []
-for dset in metaConditions["TriggerPaths"]:
-  hlt_paths.extend(metaConditions["TriggerPaths"][dset])
-for i in range(len(hlt_paths)):
-  hlt_paths[i] = hlt_paths[i].encode("ascii")
+for dset in customize.metaConditions["TriggerPaths"]:
+    if dset in customize.datasetName():
+        hlt_paths.extend(customize.metaConditions["TriggerPaths"][dset])
 process.hltHighLevel= hltHighLevel.clone(HLTPaths = cms.vstring(hlt_paths))
+
+process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
+
+process.dataRequirements = cms.Sequence()
+if customize.processId == "Data":
+        process.dataRequirements += process.hltHighLevel
+
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
@@ -637,7 +644,7 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
 
 
 
-process.p = cms.Path(
+process.p = cms.Path(    process.dataRequirements*
                          process.flashggMetFilters*
                          process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
