@@ -1,5 +1,27 @@
 import sys, os
 
+#import argparse
+#parser = argparse.ArgumentParser()
+#parser.add_argument("input_files", help = "input microAODs to run over", type=str)
+#parser.add_argument("meta_conditions", help = "MetaConditions json", type=str)
+#parser.add_argument("n_events", help = "number of events to run over", type=int, default=1)
+#args = parser.parse_args()
+
+#n_events = args.n_events
+#file_names = args.input_files
+#file_names = file_names.replace("/hadoop", "file:/hadoop").split(",")
+#for i in range(len(file_names)):
+#    if file_names[i].startswith("/store"):
+#        file_names[i] = "root://cms-xrd-global.cern.ch/" + file_names[i]
+
+#meta_conditions = args.meta_conditions 
+
+#print "Running over these file(s):"
+#for file in file_names:
+#    print file
+#print "Using these MetaConditions: %s" % meta_conditions
+#print "Running over %d events" % n_events
+
 n_events = -1 
 file_names = "DoubleEG"
 meta_conditions = "MetaData/data/MetaConditions/Era2018_RR-17Sep2018_v1.json"
@@ -648,7 +670,8 @@ process.p = cms.Path(    process.dataRequirements*
                          process.flashggMetFilters*
                          process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
-                         process.flashggDifferentialPhoIdInputsCorrection* 
+                         #process.flashggDifferentialPhoIdInputsCorrection* 
+                         process.flashggUpdatedIdMVADiPhotons*
                          process.flashggDiPhotonSystematics* 
                          process.flashggMetSystematics*
                          process.flashggMuonSystematics*process.flashggElectronSystematics*

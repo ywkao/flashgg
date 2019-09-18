@@ -96,9 +96,11 @@ def createStandardSystematicsProducers(process, options):
 
 def modifyTagSequenceForSystematics(process,jetSystematicsInputTags,ZPlusJetMode=False):
     process.flashggTagSequence.remove(process.flashggUnpackedJets) # to avoid unnecessary cloning
-    process.flashggTagSequence.remove(process.flashggDifferentialPhoIdInputsCorrection) # Needs to be run before systematics
+    #process.flashggTagSequence.remove(process.flashggDifferentialPhoIdInputsCorrection) # Needs to be run before systematics
+    process.flashggTagSequence.remove(process.flashggUpdatedIdMVADiPhotons)
     from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet,massSearchReplaceAnyInputTag
-    massSearchReplaceAnyInputTag(process.flashggTagSequence,cms.InputTag("flashggDifferentialPhoIdInputsCorrection"),cms.InputTag("flashggDiPhotonSystematics"))
+    #massSearchReplaceAnyInputTag(process.flashggTagSequence,cms.InputTag("flashggDifferentialPhoIdInputsCorrection"),cms.InputTag("flashggDiPhotonSystematics"))
+    massSearchReplaceAnyInputTag(process.flashggTagSequence,cms.InputTag("flashggUpdatedIdMVADiPhotons"),cms.InputTag("flashggDiPhotonSystematics"))
     massSearchReplaceAnyInputTag(process.flashggTagSequence,cms.InputTag("flashggSelectedElectrons"),cms.InputTag("flashggElectronSystematics"))
     massSearchReplaceAnyInputTag(process.flashggTagSequence,cms.InputTag("flashggSelectedMuons"),cms.InputTag("flashggMuonSystematics"))
     massSearchReplaceAnyInputTag(process.flashggTagSequence,cms.InputTag("flashggMets"),cms.InputTag("flashggMetSystematics"))

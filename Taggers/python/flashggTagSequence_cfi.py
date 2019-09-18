@@ -4,13 +4,15 @@ from flashgg.Taggers.flashggVBFMVA_cff import flashggVBFMVA,flashggVBFDiPhoDiJet
 from flashgg.Taggers.flashggTags_cff import *
 from flashgg.Taggers.flashggPreselectedDiPhotons_cfi import flashggPreselectedDiPhotons
 from flashgg.Taggers.flashggTagSorter_cfi import flashggTagSorter
-from flashgg.Taggers.flashggDifferentialPhoIdInputsCorrection_cfi import flashggDifferentialPhoIdInputsCorrection, setup_flashggDifferentialPhoIdInputsCorrection
+#from flashgg.Taggers.flashggDifferentialPhoIdInputsCorrection_cfi import flashggDifferentialPhoIdInputsCorrection, setup_flashggDifferentialPhoIdInputsCorrection
+from flashgg.Taggers.flashggUpdatedIdMVADiPhotons_cfi import flashggUpdatedIdMVADiPhotons
 
 def flashggPrepareTagSequence(process, options):
-    setup_flashggDifferentialPhoIdInputsCorrection(process, options)
-    flashggPreselectedDiPhotons.src = "flashggDifferentialPhoIdInputsCorrection"
+    #setup_flashggDifferentialPhoIdInputsCorrection(process, options)
+    #flashggPreselectedDiPhotons.src = "flashggDifferentialPhoIdInputsCorrection"
+    flashggPreselectedDiPhotons.src = "flashggUpdatedIdMVADiPhotons"
 
-    flashggTagSequence = cms.Sequence(flashggDifferentialPhoIdInputsCorrection
+    flashggTagSequence = cms.Sequence(flashggUpdatedIdMVADiPhotons #flashggDifferentialPhoIdInputsCorrection
                                       * flashggPreselectedDiPhotons
                                       * flashggDiPhotonMVA
                                       * flashggUnpackedJets
