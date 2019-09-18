@@ -200,8 +200,11 @@ printSystematicInfo(process)
 from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
 hlt_paths = []
 for dset in customize.metaConditions["TriggerPaths"]:
-    if dset in customize.datasetName():
+    if dset[2:-2] in file_names[0]: 
+        print customize.metaConditions["TriggerPaths"][dset]
         hlt_paths.extend(customize.metaConditions["TriggerPaths"][dset])
+
+hlt_paths = [path.encode("ascii") for path in hlt_paths]
 process.hltHighLevel= hltHighLevel.clone(HLTPaths = cms.vstring(hlt_paths))
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )

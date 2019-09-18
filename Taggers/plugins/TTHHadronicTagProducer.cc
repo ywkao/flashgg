@@ -782,7 +782,6 @@ namespace flashgg {
 		}
 	    }
 	  }
-	
     
 
         Handle<View<reco::GenParticle> > genParticles;
@@ -1148,8 +1147,11 @@ namespace flashgg {
                     pho1_scphi_= dipho->leadingPhoton()->superCluster()->phi();
                     pho2_scphi_= dipho->subLeadingPhoton()->superCluster()->phi();
 
-                    pho1_hasPixelSeed_= dipho->leadingPhoton()->hasPixelSeed();
-                    pho2_hasPixelSeed_= dipho->subLeadingPhoton()->hasPixelSeed();
+                    // FIXME: inverting for ttZ region
+                    pho1_hasPixelSeed_ = 0;
+                    pho2_hasPixelSeed_ = 0;
+                    //pho1_hasPixelSeed_= dipho->leadingPhoton()->hasPixelSeed();
+                    //pho2_hasPixelSeed_= dipho->subLeadingPhoton()->hasPixelSeed();
 
                     pho1_sigmaEOverE_= dipho->leadingPhoton()->sigEOverE();
                     pho2_sigmaEOverE_= dipho->subLeadingPhoton()->sigEOverE();

@@ -1142,8 +1142,11 @@ namespace flashgg {
                 leadIDMVA_ = dipho->leadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
                 subleadIDMVA_ = dipho->subLeadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
                 deltaphi_ = deltaPhi( dipho->leadingPhoton()->phi(), dipho->subLeadingPhoton()->phi() );
-                leadPSV_ = dipho->leadingPhoton()->hasPixelSeed();
-                subleadPSV_ = dipho->subLeadingPhoton()->hasPixelSeed();
+                // FIXME: inverting PSV for ttZ region
+                leadPSV_ = 0;
+                subleadPSV_ = 0;
+                //leadPSV_ = dipho->leadingPhoton()->hasPixelSeed();
+                //subleadPSV_ = dipho->subLeadingPhoton()->hasPixelSeed();
                 nJets_ = njet_;
                 nJets_bTagMedium_ = njets_btagmedium_;
 
