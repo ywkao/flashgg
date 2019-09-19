@@ -197,21 +197,22 @@ else:
 printSystematicInfo(process)
 
 # Require standard diphoton trigger
-from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
-hlt_paths = []
-for dset in customize.metaConditions["TriggerPaths"]:
-    if dset[2:-2] in file_names[0]: 
-        print customize.metaConditions["TriggerPaths"][dset]
-        hlt_paths.extend(customize.metaConditions["TriggerPaths"][dset])
+# Triggers are already required in microAOD production, don't need to require again
+#from HLTrigger.HLTfilters.hltHighLevel_cfi import hltHighLevel
+#hlt_paths = []
+#for dset in customize.metaConditions["TriggerPaths"]:
+#    if dset[2:-2] in file_names[0]: 
+#        print customize.metaConditions["TriggerPaths"][dset]
+#        hlt_paths.extend(customize.metaConditions["TriggerPaths"][dset])
 
-hlt_paths = [path.encode("ascii") for path in hlt_paths]
-process.hltHighLevel= hltHighLevel.clone(HLTPaths = cms.vstring(hlt_paths))
+#hlt_paths = [path.encode("ascii") for path in hlt_paths]
+#process.hltHighLevel= hltHighLevel.clone(HLTPaths = cms.vstring(hlt_paths))
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
-process.dataRequirements = cms.Sequence()
-if customize.processId == "Data":
-        process.dataRequirements += process.hltHighLevel
+#process.dataRequirements = cms.Sequence()
+#if customize.processId == "Data":
+#        process.dataRequirements += process.hltHighLevel
 
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
@@ -669,8 +670,8 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
 
 
 
-process.p = cms.Path(    process.dataRequirements*
-                         #process.flashggMetFilters*
+process.p = cms.Path(    #process.dataRequirements* # don't require trigger because it's already required in microAOD production
+                         process.flashggMetFilters*
                          process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
                          #process.flashggDifferentialPhoIdInputsCorrection* 
