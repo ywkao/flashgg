@@ -670,7 +670,7 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
 
 
 process.p = cms.Path(    process.dataRequirements*
-                         process.flashggMetFilters*
+                         #process.flashggMetFilters*
                          process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
                          #process.flashggDifferentialPhoIdInputsCorrection* 
