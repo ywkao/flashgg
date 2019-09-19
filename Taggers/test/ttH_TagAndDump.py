@@ -674,8 +674,7 @@ process.p = cms.Path(    #process.dataRequirements* # don't require trigger beca
                          process.flashggMetFilters*
                          process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
-                         #process.flashggDifferentialPhoIdInputsCorrection* 
-                         process.flashggUpdatedIdMVADiPhotons*
+                         process.flashggDifferentialPhoIdInputsCorrection* 
                          process.flashggDiPhotonSystematics* 
                          process.flashggMetSystematics*
                          process.flashggMuonSystematics*process.flashggElectronSystematics*
