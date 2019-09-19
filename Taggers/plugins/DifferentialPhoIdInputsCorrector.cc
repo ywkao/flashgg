@@ -276,10 +276,7 @@ namespace flashgg {
                 {
                     pho.setpfPhoIso03(pho.pfPhoIso03()+correctionScalings->at("phoIsoMorphing").Eval(corrections->at("phoIsoMorphing")(pho)[0]));
                 }
-            //Make sure pfPhoIso03Corr is same as pfPhoIso03
-            pho.setpfPhoIso03Corr(pho.pfPhoIso03());
 
-                
             //---Charge isolations
             // ----------------+-------------------------+
             // ChIsoWorst tail | 01         | 11         |
