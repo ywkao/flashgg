@@ -1,27 +1,5 @@
 import sys, os
 
-#import argparse
-#parser = argparse.ArgumentParser()
-#parser.add_argument("input_files", help = "input microAODs to run over", type=str)
-#parser.add_argument("meta_conditions", help = "MetaConditions json", type=str)
-#parser.add_argument("n_events", help = "number of events to run over", type=int, default=1)
-#args = parser.parse_args()
-
-#n_events = args.n_events
-#file_names = args.input_files
-#file_names = file_names.replace("/hadoop", "file:/hadoop").split(",")
-#for i in range(len(file_names)):
-#    if file_names[i].startswith("/store"):
-#        file_names[i] = "root://cms-xrd-global.cern.ch/" + file_names[i]
-
-#meta_conditions = args.meta_conditions 
-
-#print "Running over these file(s):"
-#for file in file_names:
-#    print file
-#print "Using these MetaConditions: %s" % meta_conditions
-#print "Running over %d events" % n_events
-
 n_events = -1 
 file_names = "DoubleEG"
 meta_conditions = "MetaData/data/MetaConditions/Era2018_RR-17Sep2018_v1.json"
@@ -55,17 +33,10 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1 )
-
-
-#process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/DoubleEG_Run2016B-17Jul2018_ver2-v1_MINIAOD_RunII/test_skim_1.root"))
-#process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/DoubleEG_Run2017C-31Mar2018-v1_MINIAOD_RunII/test_skim_2.root"))
-#process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/EGamma_Run2018B-17Sep2018-v1_MINIAOD_RunII/test_skim_1.root"))
-#process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring("file:myMicroAODOutputFile.root"))
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 100 )
 
 process.source = cms.Source("PoolSource", fileNames = cms.untracked.vstring(file_names))
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(n_events))
-
 
 systlabels = [""]
 phosystlabels = []
@@ -75,11 +46,6 @@ elesystlabels = []
 musystlabels = []
 
 from flashgg.MetaData.MetaConditionsReader import *
-
-# set default options if needed
-#metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2016_RR-17Jul2018_v1.json")
-#metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2017_RR-31Mar2018_v1.json")
-#metaConditions = MetaConditionsReader("MetaData/data/MetaConditions/Era2018_RR-17Sep2018_v1.json")
 metaConditions = MetaConditionsReader(meta_conditions)
 
 ISDATA = False
@@ -138,12 +104,6 @@ from flashgg.MetaData.JobConfig import customize
 customize.metaConditions = metaConditions
 customize.processId = processId
 
-#class customizer:
-#  def __init__(self, **kwargs):
-#    self.metaConditions = kwargs.get("metaConditions")
-#    self.processType = kwargs.get("processType")
-
-#customize = customizer(metaConditions = metaConditions, processType = "data" if ISDATA else "mc")
 jetSystematicsInputTags = createStandardSystematicsProducers(process , customize)
 modifyTagSequenceForSystematics(process,jetSystematicsInputTags)
 
