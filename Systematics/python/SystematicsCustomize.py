@@ -323,9 +323,9 @@ def recalculatePDFWeights(process, options):
 
     
 def customizeForL1Prefiring(process, options):
-    print "You selected to apply L1 pre-firing. We will apply if it is an appropriate year."
+    print "You selected to apply L1 pre-firing. We will apply if it is an appropriate year (2016 or 2017)."
     applyPrefireProbability = options["L1Prefiring"]["apply"]
-    for tagger in ["flashggTTHHadronicTag"]:
+    for tagger in ["flashggTTHHadronicTag", "flashggTTHLeptonicTag"]:
         getattr(process, tagger).applyPrefireProbability = cms.bool(applyPrefireProbability)
 
     if applyPrefireProbability:

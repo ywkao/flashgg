@@ -154,6 +154,6 @@
 
     "L1Prefiring" :
     {
-        "apply" : false,
+        "apply" : false
     }
 }
