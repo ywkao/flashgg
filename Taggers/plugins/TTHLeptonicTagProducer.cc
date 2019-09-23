@@ -1143,10 +1143,10 @@ namespace flashgg {
                 subleadIDMVA_ = dipho->subLeadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
                 deltaphi_ = deltaPhi( dipho->leadingPhoton()->phi(), dipho->subLeadingPhoton()->phi() );
                 // FIXME: inverting PSV for ttZ region
-                //leadPSV_ = 0;
-                //subleadPSV_ = 0;
-                leadPSV_ = dipho->leadingPhoton()->hasPixelSeed();
-                subleadPSV_ = dipho->subLeadingPhoton()->hasPixelSeed();
+                leadPSV_ = 0;
+                subleadPSV_ = 0;
+                //leadPSV_ = dipho->leadingPhoton()->hasPixelSeed();
+                //subleadPSV_ = dipho->subLeadingPhoton()->hasPixelSeed();
                 nJets_ = njet_;
                 nJets_bTagMedium_ = njets_btagmedium_;
 
@@ -1411,6 +1411,7 @@ namespace flashgg {
                     std::string syst_label = modifySystematicsWorkflow ? systematicsLabels[syst_idx] : systLabel_;
                     tthltags_obj.setSystLabel( syst_label );
                     tthltags_obj.setMvaRes(mvaValue);
+                    tthltags_obj.setMva_RunII_Res(tthMvaVal_RunII_);
                     tthltags_obj.setLepPt( lepPt );
                     tthltags_obj.setLepE( lepE );
                     tthltags_obj.setLepEta( lepEta );
