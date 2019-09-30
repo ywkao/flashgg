@@ -223,6 +223,10 @@ namespace flashgg {
             if(correctShowerShapes_)
             {
                 reco::Photon::ShowerShape correctedShowerShapes = pho.full5x5_showerShapeVariables();
+                if (correctedShowerShapes.e3x3 < 0) {
+                    cout << "Negative R9 value, setting it to 0" << endl;
+                    correctedShowerShapes.e3x3 = 0.;
+                }
                 pho.addUserFloat("uncorr_r9", pho.full5x5_r9());
                 pho.addUserFloat("uncorr_s4", pho.s4());
                 pho.addUserFloat("uncorr_sieie", pho.full5x5_sigmaIetaIeta());
@@ -233,10 +237,6 @@ namespace flashgg {
                 //---Compute corrections
                 // R9 (store it inside e3x3)        
                 correctedShowerShapes.e3x3 = (pho.full5x5_r9()+correctionScalings->at("r9").Eval(corrections->at("r9")(pho)[0]))*pho.superCluster()->rawEnergy();                            
-                if (correctedShowerShapes.e3x3 < 0) {
-                    cout << "Negative R9 value, setting it to 0" << endl;
-                    correctedShowerShapes.e3x3 = 0.;
-                }
                 //S4
                 auto s4_corr = pho.s4()+correctionScalings->at("s4").Eval(corrections->at("s4")(pho)[0]);
                 // SiEiE
@@ -416,48 +416,50 @@ namespace flashgg {
         unique_ptr<std::vector<flashgg::DiPhotonCandidate> > out_diphotons( new std::vector<flashgg::DiPhotonCandidate>() );
 
         for (const auto & orig_dipho : *orig_diphotons) {
+            
             flashgg::DiPhotonCandidate *dipho = orig_dipho.clone();
             dipho->makePhotonsPersistent();
+
+            if( !evt.isRealData() ) {
+                //---store ChIso wrt chosen vertex into the actual photon objects
+                dipho->getLeadingPhoton().setpfChgIsoWrtChosenVtx03(dipho->leadingView()->pfChIso03WrtChosenVtx());
+                dipho->getSubLeadingPhoton().setpfChgIsoWrtChosenVtx03(dipho->subLeadingView()->pfChIso03WrtChosenVtx());
+
+                //---compute corrections
             
-            //---store ChIso wrt chosen vertex into the actual photon objects
-            dipho->getLeadingPhoton().setpfChgIsoWrtChosenVtx03(dipho->leadingView()->pfChIso03WrtChosenVtx());
-            dipho->getSubLeadingPhoton().setpfChgIsoWrtChosenVtx03(dipho->subLeadingView()->pfChIso03WrtChosenVtx());
+                correctPhoton(dipho->getLeadingPhoton(), engine, rhoFixedGrd);
+                correctPhoton(dipho->getSubLeadingPhoton(), engine, rhoFixedGrd);
 
-            //---compute corrections
-            correctPhoton(dipho->getLeadingPhoton(), engine, rhoFixedGrd);
-            correctPhoton(dipho->getSubLeadingPhoton(), engine, rhoFixedGrd);
+                auto leadChgIsos = dipho->getLeadingPhoton().pfChgIso03();
+                leadChgIsos[dipho->vtx()] = dipho->getLeadingPhoton().pfChgIsoWrtChosenVtx03();
+                dipho->getLeadingPhoton().setpfChgIso03(leadChgIsos);
+                auto subleadChgIsos = dipho->getSubLeadingPhoton().pfChgIso03();
+                subleadChgIsos[dipho->vtx()] = dipho->getSubLeadingPhoton().pfChgIsoWrtChosenVtx03();
+                dipho->getLeadingPhoton().setpfChgIso03(leadChgIsos);
 
-            auto leadChgIsos = dipho->getLeadingPhoton().pfChgIso03();
-            leadChgIsos[dipho->vtx()] = dipho->getLeadingPhoton().pfChgIsoWrtChosenVtx03();
-            dipho->getLeadingPhoton().setpfChgIso03(leadChgIsos);
-            auto subleadChgIsos = dipho->getSubLeadingPhoton().pfChgIso03();
-            subleadChgIsos[dipho->vtx()] = dipho->getSubLeadingPhoton().pfChgIsoWrtChosenVtx03();
-            dipho->getLeadingPhoton().setpfChgIso03(leadChgIsos);
+                if( reRunRegression_ && !evt.isRealData() ) {
+                    // store original energy 
+                    dipho->getLeadingPhoton().addUserFloat("reco_E", dipho->getLeadingPhoton().energy());
+                    dipho->getSubLeadingPhoton().addUserFloat("reco_E", dipho->getSubLeadingPhoton().energy());
+                    
+                    regress_->setEvent(evt);
+                    regress_->setEventContent(es);
+                    
+                    // compute new regression values
+                    updatePhotonRegressions(dipho);
+                    storePhotonRegressions(dipho, "afterDiffCorr");
+                }
 
-            if( reRunRegression_ && !evt.isRealData() ) {
-                // store original energy 
-                dipho->getLeadingPhoton().addUserFloat("reco_E", dipho->getLeadingPhoton().energy());
-                dipho->getSubLeadingPhoton().addUserFloat("reco_E", dipho->getSubLeadingPhoton().energy());
-                
-                regress_->setEvent(evt);
-                regress_->setEventContent(es);
+                //---Recompute photon id
+                dipho->getLeadingPhoton().addUserFloat("original_phoId", dipho->getLeadingPhoton().phoIdMvaDWrtVtx(dipho->vtx()));
+                double eA_leadPho = effectiveAreas_.getEffectiveArea( std::abs(dipho->getLeadingPhoton().superCluster()->eta()) );
+                dipho->getLeadingPhoton().setPhoIdMvaWrtVtx( dipho->vtx(), phoTools_.computeMVAWrtVtx( dipho->getLeadingPhoton(), dipho->vtx(), rhoFixedGrd, eA_leadPho, phoIsoPtScalingCoeff_, phoIsoCutoff_ ) );
 
-                // compute new regression values
-                updatePhotonRegressions(dipho);
-                storePhotonRegressions(dipho, "afterDiffCorr");
+                dipho->getSubLeadingPhoton().addUserFloat("original_phoId", dipho->getSubLeadingPhoton().phoIdMvaDWrtVtx(dipho->vtx()));
+                double eA_subLeadPho = effectiveAreas_.getEffectiveArea( std::abs(dipho->getSubLeadingPhoton().superCluster()->eta()) );
+                dipho->getSubLeadingPhoton().setPhoIdMvaWrtVtx( dipho->vtx(), phoTools_.computeMVAWrtVtx( dipho->getSubLeadingPhoton(), dipho->vtx(), rhoFixedGrd, eA_subLeadPho, phoIsoPtScalingCoeff_, phoIsoCutoff_ ) );
             }
-
-            //---Recompute photon id
-            dipho->getLeadingPhoton().addUserFloat("original_phoId", dipho->getLeadingPhoton().phoIdMvaDWrtVtx(dipho->vtx()));
-            double eA_leadPho = effectiveAreas_.getEffectiveArea( std::abs(dipho->getLeadingPhoton().superCluster()->eta()) );
-            dipho->getLeadingPhoton().setPhoIdMvaWrtVtx( dipho->vtx(), phoTools_.computeMVAWrtVtx( dipho->getLeadingPhoton(), dipho->vtx(), rhoFixedGrd,
-                                                                                                   eA_leadPho, phoIsoPtScalingCoeff_, phoIsoCutoff_ ) );
-
-            dipho->getSubLeadingPhoton().addUserFloat("original_phoId", dipho->getSubLeadingPhoton().phoIdMvaDWrtVtx(dipho->vtx()));
-            double eA_subLeadPho = effectiveAreas_.getEffectiveArea( std::abs(dipho->getSubLeadingPhoton().superCluster()->eta()) );
-            dipho->getSubLeadingPhoton().setPhoIdMvaWrtVtx( dipho->vtx(), phoTools_.computeMVAWrtVtx( dipho->getSubLeadingPhoton(), dipho->vtx(), rhoFixedGrd,
-                                                                                                   eA_subLeadPho, phoIsoPtScalingCoeff_, phoIsoCutoff_ ) );
-
+            
             out_diphotons->push_back(*dipho);
             delete dipho;
         }

@@ -1166,10 +1166,10 @@ namespace flashgg {
                     pho2_scphi_= dipho->subLeadingPhoton()->superCluster()->phi();
 
                     // FIXME: inverting for ttZ region
-                    pho1_hasPixelSeed_ = 0;
-                    pho2_hasPixelSeed_ = 0;
-                    //pho1_hasPixelSeed_= dipho->leadingPhoton()->hasPixelSeed();
-                    //pho2_hasPixelSeed_= dipho->subLeadingPhoton()->hasPixelSeed();
+                    //pho1_hasPixelSeed_ = 0;
+                    //pho2_hasPixelSeed_ = 0;
+                    pho1_hasPixelSeed_= dipho->leadingPhoton()->hasPixelSeed();
+                    pho2_hasPixelSeed_= dipho->subLeadingPhoton()->hasPixelSeed();
 
                     pho1_sigmaEOverE_= dipho->leadingPhoton()->sigEOverE();
                     pho2_sigmaEOverE_= dipho->subLeadingPhoton()->sigEOverE();
@@ -1401,6 +1401,20 @@ namespace flashgg {
                 }
                 
                 if( isTTHHadronicTagged ) {
+
+                    // Check for NaNs
+                    if((std::isnan(dipho->leadingPhoton()->full5x5_r9()) || std::isnan(dipho->leadingPhoton()->s4()) || std::isnan(dipho->leadingPhoton()->full5x5_sigmaIetaIeta()) || std::isnan(dipho->leadingPhoton()->sieip()) || std::isnan(dipho->leadingPhoton()->superCluster()->etaWidth()) || std::isnan(dipho->leadingPhoton()->superCluster()->phiWidth()) || std::isnan(dipho->leadingPhoton()->pfPhoIso03()) || std::isnan(dipho->leadingPhoton()->pfChgIsoWrtChosenVtx03()) || std::isnan(dipho->leadingPhoton()->pfChgIsoWrtWorstVtx03()) || std::isinf(dipho->leadingPhoton()->full5x5_r9()) || std::isinf(dipho->leadingPhoton()->s4()) || std::isinf(dipho->leadingPhoton()->full5x5_sigmaIetaIeta()) || std::isinf(dipho->leadingPhoton()->sieip()) || std::isinf(dipho->leadingPhoton()->superCluster()->etaWidth()) || std::isinf(dipho->leadingPhoton()->superCluster()->phiWidth()) || std::isinf(dipho->leadingPhoton()->pfPhoIso03()) || std::isinf(dipho->leadingPhoton()->pfChgIsoWrtChosenVtx03()) || std::isinf(dipho->leadingPhoton()->pfChgIsoWrtWorstVtx03()))) {
+                        cout << "Leading photon with at least 1 Nan" << endl;
+                        cout << "Kinematics: pT = " << dipho->leadingPhoton()->pt() << ", eta = " << dipho->leadingPhoton()->eta() << ", phi = " << dipho->leadingPhoton()->phi() << endl;
+                    }
+
+                    else if((std::isnan(dipho->subLeadingPhoton()->full5x5_r9()) || std::isnan(dipho->subLeadingPhoton()->s4()) || std::isnan(dipho->subLeadingPhoton()->full5x5_sigmaIetaIeta()) || std::isnan(dipho->subLeadingPhoton()->sieip()) || std::isnan(dipho->subLeadingPhoton()->superCluster()->etaWidth()) || std::isnan(dipho->subLeadingPhoton()->superCluster()->phiWidth()) || std::isnan(dipho->subLeadingPhoton()->pfPhoIso03()) || std::isnan(dipho->subLeadingPhoton()->pfChgIsoWrtChosenVtx03()) || std::isnan(dipho->subLeadingPhoton()->pfChgIsoWrtWorstVtx03()) || std::isinf(dipho->subLeadingPhoton()->full5x5_r9()) || std::isinf(dipho->subLeadingPhoton()->s4()) || std::isinf(dipho->subLeadingPhoton()->full5x5_sigmaIetaIeta()) || std::isinf(dipho->subLeadingPhoton()->sieip()) || std::isinf(dipho->subLeadingPhoton()->superCluster()->etaWidth()) || std::isinf(dipho->subLeadingPhoton()->superCluster()->phiWidth()) || std::isinf(dipho->subLeadingPhoton()->pfPhoIso03()) || std::isinf(dipho->subLeadingPhoton()->pfChgIsoWrtChosenVtx03()) || std::isinf(dipho->subLeadingPhoton()->pfChgIsoWrtWorstVtx03()))) {
+                        cout << "Subleading photon with at least 1 Nan" << endl;
+                        cout << "Kinematics: pT = " << dipho->subLeadingPhoton()->pt() << ", eta = " << dipho->subLeadingPhoton()->eta() << ", phi = " << dipho->subLeadingPhoton()->phi() << endl;
+                    }
+ 
+                    else
+                        cout << "No NaNs here" << endl;
 
                     TTHHadronicTag tthhtags_obj( dipho, mvares, JetVect, BJetVect );
                     tthhtags_obj.setCategoryNumber(catnum  );
