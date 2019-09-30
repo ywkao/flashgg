@@ -223,10 +223,6 @@ namespace flashgg {
             if(correctShowerShapes_)
             {
                 reco::Photon::ShowerShape correctedShowerShapes = pho.full5x5_showerShapeVariables();
-                if (correctedShowerShapes.e3x3 < 0) {
-                    cout << "Negative R9 value, setting it to 0" << endl;
-                    correctedShowerShapes.e3x3 = 0.;
-                }
                 pho.addUserFloat("uncorr_r9", pho.full5x5_r9());
                 pho.addUserFloat("uncorr_s4", pho.s4());
                 pho.addUserFloat("uncorr_sieie", pho.full5x5_sigmaIetaIeta());
@@ -237,6 +233,10 @@ namespace flashgg {
                 //---Compute corrections
                 // R9 (store it inside e3x3)        
                 correctedShowerShapes.e3x3 = (pho.full5x5_r9()+correctionScalings->at("r9").Eval(corrections->at("r9")(pho)[0]))*pho.superCluster()->rawEnergy();                            
+                if (correctedShowerShapes.e3x3 < 0) {
+                    cout << "Negative R9 value, setting it to 0" << endl;
+                    correctedShowerShapes.e3x3 = 0.;
+                }
                 //S4
                 auto s4_corr = pho.s4()+correctionScalings->at("s4").Eval(corrections->at("s4")(pho)[0]);
                 // SiEiE
