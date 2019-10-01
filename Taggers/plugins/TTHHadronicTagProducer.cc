@@ -1413,9 +1413,6 @@ namespace flashgg {
                         cout << "Kinematics: pT = " << dipho->subLeadingPhoton()->pt() << ", eta = " << dipho->subLeadingPhoton()->eta() << ", phi = " << dipho->subLeadingPhoton()->phi() << endl;
                     }
  
-                    else
-                        cout << "No NaNs here" << endl;
-
                     TTHHadronicTag tthhtags_obj( dipho, mvares, JetVect, BJetVect );
                     tthhtags_obj.setCategoryNumber(catnum  );
                     tthhtags_obj.setNjet( jetcount_ );
