@@ -240,7 +240,6 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "lead_sigmaEoE    := diPhoton.leadingPhoton.sigEOverE",
                  "lead_ptoM        := diPhoton.leadingPhoton.pt/diPhoton.mass",
                  "leadR9           := diPhoton.leadingPhoton.full5x5_r9",
-                 "leadR9uncorr     := diPhoton.leadingPhoton.userFloat('uncorr_r9')",
                  "leadGenMatch     := diPhoton.leadingPhoton.genMatchType",
                  "leadPtGen        := ? diPhoton.leadingPhoton.hasMatchedGenPhoton ? diPhoton.leadingPhoton.matchedGenPhoton.pt : 0",
                  "leadGendeltaR    := ? diPhoton.leadingPhoton.hasMatchedGenPhoton ? sqrt( pow((diPhoton.leadingPhoton.phi -  diPhoton.leadingPhoton.matchedGenPhoton.phi), 2) + pow((diPhoton.leadingPhoton.phi -  diPhoton.leadingPhoton.matchedGenPhoton.phi), 2)) : -999",
@@ -254,7 +253,6 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "sublead_sigmaEoE := diPhoton.subLeadingPhoton.sigEOverE",
                  "sublead_ptoM     := diPhoton.subLeadingPhoton.pt/diPhoton.mass",
                  "subleadR9        := diPhoton.subLeadingPhoton.full5x5_r9",
-                 "subleadR9uncorr  := diPhoton.subLeadingPhoton.userFloat('uncorr_r9')",
                  "subleadGenMatch  := diPhoton.subLeadingPhoton.genMatchType",
                  "subleadPtGen     := ? diPhoton.subLeadingPhoton.hasMatchedGenPhoton ? diPhoton.subLeadingPhoton.matchedGenPhoton.pt : 0",
                  "subleadGendeltaR := ? diPhoton.subLeadingPhoton.hasMatchedGenPhoton ? sqrt( pow((diPhoton.subLeadingPhoton.phi -  diPhoton.subLeadingPhoton.matchedGenPhoton.phi), 2) + pow((diPhoton.subLeadingPhoton.phi -  diPhoton.subLeadingPhoton.matchedGenPhoton.phi), 2)) : -999",
@@ -633,7 +631,7 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
 
 
 process.p = cms.Path(    #process.dataRequirements* # don't require trigger because it's already required in microAOD production
-                         #process.flashggMetFilters*
+                         process.flashggMetFilters*
                          process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
                          process.flashggDifferentialPhoIdInputsCorrection* 
