@@ -17,6 +17,9 @@ if len(sys.argv) >= 5:
   n_events = int(sys.argv[4])
   print "Setting max number of events to %d" % (n_events)
 
+
+doSystematics = False
+
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
 import FWCore.ParameterSet.VarParsing as VarParsing
@@ -113,6 +116,7 @@ process.flashggDiPhotons.whichVertex = cms.uint32(0)
 process.flashggDiPhotons.useZerothVertexFromMicro = cms.bool(True)
 
 # Remove unneeded tags
+process.flashggTagSequence.remove(process.flashggTHQLeptonicTag)
 process.flashggTagSequence.remove(process.flashggTTHDiLeptonTag)
 process.flashggTagSequence.remove(process.flashggVBFTag)
 process.flashggTagSequence.remove(process.flashggVHMetTag)
@@ -123,6 +127,10 @@ process.flashggTagSequence.remove(process.flashggVHHadronicTag)
 process.flashggTagSequence.remove(process.flashggUntagged)
 process.flashggTagSequence.remove(process.flashggVBFMVA)
 process.flashggTagSequence.remove(process.flashggVBFDiPhoDiJetMVA)
+
+process.flashggTagSequence.remove(process.flashggTTHHadronicTag)
+process.flashggTagSequence.remove(process.flashggTTHLeptonicTag)
+
 
 process.flashggTagSorter.TagPriorityRanges = cms.VPSet(   
         cms.PSet(TagName = cms.InputTag('flashggTTHLeptonicTag')),
@@ -142,19 +150,73 @@ process.flashggDiPhotonSystematics.SystMethods = newvpset
 # Or use the official tool instead
 useEGMTools(process)
 
+systlabels = [""]
+phosystlabels = []
+metsystlabels = []
+jetsystlabels = []
+elesystlabels = []
+musystlabels = []
+
+if not ISDATA:
+    if ISSIGNAL:
+        variablesToUse = minimalVariables
+    else:
+        variablesToUse = minimalNonSignalVariables
+    if doSystematics:
+        for direction in ["Up","Down"]:
+            phosystlabels.append("MvaShift%s01sigma" % direction)
+            phosystlabels.append("SigmaEOverEShift%s01sigma" % direction)
+            phosystlabels.append("MaterialCentralBarrel%s01sigma" % direction)
+            phosystlabels.append("MaterialOuterBarrel%s01sigma" % direction)
+            phosystlabels.append("MaterialForward%s01sigma" % direction)
+            phosystlabels.append("FNUFEB%s01sigma" % direction)
+            phosystlabels.append("FNUFEE%s01sigma" % direction)
+            phosystlabels.append("MCScaleGain6EB%s01sigma" % direction)
+            phosystlabels.append("MCScaleGain1EB%s01sigma" % direction)
+            jetsystlabels.append("JEC%s01sigma" % direction)
+            jetsystlabels.append("JER%s01sigma" % direction)
+            jetsystlabels.append("PUJIDShift%s01sigma" % direction)
+            metsystlabels.append("metJecUncertainty%s01sigma" % direction)
+            metsystlabels.append("metJerUncertainty%s01sigma" % direction)
+            metsystlabels.append("metPhoUncertainty%s01sigma" % direction)
+            metsystlabels.append("metUncUncertainty%s01sigma" % direction)
+            variablesToUse.append("UnmatchedPUWeight%s01sigma[1,-999999.,999999.] := weight(\"UnmatchedPUWeight%s01sigma\")" % (direction,direction))
+            variablesToUse.append("MvaLinearSyst%s01sigma[1,-999999.,999999.] := weight(\"MvaLinearSyst%s01sigma\")" % (direction,direction))
+            variablesToUse.append("LooseMvaSF%s01sigma[1,-999999.,999999.] := weight(\"LooseMvaSF%s01sigma\")" % (direction,direction))
+            variablesToUse.append("PreselSF%s01sigma[1,-999999.,999999.] := weight(\"PreselSF%s01sigma\")" % (direction,direction))
+            variablesToUse.append("electronVetoSF%s01sigma[1,-999999.,999999.] := weight(\"electronVetoSF%s01sigma\")" % (direction,direction))
+            variablesToUse.append("TriggerWeight%s01sigma[1,-999999.,999999.] := weight(\"TriggerWeight%s01sigma\")" % (direction,direction))
+            variablesToUse.append("FracRVWeight%s01sigma[1,-999999.,999999.] := weight(\"FracRVWeight%s01sigma\")" % (direction,direction))
+            variablesToUse.append("FracRVNvtxWeight%s01sigma[1,-999999.,999999.] := weight(\"FracRVNvtxWeight%s01sigma\")" % (direction,direction))
+            variablesToUse.append("ElectronWeight%s01sigma[1,-999999.,999999.] := weight(\"ElectronWeight%s01sigma\")" % (direction,direction))
+            variablesToUse.append("JetBTagCutWeight%s01sigma[1,-999999.,999999.] := weight(\"JetBTagCutWeight%s01sigma\")" % (direction,direction))
+            variablesToUse.append("JetBTagReshapeWeight%s01sigma[1,-999999.,999999.] := weight(\"JetBTagReshapeWeight%s01sigma\")" % (direction,direction))
+            for r9 in ["HighR9","LowR9"]:
+                for region in ["EB","EE"]:
+                    phosystlabels.append("ShowerShape%s%s%s01sigma"%(r9,region,direction))
+    #                    phosystlabels.append("MCSmear%s%s%s01sigma" % (r9,region,direction))
+                    phosystlabels.append("MCScale%s%s%s01sigma" % (r9,region,direction))
+                    for var in ["Rho","Phi"]:
+                        phosystlabels.append("MCSmear%s%s%s%s01sigma" % (r9,region,var,direction))
+        systlabels += phosystlabels
+        systlabels += jetsystlabels
+        systlabels += metsystlabels
+
+
 if ISSIGNAL:
-  print "Signal MC, so adding systematics and dZ"
-  customizeSystematicsForSignal(process)
+    print "Signal MC, so adding systematics and dZ"
+    customizeSystematicsForSignal(process)
 elif ISDATA:
-  print "Data, so turn off all shifts and systematics, with some exceptions"
-  variablesToUse = minimalNonSignalVariables
-  customizeSystematicsForData(process)
+    print "Data, so turn off all shifts and systematics, with some exceptions"
+    variablesToUse = minimalNonSignalVariables
+    customizeSystematicsForData(process)
 else:
-  print "Background MC, so store mgg and central only"
-  variablesToUse = minimalNonSignalVariables
-  customizeSystematicsForBackground(process)
+    print "Background MC, so store mgg and central only"
+    customizeSystematicsForBackground(process)
 
 printSystematicInfo(process)
+
+cloneTagSequenceForEachSystematic(process,systlabels,phosystlabels,metsystlabels,jetsystlabels,jetSystematicsInputTags)
 
 # Require standard diphoton trigger
 # Triggers are already required in microAOD production, don't need to require again
@@ -206,26 +268,14 @@ if ISDATA:
 else:
     metFilterSelector = "mc"
 process.flashggMetFilters.requiredFilterNames = cms.untracked.vstring([filter.encode("ascii") for filter in metaConditions["flashggMetFilters"][metFilterSelector]])
-#process.flashggMetFilters.requiredFilterNames = cms.vstring(metaConditions["flashggMetFilters"]["data"])
-#else:
-#    process.flashggMetFilters.requiredFilterNames = cms.vstring(metaConditions["flashggMetFilters"]["mc"])
 
 process.load("flashgg/Taggers/flashggTagSequence_cfi")
 process.load("flashgg/Taggers/flashggTagTester_cfi")
+process.load("flashgg.Taggers.diphotonTagDumper_cfi") ##  import diphotonTagDumper 
+
 
 process.TFileService = cms.Service("TFileService",
                                    fileName = cms.string("merged_ntuple.root"))
-## TAGS DUMPERS ##
-from flashgg.Taggers.tagsDumpers_cfi import *
-
-process.tthLeptonicTagDumper = createTagDumper("TTHLeptonicTag")
-process.tthHadronicTagDumper = createTagDumper("TTHHadronicTag")
-
-process.tthLeptonicTagDumper.dumpTrees = True
-process.tthHadronicTagDumper.dumpTrees = True
-
-## define categories and associated objects to dump
-import flashgg.Taggers.dumperConfigTools as cfgTools
 
 dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "dipho_cosphi     := abs(cos(diPhoton.leadingPhoton.phi - diPhoton.subLeadingPhoton.phi))",
@@ -304,16 +354,9 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "sublead_MomMomID := subleadMomMomID",
                  "sublead_PassFrix := subleadPassFrix",
                  "sublead_SmallestDr := subleadSmallestDr",
-
 ]
-## TTH leptonic ##
-cfgTools.addCategories(process.tthLeptonicTagDumper,
-                       ## categories definition
-                       [("all","1",0)
-                    ],
-                       ## variables to be dumped in trees/datasets. Same variables for all categories
-                       variables=dipho_variables+
-                        ["n_ele    := electrons.size",
+
+leptonic_variables = [  "n_ele    := electrons.size",
                         "ele1_pt  := ?(electrons.size>0)? electrons.at(0).pt : -1",
                         "ele2_pt  := ?(electrons.size>1)? electrons.at(1).pt : -1",
                         "ele1_eta  := ?(electrons.size>0)? electrons.at(0).eta : -999",
@@ -344,10 +387,6 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                         "topTag_score := topTagScore",
                         "topTag_topMass := topTagTopMass",
                         "topTag_WMass := topTagWMass",
-                        #"bjet1_pt := bJets.at(0).pt",
-                        #"bjet2_pt := ?bJets.size>1? bJets.at(1).pt : -1",
-                        #"bjet1_csv:= bJets.at(0).bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags')",
-                        #"bjet2_csv:= ?bJets.size>1? bJets.at(1).bDiscriminator('pfCombinedInclusiveSecondaryVertexV2BJetTags') : -1",
                         "Mjj      := ?(jets.size>1)?"
                         +"sqrt((jets.at(0).energy+jets.at(1).energy)^2-(jets.at(0).px+jets.at(1).px)^2-(jets.at(0).py+jets.at(1).py)^2-(jets.at(0).pz+jets.at(1).pz)^2)"
                         +": -1",
@@ -477,19 +516,9 @@ cfgTools.addCategories(process.tthLeptonicTagDumper,
                         "jet_energy14  := ?(jets.size>13)? jets.at(13).energy : -1",
                         "jet_energy15  := ?(jets.size>14)? jets.at(14).energy : -1",
                         "dnn_score_ttgg  := dnn_score_ttH_vs_ttgg", 
-                   ],
-                       ## histograms
-                       histograms=[]
-)
+]
 
-## TTH hadronic ##
-cfgTools.addCategories(process.tthHadronicTagDumper,
-## categories definition
-                       [("all","1",0)
-                    ],
-                       ## variables to be dumped in trees/datasets. Same variables for all categories
-                       variables=dipho_variables +
-                        ["n_bjets  := nBMedium",
+hadronic_variables = [  "n_bjets  := nBMedium",
                         "n_jets   := jetVector.size",
                         "bjet1_pt := ?nBMedium>1? bJetVector.at(0).pt : -1",
                         "bjet2_pt := ?nBMedium>1? bJetVector.at(1).pt : -1",
@@ -614,24 +643,65 @@ cfgTools.addCategories(process.tthHadronicTagDumper,
                         "jet13_energy  := ?(jetVector.size>12)? jetVector.at(12).energy : -1",
                         "jet14_energy  := ?(jetVector.size>13)? jetVector.at(13).energy : -1",
                         "jet15_energy  := ?(jetVector.size>14)? jetVector.at(14).energy : -1",
-
-
                         "bjet1_csv:= maxBTagVal",
                         "bjet2_csv:= secondMaxBTagVal",
                         "tthMVA := tthMvaRes",
                         "tthMVA_RunII := tthMva_RunII_Res",
                         "dnn_score_dipho := dnn_score_ttH_vs_dipho",
                         "dnn_score_ttgg  := dnn_score_ttH_vs_ttgg",
+]
 
-],
-                       ## histograms
-                       histograms=[]
-)
+## TAGS DUMPERS ##
+from flashgg.Taggers.tagsDumpers_cfi import *
 
+process.tagsDumper.className = "DiPhotonTagDumper"
+process.tagsDumper.src = "flashggSystTagMerger"
+process.tagsDumper.dumpTrees = True
+process.tagsDumper.nameTemplate = cms.untracked.string("$PROCESS_$SQRTS_$CLASSNAME_$SUBCAT_$LABEL")
+
+tagList = [
+    ["TTHHadronicTag", 0],
+    ["TTHLeptonicTag", 0]
+]
+
+definedSysts=set()
+process.tagsDumper.classifierCfg.remap=cms.untracked.VPSet()
+
+import flashgg.Taggers.dumperConfigTools as cfgTools
+
+for tag in tagList:
+    tagName = tag[0]
+    tagCats = tag[1]
+    # remap return value of class-based classifier
+    process.tagsDumper.classifierCfg.remap.append( cms.untracked.PSet( src=cms.untracked.string("flashgg%s"%tagName), dst=cms.untracked.string(tagName) ) )
+    for systlabel in systlabels:
+        if not systlabel in definedSysts:
+            # the cut corresponding to the systematics can be defined just once
+            cutstring = "hasSyst(\"%s\") "%(systlabel)
+            definedSysts.add(systlabel)
+        else:
+            cutstring = None
+
+        if systlabel == "":
+            currentVariables = variablesToUse
+        else:
+            currentVariables = systematicVariables
+
+        currentVariables += dipho_variables
+        if "Hadronic" in tagName:
+            currentVariables += hadronic_variables
+        elif "Leptonic" in tagName:
+            currentVariables += leptonic_variables
+            currentVariables = [var for var in currentVariables if var not in hadronic_variables] # I don't understand why I need to do this, but the hadronic variables get added for some reason...
+
+        currentVariables = list(set(currentVariables))
+        isBinnedOnly = (systlabel !=  "")
+        cfgTools.addCategory(process.tagsDumper, systlabel, classname=tagName, cutbased=cutstring, subcats=tagCats, variables=currentVariables, histograms=[], binnedOnly=isBinnedOnly, dumpPdfWeights=False, splitPdfByStage0Cat=False)
+        currentVariables = []
 
 
 process.p = cms.Path(    #process.dataRequirements* # don't require trigger because it's already required in microAOD production
-                         #process.flashggMetFilters*
+                         process.flashggMetFilters*
                          process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
                          process.flashggDifferentialPhoIdInputsCorrection* 
@@ -641,8 +711,14 @@ process.p = cms.Path(    #process.dataRequirements* # don't require trigger beca
                          (process.flashggUnpackedJets*process.jetSystematicsSequence)*
                          (process.flashggTagSequence*process.systematicsTagSequences)*
 			             process.flashggSystTagMerger*
-			             process.flashggTagSequence*
-                         process.flashggTagTester*
+			             #process.flashggTagSequence*
+                         #process.flashggTagTester*
                          process.penultimateFilter*
-		                 (process.tthLeptonicTagDumper
-                          +process.tthHadronicTagDumper))
+                         process.tagsDumper)
+                         #(process.tthLeptonicTagDumper
+                         # +process.tthHadronicTagDumper))
+
+modifySystematicsWorkflowForttH(process, systlabels, phosystlabels, metsystlabels, jetsystlabels)
+
+
+print process.p
