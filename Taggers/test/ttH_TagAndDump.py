@@ -106,6 +106,7 @@ from flashgg.Systematics.SystematicsCustomize import *
 from flashgg.MetaData.JobConfig import customize
 customize.metaConditions = metaConditions
 customize.processId = processId
+customize.doL1Prefiring = True
 
 jetSystematicsInputTags = createStandardSystematicsProducers(process , customize)
 modifyTagSequenceForSystematics(process,jetSystematicsInputTags)
@@ -157,6 +158,13 @@ jetsystlabels = []
 elesystlabels = []
 musystlabels = []
 
+
+
+if customize.doL1Prefiring:
+    customizeForL1Prefiring(process, customize.metaConditions, customize.processId)
+else:
+    process.flashggTagSequence.remove(process.flashggPrefireWeight)
+
 if not ISDATA:
     if ISSIGNAL:
         variablesToUse = minimalVariables
@@ -191,6 +199,8 @@ if not ISDATA:
             variablesToUse.append("ElectronWeight%s01sigma[1,-999999.,999999.] := weight(\"ElectronWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("JetBTagCutWeight%s01sigma[1,-999999.,999999.] := weight(\"JetBTagCutWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("JetBTagReshapeWeight%s01sigma[1,-999999.,999999.] := weight(\"JetBTagReshapeWeight%s01sigma\")" % (direction,direction))
+            if customize.doL1Prefiring:
+                variablesToUse.append("prefireProbability := weight(\"prefireProbability\")")
             for r9 in ["HighR9","LowR9"]:
                 for region in ["EB","EE"]:
                     phosystlabels.append("ShowerShape%s%s%s01sigma"%(r9,region,direction))
@@ -701,7 +711,7 @@ for tag in tagList:
 
 
 process.p = cms.Path(    #process.dataRequirements* # don't require trigger because it's already required in microAOD production
-                         process.flashggMetFilters*
+                         #process.flashggMetFilters*
                          process.genFilter* # revisit later, this looks like it's only needed for other signal modes than ttH
                          process.flashggDiPhotons* # needed for 0th vertex from microAOD
                          process.flashggDifferentialPhoIdInputsCorrection* 
