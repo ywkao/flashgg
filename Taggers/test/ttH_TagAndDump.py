@@ -278,6 +278,8 @@ if ISDATA:
 else:
     metFilterSelector = "mc"
 process.flashggMetFilters.requiredFilterNames = cms.untracked.vstring([filter.encode("ascii") for filter in metaConditions["flashggMetFilters"][metFilterSelector]])
+print "Required MET filters: ", process.flashggMetFilters.requiredFilterNames
+
 
 process.load("flashgg/Taggers/flashggTagSequence_cfi")
 process.load("flashgg/Taggers/flashggTagTester_cfi")
@@ -364,6 +366,12 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "sublead_MomMomID := subleadMomMomID",
                  "sublead_PassFrix := subleadPassFrix",
                  "sublead_SmallestDr := subleadSmallestDr",
+                 "MetPt  := MetPt",
+                 "MetPhi := MetPhi",
+                 "topTag_score := topTagScore",
+                 "topTag_topMass := topTagTopMass",
+                 "topTag_WMass := topTagWMass",
+                 "dnn_score_ttgg  := dnn_score_ttH_vs_ttgg",
 ]
 
 leptonic_variables = [  "n_ele    := electrons.size",
@@ -394,14 +402,9 @@ leptonic_variables = [  "n_ele    := electrons.size",
                         "nElecTight :=  nElecTight",
                         "n_bjets  := bJets.size",
                         "n_jets   := jets.size",
-                        "topTag_score := topTagScore",
-                        "topTag_topMass := topTagTopMass",
-                        "topTag_WMass := topTagWMass",
                         "Mjj      := ?(jets.size>1)?"
                         +"sqrt((jets.at(0).energy+jets.at(1).energy)^2-(jets.at(0).px+jets.at(1).px)^2-(jets.at(0).py+jets.at(1).py)^2-(jets.at(0).pz+jets.at(1).pz)^2)"
                         +": -1",
-                        "MetPt  := MetPt",
-                        "MetPhi := MetPhi",
                         "mT     := MT",
                         "tthMVA := mvaRes",
                         "tthMVA_RunII := mva_RunII_Res",
@@ -525,18 +528,12 @@ leptonic_variables = [  "n_ele    := electrons.size",
                         "jet_energy13  := ?(jets.size>12)? jets.at(12).energy : -1",
                         "jet_energy14  := ?(jets.size>13)? jets.at(13).energy : -1",
                         "jet_energy15  := ?(jets.size>14)? jets.at(14).energy : -1",
-                        "dnn_score_ttgg  := dnn_score_ttH_vs_ttgg", 
 ]
 
 hadronic_variables = [  "n_bjets  := nBMedium",
                         "n_jets   := jetVector.size",
                         "bjet1_pt := ?nBMedium>1? bJetVector.at(0).pt : -1",
                         "bjet2_pt := ?nBMedium>1? bJetVector.at(1).pt : -1",
-                        "MetPt  := MetPt",
-                        "MetPhi := MetPhi",
-                        "topTag_score := topTagScore",
-                        "topTag_topMass := topTagTopMass",
-                        "topTag_WMass := topTagWMass",
                         "jet1_pt  := ?(jetVector.size>0)? jetVector.at(0).pt : -1",
                         "jet2_pt  := ?(jetVector.size>1)? jetVector.at(1).pt : -1",
                         "jet3_pt  := ?(jetVector.size>2)? jetVector.at(2).pt : -1",
@@ -658,7 +655,6 @@ hadronic_variables = [  "n_bjets  := nBMedium",
                         "tthMVA := tthMvaRes",
                         "tthMVA_RunII := tthMva_RunII_Res",
                         "dnn_score_dipho := dnn_score_ttH_vs_dipho",
-                        "dnn_score_ttgg  := dnn_score_ttH_vs_ttgg",
 ]
 
 ## TAGS DUMPERS ##
