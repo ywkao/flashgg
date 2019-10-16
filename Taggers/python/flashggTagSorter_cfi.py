@@ -23,8 +23,8 @@ flashggTagSorter = cms.EDProducer('FlashggTagSorter',
         cms.PSet(TagName = cms.InputTag('flashggUntagged'))
         ###                                                                 cms.PSet(TagName = cms.InputTag('flashggSigmaMoMpToMTag'))
         ),
-                                  MassCutUpper=cms.double(180.),
-                                  MassCutLower=cms.double(100),
+                                  MassCutUpper=cms.double(99999999.),
+                                  MassCutLower=cms.double(0.),
                                   MinObjectWeightException = cms.double(0.0),
                                   MaxObjectWeightException = cms.double(13.),
                                   MinObjectWeightWarning = cms.double(0.4),
