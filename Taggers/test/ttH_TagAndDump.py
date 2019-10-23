@@ -18,7 +18,7 @@ if len(sys.argv) >= 5:
   print "Setting max number of events to %d" % (n_events)
 
 
-doSystematics = False
+doSystematics = True
 
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
@@ -214,15 +214,16 @@ if not ISDATA:
 
 
 if ISSIGNAL:
-    print "Signal MC, so adding systematics and dZ"
+    print "Signal MC" # "so adding systematics and dZ"
     customizeSystematicsForSignal(process)
 elif ISDATA:
-    print "Data, so turn off all shifts and systematics, with some exceptions"
+    print "Data" # "so turn off all shifts and systematics, with some exceptions"
     variablesToUse = minimalNonSignalVariables
     customizeSystematicsForData(process)
 else:
-    print "Background MC, so store mgg and central only"
-    customizeSystematicsForBackground(process)
+    print "Background MC" # "so store mgg and central only"
+    customizeSystematicsForSignal(process)
+    #customizeSystematicsForBackground(process)
 
 printSystematicInfo(process)
 
