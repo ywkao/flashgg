@@ -681,6 +681,7 @@ for tag in tagList:
     tagCats = tag[1]
     # remap return value of class-based classifier
     process.tagsDumper.classifierCfg.remap.append( cms.untracked.PSet( src=cms.untracked.string("flashgg%s"%tagName), dst=cms.untracked.string(tagName) ) )
+    print "Systematics with independent collections", systlabels
     for systlabel in systlabels:
         if not systlabel in definedSysts:
             # the cut corresponding to the systematics can be defined just once
@@ -691,6 +692,7 @@ for tag in tagList:
 
         if systlabel == "":
             currentVariables = variablesToUse
+            print "Systematics affecting weights", currentVariables
         else:
             currentVariables = systematicVariables
 
