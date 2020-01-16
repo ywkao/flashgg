@@ -18,7 +18,7 @@ if len(sys.argv) >= 5:
   print "Setting max number of events to %d" % (n_events)
 
 
-doSystematics = False
+doSystematics = True
 
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
@@ -201,6 +201,7 @@ if not ISDATA:
             variablesToUse.append("JetBTagReshapeWeight%s01sigma[1,-999999.,999999.] := weight(\"JetBTagReshapeWeight%s01sigma\")" % (direction,direction))
             if customize.doL1Prefiring:
                 variablesToUse.append("prefireProbability := weight(\"prefireProbability\")")
+            variablesToUse.append("weight_JetBTagWeight:=weight(\"JetBTagReshapeWeightCentral\")")
             for r9 in ["HighR9","LowR9"]:
                 for region in ["EB","EE"]:
                     phosystlabels.append("ShowerShape%s%s%s01sigma"%(r9,region,direction))
@@ -732,6 +733,5 @@ process.p = cms.Path(    #process.dataRequirements* # don't require trigger beca
                          # +process.tthHadronicTagDumper))
 
 modifySystematicsWorkflowForttH(process, systlabels, phosystlabels, metsystlabels, jetsystlabels)
-
 
 print process.p
