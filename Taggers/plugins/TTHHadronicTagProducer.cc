@@ -83,9 +83,6 @@ namespace flashgg {
         EDGetTokenT<edm::TriggerResults> triggerRECO_;
         string systLabel_;
 
-        EDGetTokenT<double> prefireToken_;
-        bool applyPrefireProbability_;
-
         typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
         bool useTTHHadronicMVA_;
         bool applyMETfilters_;
@@ -784,8 +781,6 @@ namespace flashgg {
         if (!modifySystematicsWorkflow)
             evt.getByToken( METToken_, METs );
 
-        Handle<double> prefireProb;
-        evt.getByToken( prefireToken_, prefireProb );
 
 	    //Get trigger results relevant to MET filters
         bool passMETfilters = 1;

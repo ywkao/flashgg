@@ -703,9 +703,6 @@ namespace flashgg {
         if (!modifySystematicsWorkflow)
             evt.getByToken( METToken_, theMet_ );
 
-        Handle<double> prefireProb;
-        evt.getByToken( prefireToken_, prefireProb );
-
         //std::unique_ptr<vector<TTHLeptonicTag> > tthltags( new vector<TTHLeptonicTag> );
         std::unique_ptr<vector<TagTruthBase> > truths( new vector<TagTruthBase> );
         edm::RefProd<vector<TagTruthBase> > rTagTruth = evt.getRefBeforePut<vector<TagTruthBase> >();
@@ -789,6 +786,11 @@ namespace flashgg {
             assert( diPhotons->size() == mvaResults->size() );
 
             std::unique_ptr<vector<TTHLeptonicTag> > tthltags( new vector<TTHLeptonicTag> );
+
+            if( ! evt.isRealData() )
+            {
+                evt.getByToken( genParticleToken_, genParticles );
+            }
 
 
             for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ )
@@ -1646,7 +1648,7 @@ namespace flashgg {
 
 
                     tthltags->push_back( tthltags_obj );
-     
+            
                     if( ! evt.isRealData() )
                     {
                         TagTruthBase truth_obj;
