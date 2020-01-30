@@ -44,7 +44,7 @@ def flashggPrepareTagSequence(process, options):
                                           + flashggZHLeptonicTag
                                           + flashggVHLeptonicLooseTag
                                           + flashggVHHadronicTag
-                                      )
+                                          )
                                       * flashggTagSorter
                                   )
 

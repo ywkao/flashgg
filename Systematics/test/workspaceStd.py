@@ -35,6 +35,18 @@ customize.options.register('tthTagsOnly',
                            VarParsing.VarParsing.varType.bool,
                            'tthTagsOnly'
                            )
+customize.options.register('fcncHutTagsOnly',
+                           False,
+                            VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'fcncHutTagsOnly'
+                           )
+customize.options.register('fcncHctTagsOnly',
+                           False,
+                            VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'fcncHctTagsOnly'
+                           )
 customize.options.register('doubleHTagsOnly',
                            False,
                            VarParsing.VarParsing.multiplicity.singleton,
@@ -235,7 +247,7 @@ if customize.doFiducial:
 # process.flashggTagSequence = flashggPrepareTagSequence(customize.metaConditions)
 
 # needed for 0th vertex from microAOD
-if customize.tthTagsOnly:
+if customize.tthTagsOnly or customize.fcncHutTagsOnly or customize.fcncHctTagsOnly:
     process.load("flashgg/MicroAOD/flashggDiPhotons_cfi")
     process.flashggDiPhotons.whichVertex = cms.uint32(0)
     process.flashggDiPhotons.useZerothVertexFromMicro = cms.bool(True)
@@ -262,7 +274,7 @@ if customize.doFiducial:
     process.flashggTagSequence.remove(process.flashggVHHadronicTag)
     process.flashggTagSequence.replace(process.flashggUntagged, process.flashggSigmaMoMpToMTag)
 
-if customize.tthTagsOnly:
+if customize.tthTagsOnly or customize.fcncHutTagsOnly or customize.fcncHctTagsOnly:
     process.flashggTagSequence.remove(process.flashggVBFTag)
     process.flashggTagSequence.remove(process.flashggVHMetTag)
     process.flashggTagSequence.remove(process.flashggWHLeptonicTag)
@@ -276,6 +288,7 @@ if customize.tthTagsOnly:
     process.flashggTagSequence.remove(process.flashggTTHLeptonicTag)
     process.flashggTagSequence.remove(process.flashggTTHDiLeptonTag)
     process.flashggTagSequence.remove(process.flashggTHQLeptonicTag)
+
 
 else:
     if not customize.doSystematics: # allow memory-intensive ttH MVAs if we are not running systematics
@@ -303,11 +316,17 @@ if customize.doFiducial:
     print 'we do fiducial and we change tagsorter'
     process.flashggTagSorter.TagPriorityRanges = cms.VPSet(     cms.PSet(TagName = cms.InputTag('flashggSigmaMoMpToMTag')) )
 
-if customize.tthTagsOnly:
-    process.flashggTagSorter.TagPriorityRanges = cms.VPSet(   
-        cms.PSet(TagName = cms.InputTag('flashggTTHLeptonicTag')),
-        cms.PSet(TagName = cms.InputTag('flashggTTHHadronicTag')) 
-    )
+if customize.tthTagsOnly or customize.fcncHutTagsOnly or customize.fcncHctTagsOnly:
+    if customize.tthTagsOnly:
+        process.flashggTagSorter.TagPriorityRanges = cms.VPSet(   
+            cms.PSet(TagName = cms.InputTag('flashggTTHLeptonicTag')),
+            cms.PSet(TagName = cms.InputTag('flashggTTHHadronicTag')) 
+        )
+    else:
+        process.flashggTagSorter.TagPriorityRanges = cms.VPSet(
+            cms.PSet(TagName = cms.InputTag('flashggFCNCLeptonicTag')),
+            cms.PSet(TagName = cms.InputTag('flashggFCNCHadronicTag'))
+        )
 
     print "customize.processId:",customize.processId
 
@@ -492,6 +511,11 @@ elif customize.tthTagsOnly:
         ["TTHHadronicTag",4],
         ["TTHLeptonicTag",4]
         ]
+elif customize.fcncHutTagsOnly or customize.fcncHctTagsOnly:
+    tagList=[
+        ["FCNCHadronicTag",2],
+        ["FCNCLeptonicTag",2]
+        ]
 elif customize.doubleHTagsOnly:
     tagList = hhc.tagList
     print "taglist is:"
@@ -626,7 +650,7 @@ else:
 
 process.flashggMetFilters.requiredFilterNames = cms.untracked.vstring([filter.encode("ascii") for filter in customize.metaConditions["flashggMetFilters"][metFilterSelector]])
 
-if customize.tthTagsOnly:
+if customize.tthTagsOnly or customize.fcncHutTagsOnly or customize.fcncHctTagsOnly:
     process.p = cms.Path(process.dataRequirements*
                          process.flashggMetFilters*
                          process.genFilter*
@@ -642,7 +666,14 @@ if customize.tthTagsOnly:
                          process.finalFilter*
                          process.tagsDumper)
     # Now, we put the ttH tags back in the sequence with modified systematics workflow
-    modifySystematicsWorkflowForttH(process, systlabels, phosystlabels, metsystlabels, jetsystlabels)
+    if customize.tthTagsOnly:
+        modifySystematicsWorkflowForttH(process, systlabels, phosystlabels, metsystlabels, jetsystlabels)
+    else:
+        if customize.fcncHutTagsOnly:
+            coupling = "Hut"
+        elif customize.fcncHctTagsOnly:
+            coupling = "Hct"
+        modifySystematicsWorkflowForFCNC(process, systlabels, phosystlabels, metsystlabels, jetsystlabels, coupling)
 
 else :
     process.p = cms.Path(process.dataRequirements*
