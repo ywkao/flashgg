@@ -91,6 +91,10 @@ namespace flashgg {
         unique_ptr<TMVA::Reader>TThMva_RunII_;
         FileInPath tthMVA_RunII_weightfile_;
 
+        unique_ptr<TMVA::Reader> FCNCMva_;
+        FileInPath fcncHutMVAWeightFile_;
+        FileInPath fcncHctMVAWeightFile_;
+
         FileInPath tthVsttGGDNNfile_;
 
         //Thresholds
@@ -199,6 +203,7 @@ namespace flashgg {
         float dnn_score_0_;
        
         float tthMvaVal_RunII_;
+        float fcncMvaVal_;
 
         BDT_resolvedTopTagger *topTagger;
         DNN_Helper* dnn;
@@ -516,6 +521,9 @@ namespace flashgg {
         tthVsttGGDNNfile_ = iConfig.getParameter<edm::FileInPath>( "tthVsttGGDNNfile" );
         tthMVA_RunII_weightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVA_RunII_weightfile" );
 
+        fcncHutMVAWeightFile_ = iConfig.getParameter<edm::FileInPath>( "fcncHutMVAWeightFile" );
+        fcncHctMVAWeightFile_ = iConfig.getParameter<edm::FileInPath>( "fcncHctMVAWeightFile" );
+    
 
         DiphotonMva_.reset( new TMVA::Reader( "!Color:Silent" ) );
         DiphotonMva_->AddVariable( "dipho_leadEta", &leadeta_ );
@@ -587,6 +595,58 @@ namespace flashgg {
         TThMva_RunII_->AddVariable("dnn_score_0", &dnn_score_0_);
          
         TThMva_RunII_->BookMVA( "BDT" , tthMVA_RunII_weightfile_.fullPath());     
+
+        FCNCMva_.reset( new TMVA::Reader( "!Color:Silent" ) );
+
+        FCNCMva_->AddVariable("maxIDMVA_", &maxPhoID_);
+        FCNCMva_->AddVariable("minIDMVA_", &minPhoID_);
+        FCNCMva_->AddVariable("max2_btag_", &secondMaxBTagVal_noBB_);
+        FCNCMva_->AddVariable("max1_btag_", &maxBTagVal_noBB_);
+        FCNCMva_->AddVariable("dipho_delta_R", &diPhoDeltaR_);
+        FCNCMva_->AddVariable("njets_", &nJets_);
+        FCNCMva_->AddVariable("ht_", &ht_);
+        FCNCMva_->AddVariable("leadptoM_", &leadptom_);
+        FCNCMva_->AddVariable("subleadptoM_", &subleadptom_);
+        FCNCMva_->AddVariable("lead_eta_", &leadeta_);
+        FCNCMva_->AddVariable("sublead_eta_", &subleadeta_);
+
+        FCNCMva_->AddVariable("jet1_pt_", &jetPt_1_);
+        FCNCMva_->AddVariable("jet1_eta_", &jetEta_1_);
+        FCNCMva_->AddVariable("jet1_btag_", &btag_noBB_1_);
+        FCNCMva_->AddVariable("jet2_pt_", &jetPt_2_);
+        FCNCMva_->AddVariable("jet2_eta_", &jetEta_2_);
+        FCNCMva_->AddVariable("jet2_btag_", &btag_noBB_2_);
+        FCNCMva_->AddVariable("jet3_pt_", &jetPt_3_);
+        FCNCMva_->AddVariable("jet3_eta_", &jetEta_3_);
+        FCNCMva_->AddVariable("jet3_btag_", &btag_noBB_3_);
+        FCNCMva_->AddVariable("jet4_pt_", &jetPt_4_);
+        FCNCMva_->AddVariable("jet4_eta_", &jetEta_4_);
+        FCNCMva_->AddVariable("jet4_btag_", &btag_noBB_4_);
+
+        FCNCMva_->AddVariable("leadPSV_", &leadPSV_);
+        FCNCMva_->AddVariable("subleadPSV_", &subleadPSV_);
+
+        FCNCMva_->AddVariable("dipho_cosphi_", &diPhoCosPhi_);
+        FCNCMva_->AddVariable("dipho_rapidity_", &diPhoY_);
+        FCNCMva_->AddVariable("met_", &MetPt_);
+
+        FCNCMva_->AddVariable("dipho_pt_over_mass_", &diPhoPtoM_);
+
+        FCNCMva_->AddVariable("helicity_angle_", &helicity_angle_);
+        FCNCMva_->AddVariable("lep_pt_", &lepton_leadPt_);
+        FCNCMva_->AddVariable("lep_eta_", &lepton_leadEta_);
+        FCNCMva_->AddVariable("n_lep_tight_", &lepton_nTight_);
+
+        if (coupling_ == "Hut") {
+            std::cout << "Coupling selected as " << coupling_ << ", loading the following MVA: " << fcncHutMVAWeightFile_.fullPath() << std::endl;
+            FCNCMva_->BookMVA( "BDT" , fcncHutMVAWeightFile_.fullPath());
+        }
+        else if (coupling_ == "Hct") {
+            std::cout << "Coupling selected as " << coupling_ << ", loading the following MVA: " << fcncHctMVAWeightFile_.fullPath()
+<< std::endl;
+            FCNCMva_->BookMVA( "BDT" , fcncHctMVAWeightFile_.fullPath());
+        }
+  
 
         if (useLargeMVAs) {
             topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
@@ -1248,6 +1308,7 @@ namespace flashgg {
                 float mvaValue = DiphotonMva_-> EvaluateMVA( "BDT" );
 
                 tthMvaVal_RunII_ = convert_tmva_to_prob(TThMva_RunII_->EvaluateMVA( "BDT" ));
+                fcncMvaVal_ = convert_tmva_to_prob(FCNCMva_->EvaluateMVA( "BDT" ));
                 if (debug_) {
                   cout << "TTH Leptonic Tag -- input MVA variables for Run II MVA: " << endl;
                   cout << "--------------------------------------------------------" << endl;
@@ -1292,12 +1353,13 @@ namespace flashgg {
 
                   cout << "DNN Score 0: " << dnn_score_0_ << endl;
                   cout << endl;
-                  cout << "BDT Score: " << tthMvaVal_RunII_ << endl;
+                  cout << "BDT Score: " << fcncMvaVal_ << endl;
               }
 
               global_features.clear();
 
-              mvaValue = tthMvaVal_RunII_; // use Run II MVA for categorization
+              mvaValue = fcncMvaVal_;
+              //mvaValue = tthMvaVal_RunII_; // use Run II MVA for categorization
 
                 int catNumber = -1;
                 catNumber = chooseCategory( mvaValue , debug_);  

@@ -48,6 +48,7 @@ namespace flashgg {
     private:
         void produce( Event &, const EventSetup & ) override;
         int  chooseCategory( float );
+        void calculate_masses(std::vector<edm::Ptr<flashgg::Jet>> jets, edm::Ptr<flashgg::DiPhotonCandidate> dipho, float &m_ggj, float &m_jjj); 
 
         std::vector<edm::EDGetTokenT<View<flashgg::Jet> > > tokenJets_;
         std::vector<std::vector<edm::EDGetTokenT<edm::View<flashgg::Jet>>>> jetTokens_;
@@ -119,6 +120,11 @@ namespace flashgg {
         unique_ptr<TMVA::Reader>TThMva_RunII_;
         FileInPath tthMVA_RunII_weightfile_;
 
+        unique_ptr<TMVA::Reader> FCNCMva_RunII_;
+        FileInPath fcncHutMVAWeightFile_;
+        FileInPath fcncHctMVAWeightFile_;
+
+
         int jetcount_;
         float nJets_;
         int njets_btagloose_;
@@ -176,6 +182,8 @@ namespace flashgg {
       
         float tthMvaVal_;
         float tthMvaVal_RunII_;
+
+        float fcncMvaVal_;
         
         float maxBTagVal_noBB_;
         float secondMaxBTagVal_noBB_;
@@ -192,6 +200,9 @@ namespace flashgg {
         float ht_;
         float helicity_angle_;
         float top_tag_score_;
+
+        float m_ggj_;
+        float m_jjj_;
 
         float dnn_score_0_;
         float dnn_score_1_;
@@ -365,6 +376,9 @@ namespace flashgg {
         tthVsttGGDNNfile_ = iConfig.getParameter<edm::FileInPath>( "tthVsttGGDNNfile" );
         tthMVA_RunII_weightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVA_RunII_weightfile" );
 
+        fcncHutMVAWeightFile_ = iConfig.getParameter<edm::FileInPath>( "fcncHutMVAWeightFile" );
+        fcncHctMVAWeightFile_ = iConfig.getParameter<edm::FileInPath>( "fcncHctMVAWeightFile" );
+
         nJets_ = 0;
         leadJetPt_ = 0.;
         leadJetBTag_ = -1.;
@@ -518,7 +532,61 @@ namespace flashgg {
             TThMva_RunII_->AddVariable("dnn_score_1", &dnn_score_1_);
 
             TThMva_RunII_->BookMVA(_MVAMethod.c_str(), tthMVA_RunII_weightfile_.fullPath()); 
-        
+
+            FCNCMva_RunII_.reset( new TMVA::Reader( "!Color:Silent" ) );
+
+            FCNCMva_RunII_->AddVariable("maxIDMVA_", &maxPhoID_);
+            FCNCMva_RunII_->AddVariable("minIDMVA_", &minPhoID_);
+            FCNCMva_RunII_->AddVariable("max2_btag_", &secondMaxBTagVal_noBB_);
+            FCNCMva_RunII_->AddVariable("max1_btag_", &maxBTagVal_noBB_);
+            FCNCMva_RunII_->AddVariable("dipho_delta_R", &diPhoDeltaR_);
+            FCNCMva_RunII_->AddVariable("njets_", &nJets_);
+            FCNCMva_RunII_->AddVariable("ht_", &ht_);
+            FCNCMva_RunII_->AddVariable("leadptoM_", &pho1_ptoM_);
+            FCNCMva_RunII_->AddVariable("subleadptoM_", &pho2_ptoM_);
+            FCNCMva_RunII_->AddVariable("lead_eta_", &pho1_eta_);
+            FCNCMva_RunII_->AddVariable("sublead_eta_", &pho2_eta_);
+
+            FCNCMva_RunII_->AddVariable("jet1_pt_", &jetPt_1_);
+            FCNCMva_RunII_->AddVariable("jet1_eta_", &jetEta_1_);
+            FCNCMva_RunII_->AddVariable("jet1_btag_", &btag_noBB_1_);
+            FCNCMva_RunII_->AddVariable("jet2_pt_", &jetPt_2_);
+            FCNCMva_RunII_->AddVariable("jet2_eta_", &jetEta_2_);
+            FCNCMva_RunII_->AddVariable("jet2_btag_", &btag_noBB_2_);
+            FCNCMva_RunII_->AddVariable("jet3_pt_", &jetPt_3_);
+            FCNCMva_RunII_->AddVariable("jet3_eta_", &jetEta_3_);
+            FCNCMva_RunII_->AddVariable("jet3_btag_", &btag_noBB_3_);
+            FCNCMva_RunII_->AddVariable("jet4_pt_", &jetPt_4_);
+            FCNCMva_RunII_->AddVariable("jet4_eta_", &jetEta_4_);
+            FCNCMva_RunII_->AddVariable("jet4_btag_", &btag_noBB_4_);
+
+            FCNCMva_RunII_->AddVariable("leadPSV_", &pho1_hasPixelSeed_);
+            FCNCMva_RunII_->AddVariable("subleadPSV_", &pho2_hasPixelSeed_);
+
+            FCNCMva_RunII_->AddVariable("dipho_cosphi_", &diPhoCosPhi_);
+            FCNCMva_RunII_->AddVariable("dipho_rapidity_", &diPhoY_);
+            FCNCMva_RunII_->AddVariable("met_", &MET_);
+
+            FCNCMva_RunII_->AddVariable("dipho_pt_over_mass_", &diPhoPtoM_);
+
+            FCNCMva_RunII_->AddVariable("helicity_angle_", &helicity_angle_);
+            FCNCMva_RunII_->AddVariable("m_ggj_", &m_ggj_); 
+            FCNCMva_RunII_->AddVariable("m_jjj_", &m_jjj_); 
+
+            //FCNCMva_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+            //FCNCMva_RunII_->AddVariable("dnn_score_0", &dnn_score_0_);
+            //FCNCMva_RunII_->AddVariable("dnn_score_1", &dnn_score_1_);
+            
+            if (coupling_ == "Hut") {
+                std::cout << "Coupling selected as " << coupling_ << ", loading the following MVA: " << fcncHutMVAWeightFile_.fullPath() << std::endl;
+                FCNCMva_RunII_->BookMVA(_MVAMethod.c_str(), fcncHutMVAWeightFile_.fullPath());
+            }
+            else if (coupling_ == "Hct") {
+                std::cout << "Coupling selected as " << coupling_ << ", loading the following MVA: " << fcncHctMVAWeightFile_.fullPath()
+<< std::endl;
+                FCNCMva_RunII_->BookMVA(_MVAMethod.c_str(), fcncHctMVAWeightFile_.fullPath());
+            }
+ 
         }       
 
         if (useLargeMVAs) {
@@ -554,6 +622,46 @@ namespace flashgg {
             if( ( double )tthmvavalue > boundaries[boundaries.size() - n - 1] ) { return n; }
         }
         return -1; // Does not pass, object will not be produced
+    }
+
+    void FCNCHadronicTagProducer::calculate_masses(std::vector<edm::Ptr<flashgg::Jet>> jets, edm::Ptr<flashgg::DiPhotonCandidate> dipho, float &m_ggj, float &m_jjj)
+    {
+        if (jets.size() < 4) {
+            m_ggj = -9.;
+            m_jjj = -9.;
+            return;
+        }   
+
+        TLorentzVector pho1, pho2;
+        pho1.SetPtEtaPhiE(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), dipho->leadingPhoton()->energy());
+        pho2.SetPtEtaPhiE(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), dipho->subLeadingPhoton()->energy());
+        TLorentzVector diphoton = pho1 + pho2;
+
+        const float m_top = 172.44;
+        float min_mass_diff = 999999;
+        for (unsigned int i = 0; i < 4; i++) {
+            TLorentzVector light_jet;
+            light_jet.SetPtEtaPhiE(jets[i]->pt(), jets[i]->eta(), jets[i]->phi(), jets[i]->energy());
+
+            TLorentzVector t1 = diphoton + light_jet;
+            TLorentzVector t2;            
+
+            for (unsigned int j = 0; j < 4; j++) {
+                if (j == i)
+                    continue;
+                TLorentzVector jet;
+                jet.SetPtEtaPhiE(jets[j]->pt(), jets[j]->eta(), jets[j]->phi(), jets[j]->energy());
+                t2 += jet;
+            } 
+
+            float mass_diff = abs(t1.M() - m_top) + abs(t2.M() - m_top);
+            if (mass_diff < min_mass_diff) {
+                min_mass_diff = mass_diff;
+                m_ggj = t1.M();
+                m_jjj = t2.M();
+            }
+        }
+        return;   
     }
 
     void FCNCHadronicTagProducer::produce( Event &evt, const EventSetup & )
@@ -769,6 +877,9 @@ namespace flashgg {
                 dnn_score_0_ = -999.;
                 dnn_score_1_ = -999.;
                 tthMvaVal_RunII_ = -999.;
+
+                m_ggj_ = -999.;
+                m_jjj_ = -999.;
 
                 unsigned int jetCollectionIndex = diPhotons->ptrAt( diphoIndex )->jetCollectionIndex();
 
@@ -1101,11 +1212,14 @@ namespace flashgg {
                   pho2.SetPtEtaPhiE(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), dipho->subLeadingPhoton()->energy());
                   helicity_angle_ = helicity(pho1, pho2);
 
+                  calculate_masses(JetVect, dipho, m_ggj_, m_jjj_); 
+
                   top_tag_score_ = mvaEval.size() > 0 ? (mvaEval[0] != - 99 ? mvaEval[0] : -1) : - 1;
                   dnn_score_0_ = dnn_score_dipho;
                   dnn_score_1_ = dnn_score_ttGG;
 
                   tthMvaVal_RunII_ = convert_tmva_to_prob(TThMva_RunII_->EvaluateMVA( _MVAMethod.c_str() ));
+                  fcncMvaVal_ = convert_tmva_to_prob(FCNCMva_RunII_->EvaluateMVA( _MVAMethod.c_str() ));
                   if (debug_) {
                     cout << "TTH Hadronic Tag -- input MVA variables for Run II MVA: " << endl;
                     cout << "--------------------------------------------------------" << endl;
@@ -1145,17 +1259,21 @@ namespace flashgg {
                     cout << "helicity_angle_: " << helicity_angle_ << endl;
                     cout << "top_tag_score_: " << top_tag_score_ << endl;
 
+                    cout << "m_ggj_: " << m_ggj_ << endl;
+                    cout << "m_jjj_: " << m_jjj_ << endl;
+
                     cout << "DNN Score 0: " << dnn_score_0_ << endl;
                     cout << "DNN Score 1: " << dnn_score_1_ << endl;
                     cout << endl;
-                    cout << "BDT Score: " << tthMvaVal_RunII_ << endl;
+                    cout << "BDT Score: " << fcncMvaVal_ << endl;
                   }
 
                   global_features.clear();
 
                 }
 
-                tthMvaVal_ = tthMvaVal_RunII_; // use Run II MVA
+                tthMvaVal_ = fcncMvaVal_;
+                //tthMvaVal_ = tthMvaVal_RunII_; // use Run II MVA
 
                 bool isTTHHadronicTagged = false;
                 int catnum =-1;

@@ -124,7 +124,9 @@ flashggFCNCHadronicTag = cms.EDProducer("FlashggFCNCHadronicTagProducer",
                                        VertexTag=cms.InputTag('offlineSlimmedPrimaryVertices'),
                                        METTag=cms.InputTag('flashggMets'),
                                        rhoTag = cms.InputTag('fixedGridRhoFastjetAll'),
-#                                       tthMVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_tth_hadronic_2017Data_35vars_v0.weights.xml"),
+                                       fcncHutMVAWeightFile = cms.FileInPath("flashgg/Taggers/data/FCNC_Hadronic_v4.11_14Jan2020_impute_hut__bdt.xml"),
+                                       fcncHctMVAWeightFile = cms.FileInPath("flashgg/Taggers/data/FCNC_Hadronic_v4.11_14Jan2020_impute_hct__bdt.xml"),
+                                       #                                       tthMVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_tth_hadronic_2017Data_35vars_v0.weights.xml"),
                                        tthMVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_tth_hadronic_2017Data_30vars_v0.weights.xml"),
                                        topTaggerXMLfile = cms.FileInPath("flashgg/Taggers/data/resTop_xgb_csv_order_deepCTag.xml"),
                                        tthVsDiphoDNNfile = cms.FileInPath("flashgg/Taggers/data/ttHHadronic_ttH_vs_dipho_v1.6_28May2019_weights.pb"),
@@ -172,7 +174,7 @@ flashggFCNCHadronicTag = cms.EDProducer("FlashggFCNCHadronicTagProducer",
                                        ElePhotonDrCut = cms.double(0.),
                                        ElePhotonZMassCut = cms.double(5),
                                        DeltaRTrkEle = cms.double(0.),
-                                       debug = cms.bool(False)
+                                       debug = cms.bool(True)
                                        )
 
 
@@ -315,6 +317,8 @@ flashggFCNCLeptonicTag = cms.EDProducer("FlashggFCNCLeptonicTagProducer",
                                        VertexTag=cms.InputTag('offlineSlimmedPrimaryVertices'),
                                        GenParticleTag=cms.InputTag( "flashggPrunedGenParticles" ),
                                        rhoTag = cms.InputTag('fixedGridRhoFastjetAll'),
+                                       fcncHutMVAWeightFile = cms.FileInPath("flashgg/Taggers/data/FCNC_Leptonic_v4.11_14Jan2020_hut__bdt.xml"),
+                                       fcncHctMVAWeightFile = cms.FileInPath("flashgg/Taggers/data/FCNC_Leptonic_v4.11_14Jan2020_hct__bdt.xml"), 
                                        MVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVAClassification_BDT_training_v2.json.weights.xml"),
                                        topTaggerXMLfile = cms.FileInPath("flashgg/Taggers/data/resTop_xgb_csv_order_deepCTag.xml"),
                                        tthVsttGGDNNfile = cms.FileInPath("flashgg/Taggers/data/ttHLeptonic_ttH_vs_ttGG_v1.6_28May2019_weights.pb"),
@@ -351,7 +355,7 @@ flashggFCNCLeptonicTag = cms.EDProducer("FlashggFCNCLeptonicTagProducer",
                                        DeltaRTrkEle = cms.double(0.35),
                                        UseCutBasedDiphoId = cms.bool(False),
                                        SplitDiLeptEv = cms.bool(True),
-                                       debug = cms.bool(False),
+                                       debug = cms.bool(True),
                                        CutBasedDiphoId = cms.vdouble(0.4,0.3,0.0,-0.5,2.0,2.5)    # pT/m lead, pT/m sublead, leadIdMVA, subleadIdMVA, DeltaEta, DeltaPhi
 )
 
