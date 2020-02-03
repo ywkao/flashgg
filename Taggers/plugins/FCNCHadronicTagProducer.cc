@@ -657,8 +657,8 @@ namespace flashgg {
             float mass_diff = abs(t1.M() - m_top) + abs(t2.M() - m_top);
             if (mass_diff < min_mass_diff) {
                 min_mass_diff = mass_diff;
-                m_ggj = t1.M();
-                m_jjj = t2.M();
+                m_ggj = log(t1.M());
+                m_jjj = log(t2.M());
             }
         }
         return;   
