@@ -13,7 +13,8 @@ import shlex
 
 # -------------------------------------------------------------------------------                                                                                           
 def shell_args(cmd):
-    return [ shell_expand(a) for a in shlex.split(cmd) ]
+    #return [ shell_expand(a) for a in shlex.split(cmd) ]
+    return [ a for a in shlex.split(cmd) ]
 
 # -------------------------------------------------------------------------------
 def shell_expand(string):
@@ -255,7 +256,8 @@ class JobsManager(object):
         outputPfx = "%s/%s" % ( options.outputDir, outputPfx )
         
 
-        args.append("processIdMap=%s/config.json" % os.path.abspath(options.outputDir))
+        #args.append("processIdMap=%s/config.json" % os.path.abspath(options.outputDir))
+        args.append("processIdMap=$CMSSW_BASE/src/flashgg/Systematics/test/%s/config.json" % options.outputDir)
 
         pset = args[0] if not options.jobExe else args[1]
         with open(pset,"r") as pin:
@@ -264,12 +266,18 @@ class JobsManager(object):
                 pout.close()
                 if not options.jobExe: os.chmod( "%s/%s" % ( options.outputDir, os.path.basename(pset)), 0755  )
             pin.close()
-        pset = "%s/%s" % ( options.outputDir, os.path.basename(pset) )
-        pset = os.path.abspath(pset)
-        
+
+        #pset = "%s/%s" % ( options.outputDir, os.path.basename(pset) )
+        #pset = os.path.abspath(pset)
+        pset = "$CMSSW_BASE/src/flashgg/Systematics/test/" + pset
+
+        with open("%s/config.json" % (options.outputDir), "w+" ) as fout:
+            fout.write( dumpCfg(options,skip=["dry_run","summary"]) )
+
         if options.useTarball:
             apset = os.path.abspath(pset)
-            self.jobFactory.mkTarball("%s/sandbox.tgz" % os.path.abspath(options.outputDir),
+            #self.jobFactory.mkTarball("%s/sandbox.tgz" % os.path.abspath(options.outputDir),
+            self.jobFactory.mkTarball("$CMSSW_BASE/src/flashgg/Systematics/test/sandbox.tgz",
                                       tarball_entries=[apset,"python","lib","bin","src/flashgg/MetaData/python"],tarball_patterns=[("src/*","data"), ("external/*","data"), ("src/*","toolbox"), ("src/*","python")],
                                       tarball_transform="'s,%s,pset.py,'" % (apset.lstrip("/")), light=self.options.lighttarball
                                       )
@@ -281,8 +289,11 @@ class JobsManager(object):
             task_config["tarball"] = self.jobFactory.tarball
             
         if not options.stageTo:
-            self.jobFactory.stageDest( os.path.abspath(options.outputDir) )
-            options.stageTo = os.path.abspath(options.outputDir)
+            #self.jobFactory.stageDest( os.path.abspath(options.outputDir) )
+            #options.stageTo = os.path.abspath(options.outputDir)
+            self.jobFactory.stageDest( options.outputDir )
+            options.stageTo = options.outputDir
+
             print "\nWill stage output to %s using the command '%s'\n" % ( self.jobFactory.stage_dest, self.jobFactory.getStageCmd() )
 
         if options.jobExe:
@@ -290,8 +301,8 @@ class JobsManager(object):
         else:
             args[0] = pset
 
-        with open("%s/config.json" % (options.outputDir), "w+" ) as fout:
-            fout.write( dumpCfg(options,skip=["dry_run","summary"]) )
+        #with open("%s/config.json" % (options.outputDir), "w+" ) as fout:
+        #    fout.write( dumpCfg(options,skip=["dry_run","summary"]) )
         
         # store cmdLine
         options.cmdLine = str(" ".join(args))

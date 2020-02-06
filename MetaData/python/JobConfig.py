@@ -400,12 +400,11 @@ class JobConfig(object):
 
         # get the runs and lumis contained in each file of the secondary dataset
         if self.options.secondaryDataset:
-            secondary_files = [fdata['file'][0]['name'] for fdata in safe_das_query("file dataset=%s instance=prod/phys03" % self.options.secondaryDataset, 
-                                                                               cmd='dasgoclient --dasmaps=./')['data']]
+            secondary_files = [fdata['file'][0]['name'] for fdata in safe_das_query("file dataset=%s instance=prod/phys03" % self.options.secondaryDataset) 
             runs_and_lumis = {}
             for s in secondary_files:
                 runs_and_lumis[str(s)] = {data['lumi'][0]['run_number'] : data['lumi'][0]['lumi_section_num']
-                                          for data in safe_das_query("lumi file=%s instance=prod/phys03" % s, cmd='dasgoclient --dasmaps=./')['data']}
+                                          for data in safe_das_query("lumi file=%s instance=prod/phys03" % s)['data']}
 
         for f in files:
             if len(f.split(":",1))>1:
@@ -421,7 +420,7 @@ class JobConfig(object):
             elif self.options.secondaryDataset != "":
                 # match primary file to the corresponding secondary file(s)
                 f_runs_and_lumis = {data['lumi'][0]['run_number'] : data['lumi'][0]['lumi_section_num']
-                                    for data in safe_das_query("lumi file=%s instance=prod/phys03" % f, cmd='dasgoclient --dasmaps=./')['data']}
+                                    for data in safe_das_query("lumi file=%s instance=prod/phys03" % f)['data']}
                 for s_name, s_runs_and_lumis in runs_and_lumis.items():
                     matched_runs = set(f_runs_and_lumis.keys()).intersection(s_runs_and_lumis.keys())
                     for run in matched_runs:

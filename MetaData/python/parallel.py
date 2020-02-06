@@ -141,7 +141,7 @@ class WorkNodeJob(object):
         
         # get specific preamble needed by the runner
         #     this commands are expected to bring the process to the job working directory in the worker node
-        script += self.runner.preamble()+"\n"
+        #script += self.runner.preamble()+"\n"
         
         # copy grid proxy over
         if self.copy_proxy and self.runner.copyProxy():
@@ -167,7 +167,7 @@ class WorkNodeJob(object):
             try:
                 proxy = BatchRegistry.getProxy()
                 proxyname = proxy.split(":")[1]
-                script += "export X509_USER_PROXY=%s\n" % proxyname
+                #script += "export X509_USER_PROXY=%s\n" % proxyname
                 if WorkNodeJob.nwarnings > 0:
                     WorkNodeJob.nwarnings -= 1
                     print 
@@ -191,15 +191,30 @@ class WorkNodeJob(object):
         if not self.tarball:
             script += "cd " + os.environ['CMSSW_BASE']+"\n"
         else:
-            script += "source $VO_CMS_SW_DIR/cmsset_default.sh\n"
+            #script += "source $VO_CMS_SW_DIR/cmsset_default.sh\n"
+            
+            # Copy tarball with xrdcp
+            script += "xrdcp root://redirector.t2.ucsd.edu//" + (self.stage_dest.split("hadoop/cms"))[1] + "package.tar.gz .\n"
+
+            
             script += "export SCRAM_ARCH=%s\n" % os.environ['SCRAM_ARCH']
-            script += "scram project CMSSW %s\n" % os.environ['CMSSW_VERSION']
-            script += "cd %s\n" % os.environ['CMSSW_VERSION']
-            script += "tar zxf %s -h\n" % self.tarball
-            script += "cp src/XGBoostCMSSW/XGBoostInterface/toolbox/*xml config/toolbox/$SCRAM_ARCH/tools/selected/\n"
-            script += "scram setup rabit\n"
-            script += "scram setup xgboost\n"
-            script += "scram b\n"
+            script += "source /cvmfs/cms.cern.ch/cmsset_default.sh\n"
+            script += "tar xvf package.tar.gz\n"
+            script += "rm package.tar.gz\n"
+            script += "cp config.json %s/src/flashgg/Systematics/test/%s/\n" % (os.environ['CMSSW_VERSION'], self.job_outdir )
+            script += "cd %s/src/flashgg\n" % os.environ['CMSSW_VERSION']
+            script += "scramv1 b ProjectRename\n"
+            script += "scram b -j1\n"
+
+
+
+            #script += "scram project CMSSW %s\n" % os.environ['CMSSW_VERSION']
+            #script += "cd %s\n" % os.environ['CMSSW_VERSION']
+            #script += "tar zxf %s -h\n" % self.tarball
+            #script += "cp src/XGBoostCMSSW/XGBoostInterface/toolbox/*xml config/toolbox/$SCRAM_ARCH/tools/selected/\n"
+            #script += "scram setup rabit\n"
+            #script += "scram setup xgboost\n"
+            #script += "scram b\n"
             
         script += "eval $(scram runtime -sh)"+"\n"
         script += "cd $WD\n"
@@ -249,7 +264,8 @@ class WorkNodeJob(object):
         script += 'if [[ $retval == 0 ]]; then\n'
         script += '    errors=""\n'
         script += '    for file in $(find -name %s); do\n' % " -or -name ".join(self.stage_patterns)
-        script += '        %s $file %s\n' % ( self.stage_cmd, self.stage_dest )
+        #script += '        %s $file %s\n' % ( self.stage_cmd, self.stage_dest )
+        script += '        %s $file %s/$file\n' % ( self.stage_cmd, self.stage_dest )
         script += '        if [[ $? != 0 ]]; then\n'
         script += '            errors="$errors $file($?)"\n'
         script += '        fi\n'
@@ -323,18 +339,20 @@ class WorkNodeJobFactory(object):
         else:
             args.extend(["-h","--show-transformed","-zvcf",tarball])
         args.extend(content)
-        print 
-        print "Preparing tarball with the following content:"
-        print "\n".join(content)
-        print
-        stat,out =  commands.getstatusoutput("cd $CMSSW_BASE; tar %s" % " ".join(args) )
+        #print 
+        #print "Preparing tarball with the following content:"
+        #print "\n".join(content)
+        #print
+        #stat,out =  commands.getstatusoutput("cd $CMSSW_BASE; tar %s" % " ".join(args) )
 
-        if stat != 0:
-            print "error (%d) creating job tarball"
-            print "CMSSW_BASE: %s" % os.environ["CMSSW_BASE"]
-            print "args: %s" % " ".join(args)
-            print out
+        #if stat != 0:
+        #    print "error (%d) creating job tarball"
+        #    print "CMSSW_BASE: %s" % os.environ["CMSSW_BASE"]
+        #    print "args: %s" % " ".join(args)
+        #    print out
     
+        print "Preparing tarball..." # with the following content:"
+
 
     #----------------------------------------
     def getStageCmd(self):
@@ -349,6 +367,8 @@ class WorkNodeJobFactory(object):
             stage_cmd = "xrdcp"
         elif self.stage_dest.startswith("rsync") or "@" in self.stage_dest or "::" in self.stage_dest:
             stage_cmd = "rsync -av"
+        elif self.stage_dest.startswith("gsiftp"):
+            stage_cmd = "env -i X509_USER_PROXY=${X509_USER_PROXY} gfal-copy -p -f -t 4200 --verbose"
         else:
             stage_cmd = "cp -pv"
 
@@ -431,8 +451,10 @@ class HTCondorJob(object):
             fout.write('+JobFlavour   = "'+self.htcondorQueue+'"\n\n')
             fout.write('+OnExitHold   = ExitStatus != 0 \n\n')
             fout.write('periodic_release =  (NumJobStarts < 4) && ((CurrentTime - EnteredCurrentStatus) > 60) \n\n')
-            fout.write('input         = %s/.dasmaps/das_maps_dbs_prod.js \n' % os.environ['HOME'])
+            #fout.write('input         = %s/.dasmaps/das_maps_dbs_prod.js \n' % os.environ['HOME'])
             fout.write('executable    = '+self.execName+'\n')
+            fout.write('x509userproxy=/tmp/x509up_u{0}\n'.format(os.getuid()))
+            fout.write('transfer_input_files = '+self.execName.split("/")[0]+'/config.json\n')
             fout.write('arguments     = $(ProcId)\n')
             #fout.write('arguments   = $(ProcId)\n')
             if self.copy_proxy:
@@ -440,8 +462,10 @@ class HTCondorJob(object):
             fout.write('output        = '+self.jobName+'_$(ClusterId).$(ProcId).out\n')
             fout.write('error         = '+self.jobName+'_$(ClusterId).$(ProcId).err\n')
             fout.write('log           = '+self.jobName+'_$(ClusterId).$(ProcId)_htc.log\n\n')
+            fout.write('+SingularityImage = "/cvmfs/singularity.opensciencegrid.org/bbockelm/cms:rhel7"\n')
             fout.write('RequestCpus   = {}\n'.format(self.ncondorcpu))
-            fout.write('max_retries   = 2\n')
+            fout.write('max_retries   = 3\n')
+            fout.write('+DESIRED_Sites="T2_US_UCSD,T2_US_CALTECH,T2_US_MIT,T2_US_WISCONSIN,T2_US_Nebraska,T2_US_Purdue,T2_US_Vanderbilt,T2_US_Florida"\n')
             fout.write('queue '+str(njobs)+' \n')
             fout.close()        
 
