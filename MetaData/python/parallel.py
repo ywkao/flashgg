@@ -26,6 +26,7 @@ class BatchRegistry:
         "psi.ch"           : "sge",
         "hep.ph.ic.ac.uk"  : "sge",
         "irfu.ext"         : "iclust",
+        "t2.ucsd.edu"      : "htcondor",
         }
     
     #----------------------------------------
@@ -187,7 +188,7 @@ class WorkNodeJob(object):
         script += "echo\n"
         script += "echo\n"
         script += "echo\n"
-        
+
         if not self.tarball:
             script += "cd " + os.environ['CMSSW_BASE']+"\n"
         else:
@@ -206,8 +207,6 @@ class WorkNodeJob(object):
             script += "scramv1 b ProjectRename\n"
             script += "scram b -j1\n"
 
-
-
             #script += "scram project CMSSW %s\n" % os.environ['CMSSW_VERSION']
             #script += "cd %s\n" % os.environ['CMSSW_VERSION']
             #script += "tar zxf %s -h\n" % self.tarball
@@ -217,6 +216,7 @@ class WorkNodeJob(object):
             #script += "scram b\n"
             
         script += "eval $(scram runtime -sh)"+"\n"
+        script += "pip install --user htcondor\n"
         script += "cd $WD\n"
         
         if self.job_outdir:

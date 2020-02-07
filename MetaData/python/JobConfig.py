@@ -400,7 +400,7 @@ class JobConfig(object):
 
         # get the runs and lumis contained in each file of the secondary dataset
         if self.options.secondaryDataset:
-            secondary_files = [fdata['file'][0]['name'] for fdata in safe_das_query("file dataset=%s instance=prod/phys03" % self.options.secondaryDataset) 
+            secondary_files = [fdata['file'][0]['name'] for fdata in safe_das_query("file dataset=%s instance=prod/phys03" % self.options.secondaryDataset)] 
             runs_and_lumis = {}
             for s in secondary_files:
                 runs_and_lumis[str(s)] = {data['lumi'][0]['run_number'] : data['lumi'][0]['lumi_section_num']
