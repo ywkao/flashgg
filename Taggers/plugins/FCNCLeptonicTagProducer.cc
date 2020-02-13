@@ -476,7 +476,10 @@ namespace flashgg {
 
         leadPhoOverMassThreshold_ = iConfig.getParameter<double>( "leadPhoOverMassThreshold");
         subleadPhoOverMassThreshold_ = iConfig.getParameter<double>( "subleadPhoOverMassThreshold");
-        MVAThreshold_ = iConfig.getParameter<std::vector<double>>( "MVAThreshold");
+        if (coupling_ == "Hut")
+            MVAThreshold_ = iConfig.getParameter<std::vector<double>>( "MVAThresholdHut");
+        else if (coupling_ == "Hct")
+            MVAThreshold_ = iConfig.getParameter<std::vector<double>>( "MVAThresholdHct");
         PhoMVAThreshold_ = iConfig.getParameter<double>( "PhoMVAThreshold");
         jetsNumberThreshold_ = iConfig.getParameter<double>( "jetsNumberThreshold");
         bjetsNumberThreshold_ = iConfig.getParameter<double>( "bjetsNumberThreshold");

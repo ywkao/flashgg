@@ -162,7 +162,9 @@ flashggFCNCHadronicTag = cms.EDProducer("FlashggFCNCHadronicTagProducer",
                                        secondMaxBTagTTHHMVAThreshold = cms.double(0.0),
 #                                       Boundaries = cms.vdouble( 0.29, 0.36, 0.43 ),
 #                                       Boundaries = cms.vdouble( 0.38, 0.48, 0.56 ),
-                                       Boundaries = cms.vdouble(0.9675, 0.9937, 0.9971, 0.9991),
+                                       #Boundaries = cms.vdouble(0.9675, 0.9937, 0.9971, 0.9991),
+                                       BoundariesHut = cms.vdouble(0.9152012, 0.96306175),
+                                       BoundariesHct = cms.vdouble(0.95399004, 0.983957),
                                        dRJetPhoLeadCut =  cms.double(0.4),
                                        dRJetPhoSubleadCut = cms.double(0.4),
                                        MuonEtaCut = cms.double(2.4),
@@ -174,7 +176,7 @@ flashggFCNCHadronicTag = cms.EDProducer("FlashggFCNCHadronicTagProducer",
                                        ElePhotonDrCut = cms.double(0.),
                                        ElePhotonZMassCut = cms.double(5),
                                        DeltaRTrkEle = cms.double(0.),
-                                       debug = cms.bool(True)
+                                       debug = cms.bool(False)
                                        )
 
 
@@ -325,7 +327,9 @@ flashggFCNCLeptonicTag = cms.EDProducer("FlashggFCNCLeptonicTagProducer",
                                        tthMVA_RunII_weightfile = cms.FileInPath("flashgg/Taggers/data/ttHLeptonic_RunII_MVA_12Jun2019.xml"),
                                        leadPhoOverMassThreshold = cms.double(0.0),
                                        subleadPhoOverMassThreshold = cms.double(0.0),
-                                       MVAThreshold = cms.vdouble(0.8435, 0.9346, 0.9625, 0.9890),
+                                       #MVAThreshold = cms.vdouble(0.8435, 0.9346, 0.9625, 0.9890),
+                                       MVAThresholdHut = cms.vdouble(0.7507613, 0.9130082),
+                                       MVAThresholdHct = cms.vdouble(0.6333326, 0.88421005),
                                        #MVAThreshold = cms.vdouble(0.6, 0.3),
                                        PhoMVAThreshold = cms.double(-0.9),
                                        jetsNumberThreshold = cms.double(1.),
@@ -355,7 +359,7 @@ flashggFCNCLeptonicTag = cms.EDProducer("FlashggFCNCLeptonicTagProducer",
                                        DeltaRTrkEle = cms.double(0.35),
                                        UseCutBasedDiphoId = cms.bool(False),
                                        SplitDiLeptEv = cms.bool(True),
-                                       debug = cms.bool(True),
+                                       debug = cms.bool(False),
                                        CutBasedDiphoId = cms.vdouble(0.4,0.3,0.0,-0.5,2.0,2.5)    # pT/m lead, pT/m sublead, leadIdMVA, subleadIdMVA, DeltaEta, DeltaPhi
 )
 

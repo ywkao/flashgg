@@ -327,7 +327,10 @@ namespace flashgg {
         for (auto & tag : metTags)
            metTokens_.push_back(consumes<edm::View<flashgg::Met>>(tag)); 
 
-        boundaries = iConfig.getParameter<vector<double > >( "Boundaries" );
+        if (coupling_ == "Hut")
+            boundaries = iConfig.getParameter<vector<double > >( "BoundariesHut" );
+        else if (coupling_ == "Hct")
+            boundaries = iConfig.getParameter<vector<double > >( "BoundariesHct" );
         assert( is_sorted( boundaries.begin(), boundaries.end() ) ); // 
 
         MVAThreshold_ = iConfig.getParameter<double>( "MVAThreshold");
