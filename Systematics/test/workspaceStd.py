@@ -569,7 +569,7 @@ for tag in tagList:
               currentVariables = []
       isBinnedOnly = (systlabel !=  "")
       is_signal = reduce(lambda y,z: y or z, map(lambda x: customize.processId.count(x), signal_processes))
-      if ( customize.doPdfWeights or customize.doSystematics ) and ( (customize.datasetName() and customize.datasetName().count("HToGG")) or customize.processId.count("h_") or customize.processId.count("vbf_") or is_signal ) and (systlabel ==  "") and not (customize.processId == "th_125" or customize.processId == "bbh_125" or customize.processId == "FCNC"):
+      if ( customize.doPdfWeights or customize.doSystematics ) and ( (customize.datasetName() and customize.datasetName().count("HToGG")) or customize.processId.count("h_") or customize.processId.count("vbf_") or is_signal ) and (systlabel ==  "") and not (customize.processId == "th_125" or customize.processId == "bbh_125" or customize.processId == "FCNC" or True): # or True added as hack to prevent crashes from PDF weights for now, need to revisit
           print "Signal MC central value, so dumping PDF weights"
           dumpPdfWeights = True
           nPdfWeights = 60
