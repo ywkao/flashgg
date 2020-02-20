@@ -17,6 +17,7 @@ parser.add_argument("--dry_run", help = "don't actually make tarball or submit",
 parser.add_argument("--fcnc_wildcard", help = "wildcard to grab all fcnc samples", default = "/hadoop/cms/store/user/smay/ttH/MicroAOD/RunII/*FCNC*")
 parser.add_argument("--fcnc_only", help = "only run on fcnc locally", action="store_true")
 parser.add_argument("--save_tar", help = "don't remake tarball", action="store_true")
+parser.add_argument("--no_syst", help = "don't run systematics", action="store_true")
 args = parser.parse_args()
 
 import parallel_utils
@@ -27,6 +28,7 @@ for coupling in args.couplings.split(","):
     couplings[coupling] = {}
 
 years = args.years.split(",")
+syst = "False" if args.no_syst else "True"
 
 meta_conds = {
         "2016" : "$CMSSW_BASE/src/flashgg/MetaData/data/MetaConditions/Era2016_RR-17Jul2018_v1.json",
@@ -40,46 +42,6 @@ for coupling in couplings.keys():
         couplings[coupling][year]["outdir"] = "workspaces_" + coupling + "_" + year + "_" + args.tag + "_" + args.date + "/"
         os.system("mkdir -p %s" %  couplings[coupling][year]["outdir"] )
         os.system("cp workspaceStd.py %s" %  couplings[coupling][year]["outdir"] )
-
-
-"""
-fcnc_files = [file for file in glob.glob(args.fcnc_wildcard + "/*.root") if "RunIIFall17MiniAODv2" in file] # hard-coding this to 2017 only for now
-fcnc_commands = []
-fcnc_fpo = 10
-
-for coupling in couplings.keys():
-    year = "2017"
-    for i in range((len(fcnc_files) / fcnc_fpo) + 1):
-        script = "%s/workspaceStd_%d.py"  % (couplings[coupling][year]["outdir"], i)
-        os.system("cp workspaceStd.py %s" % script)
-        
-        file_list = ""
-        for j in range(fcnc_fpo):
-            if (i*fcnc_fpo) + j >= len(fcnc_files):
-                continue
-            file_list += "'file:%s'" % fcnc_files[(i*fcnc_fpo) + j]
-            if j != (fcnc_fpo - 1):
-                file_list += ", "
-
-        file_grabber = "process.source = cms.Source('PoolSource', fileNames=cms.untracked.vstring(%s))" % file_list
-        os.system('echo "%s" >> %s' % (file_grabber, script))
-        
-        command = "$CMSSW_BASE/src/flashgg/Systematics/test/" + script + " doHTXS=True useAAA=True doSystematics=True doPdfWeights=False processId=FCNC"
-        command += " metaConditions=%s" % meta_conds[year] 
-        if coupling == "Hut":
-            coupling_selection = "fcncHutTagsOnly=True"
-        elif coupling == "Hct":
-            coupling_selection = "fcncHctTagsOnly=True"
-        command += " " + coupling_selection
-        command += " outputFile=%s" % (couplings[coupling][year]["outdir"] + "/output_FCNC_USER_%d.root" % i)
-        fcnc_commands.append(command)
-
-
-parallel_utils.submit_jobs(fcnc_commands, 4)
-
-exit(1)
-"""
-
 
 tarfile = "package_" + args.tag + ".tar.gz"
 
@@ -100,7 +62,7 @@ for coupling in couplings.keys():
     for year in years:
         couplings[coupling][year]["stage_dir"] = "/hadoop/cms/store/user/smay/FCNC/" + couplings[coupling][year]["outdir"]
         os.system("mkdir -p %s" % couplings[coupling][year]["stage_dir"])
-        if not args.dry_run:
+        if not args.dry_run and not args.save_tar:
             os.system("cp %s %s" % (tarfile, couplings[coupling][year]["stage_dir"] + "package.tar.gz"))
             os.system("hadoop fs -setrep -R 30 %s" % (couplings[coupling][year]["stage_dir"].replace("/hadoop","") + "package.tar.gz"))
 
@@ -134,7 +96,7 @@ for coupling, info in couplings.iteritems():
                     coupling_selection = "fcncHutTagsOnly=True"
                 elif coupling == "Hct":
                     coupling_selection = "fcncHctTagsOnly=True"
-                syst_selection = "doSystematics=True"
+                syst_selection = "doSystematics=%s" % syst
                 metadata_ = copy.deepcopy(metadata)
                 metadata_["job_tag"] += "_" + coupling
 
@@ -147,7 +109,7 @@ for coupling, info in couplings.iteritems():
 
                 metadata_["executable"] = fcnc_executable
                 metadata_["tarfile"] = info[year]["outdir"] + "package.tar.gz"
-                metadata_["hadoop_path"] = info[year]["stage_dir"]
+                metadata_["hadoop_path"] = info[year]["stage_dir"].replace("/hadoop/cms/store/user/smay/","")
                 metadata_["args"] = ""
 
                 function = "python submit_fcnc.py --metadata '%s' --datasets '%s'" % (json.dumps(metadata_), json.dumps(datasets[year]))      
@@ -160,10 +122,12 @@ for coupling, info in couplings.iteritems():
                     coupling_selection = "fcncHutTagsOnly=True"
                 elif coupling == "Hct":
                     coupling_selection = "fcncHctTagsOnly=True"
-                syst_selection = "" if proc == "data" else "doSystematics=True"
+                syst_selection = "" if proc == "data" else "doSystematics=%s" % syst
                 command = "fggRunJobs.py --load wsJSONs/legacy_runII_v1_%s_%s.json -d %s workspaceStd.py -n 300 --no-copy-proxy -b htcondor --stage-to %s -q workday doHTXS=True %s %s" % (year, proc, info[year]["outdir"], "gsiftp://gftp.t2.ucsd.edu" + info[year]["stage_dir"], coupling_selection, syst_selection)
-                couplings[coupling][year]["command_" + proc] = command
-                command_list.append(command)
+                
+                if not args.fcnc_only:
+                    couplings[coupling][year]["command_" + proc] = command
+                    command_list.append(command)
 
 # Bookkeeping
 with open("ws_jobs_summary_%s.json" % args.tag, "w") as f_out:
