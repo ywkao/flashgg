@@ -21,7 +21,7 @@ parser.add_argument("--no_syst", help = "don't run systematics", action="store_t
 args = parser.parse_args()
 
 import parallel_utils
-#import submit_fcnc
+from flashgg_utils import *
 
 couplings = {}
 for coupling in args.couplings.split(","):
@@ -55,8 +55,8 @@ if not args.dry_run and not args.save_tar:
     os.system("XZ_OPT='-9e -T24' tar -Jc --exclude='.git' --exclude='my*.root' --exclude='*.tar*' --exclude='merged_ntuple*.root' --exclude='*.out' --exclude='*.err' --exclude='*.log' --exclude '*Taggers/data/DNN_models/*' --exclude '*Taggers/data/*dijet*' --exclude '*76X*.root' --exclude '*76X*.xml' --exclude '*Taggers/data/DNN_models/*' --exclude '*Taggers/data/HHTagger/*' --exclude '*Taggers/data/ttHKiller/*' -f %s ../../../../../%s/" % (tarfile, cmssw_ver))
 
 
-
-
+productions = {}
+procs = args.procs.split(",")
 # Send tarball to multiple locations
 for coupling in couplings.keys():
     for year in years:
@@ -66,76 +66,181 @@ for coupling in couplings.keys():
             os.system("cp %s %s" % (tarfile, couplings[coupling][year]["stage_dir"] + "package.tar.gz"))
             os.system("hadoop fs -setrep -R 30 %s" % (couplings[coupling][year]["stage_dir"].replace("/hadoop","") + "package.tar.gz"))
 
+        couplings[coupling][year]["datasets"] = {}
+        for proc in procs:
+            if proc == "fcnc":
+                continue
+            with open("wsJSONs/legacy_runII_v1_%s_%s.json" % (year, proc), "r") as f_in:
+                datasets_to_add = json.load(f_in)
+            for process, info in datasets_to_add["processes"].iteritems():
+                if isinstance(info[0], list):
+                    info = info[0]
+                production = choose_production(info[0])                
+                couplings[coupling][year]["datasets"][process] = { "sample" : info[0].split("/")[1], "catalog_name" : info[0], "cmdLine" : datasets_to_add["cmdLine"] , "production" : production}
+                productions[info[0].split("/")[1]] = production
+             
+                  
+catalogs = ["Era2016_RR-17Jul2018_v2", "Era2017_RR-31Mar2018_v2", "Era2018_RR-17Sep2018_v2"]
+samples = get_samples_from_catalogs(catalogs, productions)
+
 datasets = {
         "2016" : {},
         "2017" : {},
         "2018" : {}
         }
 
+for dataset in datasets.keys():
+    for proc in procs:
+        datasets[dataset][proc] = {}
+
 for dataset in [dir for dir in glob.glob(args.fcnc_wildcard) if "RunIIFall17MiniAODv2" in dir]:
     sample = dataset.split("/")[-1]
-    datasets["2017"][sample] = { "input_loc" : dataset }
+    datasets["2017"]["fcnc"][sample] = { "input_loc" : dataset }
+
+for year in years:
+    for proc in procs:
+        if proc == "fcnc":
+            continue
+        with open("wsJSONs/legacy_runII_v1_%s_%s.json" % (year, proc), "r") as f_in:
+            datasets_to_add = json.load(f_in)
+        for sample, info in datasets_to_add["processes"].iteritems():
+            if isinstance(info[0], list):
+                info = info[0]
+            sample_name = info[0].split("/")[1]
+            catalog_name = info[0]
+            cmdLine = datasets_to_add["cmdLine"]
+            if sample_name in samples.keys():
+                xs = samples[sample_name]["xs"]
+                scale1fb = samples[sample_name][year]["scale1fb"]
+                production_names = []
+                for production in samples[sample_name][year].keys():
+                    if production == "scale1fb":
+                        continue
+                    else:
+                        production_names.append(production)
+                if len(production_names) > 1 and not ("DoubleEG" in sample or "EGamma" in sample):
+                    print "More than one possible production to pick for sample %s" % sample_name
+                if len(production_names) == 0:
+                    print "Did not identify production for sample %s, year %s" % (sample_name, year)
+                    continue
+                files = []
+                nEvents = 0
+                weights = 0
+
+                for production in production_names:
+                    files += samples[sample_name][year][production]["files"]
+                    nEvents += samples[sample_name][year][production]["nevents"]
+                    weights += samples[sample_name][year][production]["weights"]
+
+                datasets[year][proc][sample] = {
+                        "sample_name" : sample_name,
+                        "catalog_name" : catalog_name,
+                        "cmdLine" : cmdLine,
+                        "xs" : xs,
+                        "scale1fb" : scale1fb,
+                        "production_names" : production_names,
+                        "files" : files,
+                        "nEvents" : "nEvents",
+                        "weights" : weights,
+                        "args" : cmdLine + " dataset=%s" % catalog_name 
+                        }
+
+            else:
+                print "Could not find sample %s in flashgg catalog!!!" % sample_name
+
 
 metadata = {
-        "fpo" : 1,
         "job_tag" : args.tag,
         "cmssw_ver" : cmssw_ver,
 }
 
+fpo = {
+        "data" : 10,
+        "sig" : 1,
+        "fcnc" : 1,
+        "zh" : 1,
+}
 
 command_list = []
-procs = args.procs.split(",")
+
 
 for coupling, info in couplings.iteritems():
+    if coupling == "Hut":
+        coupling_selection = "fcncHutTagsOnly=True"
+    elif coupling == "Hct":
+        coupling_selection = "fcncHctTagsOnly=True"
+    syst_selection = "doSystematics=%s" % syst
     for proc in procs:
         if proc == "fcnc":
-            for year in years:
-                if len(datasets[year].keys()) == 0:
-                    continue
-                if coupling == "Hut":
-                    coupling_selection = "fcncHutTagsOnly=True"
-                elif coupling == "Hct":
-                    coupling_selection = "fcncHctTagsOnly=True"
-                syst_selection = "doSystematics=%s" % syst
-                metadata_ = copy.deepcopy(metadata)
-                metadata_["job_tag"] += "_" + coupling
+            continue
+        proc_name = "FCNC" if proc == "fcnc" else proc
+        for year in years:
+            if len(datasets[year].keys()) == 0:
+                continue
+            metadata_ = copy.deepcopy(metadata)
+            metadata_["job_tag"] += "_" + coupling
 
-                fcnc_executable = "%s/fcnc_executable.sh" % info[year]["outdir"]
-                os.system("cp fcnc_executable.sh %s" % fcnc_executable)
-                os.system("sed -i 's@MY_DIR@%s@g' %s" % (info[year]["outdir"], fcnc_executable))
+            fcnc_executable = "%s/executable_%s.sh" % (info[year]["outdir"], proc)
+            os.system("cp fcnc_executable.sh %s" % fcnc_executable)
+            os.system("sed -i 's@MY_DIR@%s@g' %s" % (info[year]["outdir"], fcnc_executable))
 
-                command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True useAAA=True doPdfWeights=False processId=FCNC %s %s %s %s %s" % (coupling_selection, syst_selection, "outputFile=" + couplings[coupling][year]["outdir"] + "/output_FCNC_USER.root", "jobId=$INDEX", "metaConditions=" + meta_conds[year]) 
-                os.system("sed -i 's@COMMAND@%s@g' %s" % (command, fcnc_executable))
+            if proc == "fcnc":
+                command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True useAAA=True doPdfWeights=False processId=%s %s %s %s %s %s" % (proc_name, coupling_selection, syst_selection, "outputFile=" + couplings[coupling][year]["outdir"] + "/output_FCNC_USER.root", "jobId=$INDEX", "metaConditions=" + meta_conds[year]) 
+            else:
+                command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True doPdfWeights=False processId=%s" % (proc_name)
 
-                metadata_["executable"] = fcnc_executable
-                metadata_["tarfile"] = info[year]["outdir"] + "package.tar.gz"
-                metadata_["hadoop_path"] = info[year]["stage_dir"].replace("/hadoop/cms/store/user/smay/","")
-                metadata_["args"] = ""
+            print "\n Proc: %s, Command: %s \n" % (proc, command)
 
-                function = "python submit_fcnc.py --metadata '%s' --datasets '%s'" % (json.dumps(metadata_), json.dumps(datasets[year]))      
-                couplings[coupling][year]["command_" + proc] = function
-                command_list.append(function)
+            os.system("sed -i 's@COMMAND@%s@g' %s" % (command, fcnc_executable))
 
-        else:
-            for year in years:
-                if coupling == "Hut":
-                    coupling_selection = "fcncHutTagsOnly=True"
-                elif coupling == "Hct":
-                    coupling_selection = "fcncHctTagsOnly=True"
-                syst_selection = "" if proc == "data" else "doSystematics=%s" % syst
-                command = "fggRunJobs.py --load wsJSONs/legacy_runII_v1_%s_%s.json -d %s workspaceStd.py -n 300 --no-copy-proxy -b htcondor --stage-to %s -q workday doHTXS=True %s %s" % (year, proc, info[year]["outdir"], "gsiftp://gftp.t2.ucsd.edu" + info[year]["stage_dir"], coupling_selection, syst_selection)
-                
-                if not args.fcnc_only:
-                    couplings[coupling][year]["command_" + proc] = command
-                    command_list.append(command)
+            metadata_["executable"] = fcnc_executable
+            metadata_["tarfile"] = info[year]["outdir"] + "package.tar.gz"
+            metadata_["hadoop_path"] = info[year]["stage_dir"].replace("/hadoop/cms/store/user/smay/","")
+            metadata_["args"] = ""
+            metadata_["fpo"] = fpo[proc]
+
+            #function = "python submit_jobs.py --proc %s --metadata '%s' --datasets '%s'" % (proc, json.dumps(metadata_), json.dumps(datasets[year]))      
+            metadata_file = info[year]["outdir"] + "%s_metadata.json" % proc
+            with open(metadata_file, "w") as f_out:
+                json.dump(metadata_, f_out, sort_keys=True, indent=4)
+
+            datasets_file = info[year]["outdir"] + "%s_datasets.json" % proc
+            with open(datasets_file, "w") as f_out:
+                json.dump(datasets[year][proc], f_out, sort_keys=True, indent=4)
+
+            function = "python submit_jobs.py --proc %s --metadata %s --datasets %s" % (proc, metadata_file, datasets_file)
+
+            couplings[coupling][year]["command_" + proc] = function
+            command_list.append(function)
+
+        #else:
+        #    for year in years:
+        #        metadata_ = copy.deepcopy(metadata)
+
+        #else:
+        #    for year in years:
+        #        if coupling == "Hut":
+        #            coupling_selection = "fcncHutTagsOnly=True"
+        #        elif coupling == "Hct":
+        #            coupling_selection = "fcncHctTagsOnly=True"
+        #        syst_selection = "" if proc == "data" else "doSystematics=%s" % syst
+        #        command = "fggRunJobs.py --load wsJSONs/legacy_runII_v1_%s_%s.json -d %s workspaceStd.py -n 300 --no-copy-proxy -b htcondor --stage-to %s -q workday doHTXS=True %s %s" % (year, proc, info[year]["outdir"], "gsiftp://gftp.t2.ucsd.edu" + info[year]["stage_dir"], coupling_selection, syst_selection)
+        #        
+        #        if not args.fcnc_only:
+        #            couplings[coupling][year]["command_" + proc] = command
+        #            command_list.append(command)
 
 # Bookkeeping
 with open("ws_jobs_summary_%s.json" % args.tag, "w") as f_out:
     json.dump(couplings, f_out, sort_keys=True, indent=4)
+with open("ws_datasets_%s.json" % args.tag, "w") as f_out:
+    json.dump(datasets, f_out, sort_keys=True, indent=4)
 
 # Submit all
 if args.dry_run:
     for command in command_list:
+        print "\n\nCOMMAND"
         print command
 else:
-    parallel_utils.submit_jobs(command_list, len(command_list), False)
+    #parallel_utils.submit_jobs(command_list, 1, True, True)
+    parallel_utils.submit_jobs(command_list, len(command_list), True, True)

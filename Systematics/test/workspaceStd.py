@@ -185,7 +185,12 @@ customize.options.register('applyNNLOPSweight',
                            VarParsing.VarParsing.varType.bool,
                            'applyNNLOPSweight'
                            )
-
+customize.options.register('filenames',
+                           '',
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.string,
+                           'filenames'
+                           )
 
 print "Printing defaults"
 print 'doFiducial '+str(customize.doFiducial)
@@ -823,3 +828,7 @@ if customize.verboseSystDump:
 #print >> processDumpFile, process.dumpPython()
 # call the customization
 customize(process)
+
+if customize.filenames:
+    files = cms.untracked.vstring([file.replace("/hadoop", "file:/hadoop") for file in filenames.split(",")])
+    cms.Source('PoolSource', fileNames=files)

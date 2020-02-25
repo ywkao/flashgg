@@ -5,9 +5,23 @@ INPUTFILENAMES=$3
 INDEX=$4
 CMSSW_VER=$5
 
-ARGS=$7
+ARGS="${@:7}"
 
 WD=$PWD
+
+echo "[wrapper] OUTPUTDIR   = " ${OUTPUTDIR}
+echo "[wrapper] OUTPUTFILENAME  = " ${OUTPUTFILENAME}
+echo "[wrapper] INPUTFILENAMES  = " ${INPUTFILENAMES}
+echo "[wrapper] INDEX       = " ${INDEX}
+
+echo "[wrapper] printing env"
+printenv
+echo 
+
+echo "[wrapper] hostname  = " `hostname`
+echo "[wrapper] date      = " `date`
+echo "[wrapper] linux timestamp = " `date +%s`
+
 echo
 echo
 echo
@@ -19,6 +33,7 @@ tar xvf package.tar.gz
 rm package.tar.gz
 cp config.json $CMSSW_VER/src/flashgg/Systematics/test/MY_DIR//
 cd $CMSSW_VER/src/flashgg
+echo "[wrapper] in directory: " ${PWD}
 scramv1 b ProjectRename
 scram b -j1
 eval $(scram runtime -sh)
@@ -30,8 +45,13 @@ ls $X509_USER_PROXY
 mkdir .dasmaps
 mv das_maps_dbs_prod.js .dasmaps/
 
-echo "process.source = cms.Source('PoolSource', fileNames=cms.untracked.vstring('file:$INPUTFILENAMES'))" >> "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py"
-COMMAND
+echo "[wrapper `date +\"%Y%m%d %k:%M:%S\"`] running: COMMAND ${ARGS}"
+COMMAND ${ARGS}
+
+if [ "$?" != "0" ]; then
+    echo "Removing output file because cmsRun crashed with exit code $?"
+    rm *.root
+fi
 
 cd MY_DIR
 echo
@@ -39,17 +59,9 @@ echo
 echo "Job finished with exit code ${retval}"
 echo "Files in ouput folder"
 ls -ltr
-if [[ $retval == 0 ]]; then
-    errors=""
-    for file in $(find -name '*.root' -or -name '*.xml'); do
-        env -i X509_USER_PROXY=${X509_USER_PROXY} gfal-copy -p -f -t 4200 --verbose $file gsiftp://gftp.t2.ucsd.edu/hadoop/cms/store/user/smay/FCNC/MY_DIR//$file
-        if [[ $? != 0 ]]; then
-            errors="$errors $file($?)"
-        fi
-    done
-    if [[ -n "$errors" ]]; then
-       echo "Errors while staging files"
-       echo "$errors"
-       exit -2
-    fi
-fi
+
+eval `scram unsetenv -sh`
+for file in $(find -name '*.root'); do
+    echo "[wrapper `date +\"%Y%m%d %k:%M:%S\"`] Attempting to gfal-copy file: $file to gsiftp://gftp.t2.ucsd.edu/${OUTPUTDIR}/${OUTPUTFILENAME}_${INDEX}.root"
+    gfal-copy -p -f -t 4200 --verbose file://`pwd`/$file gsiftp://gftp.t2.ucsd.edu/${OUTPUTDIR}/${OUTPUTFILENAME}_${INDEX}.root --checksum ADLER32
+done
