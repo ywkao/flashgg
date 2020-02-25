@@ -56,7 +56,7 @@ def submit_workspaces(datasets, metadata):
             files = info["files"]
             files = [file(name=x) for x in files]
             print "Args: ", info["args"]
-            sample = Sample(dataset = info["sample_name"], files = files)
+            sample = Sample(dataset = info["proc"] + "_" + info["year"] + "_" + info["sample_name"], files = files)
             sample.info["nevts"] = 0
             task = CondorTask(
                     sample = sample,

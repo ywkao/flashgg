@@ -142,7 +142,9 @@ for year in years:
                         "files" : files,
                         "nEvents" : "nEvents",
                         "weights" : weights,
-                        "args" : cmdLine + " dataset=%s" % catalog_name 
+                        "args" : cmdLine + " dataset=%s" % catalog_name,
+                        "proc" : proc,
+                        "year" : year,
                         }
 
             else:
@@ -155,7 +157,7 @@ metadata = {
 }
 
 fpo = {
-        "data" : 10,
+        "data" : 25,
         "sig" : 1,
         "fcnc" : 1,
         "zh" : 1,
@@ -171,8 +173,6 @@ for coupling, info in couplings.iteritems():
         coupling_selection = "fcncHctTagsOnly=True"
     syst_selection = "doSystematics=%s" % syst
     for proc in procs:
-        if proc == "fcnc":
-            continue
         proc_name = "FCNC" if proc == "fcnc" else proc
         for year in years:
             if len(datasets[year].keys()) == 0:
@@ -185,9 +185,9 @@ for coupling, info in couplings.iteritems():
             os.system("sed -i 's@MY_DIR@%s@g' %s" % (info[year]["outdir"], fcnc_executable))
 
             if proc == "fcnc":
-                command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True useAAA=True doPdfWeights=False processId=%s %s %s %s %s %s" % (proc_name, coupling_selection, syst_selection, "outputFile=" + couplings[coupling][year]["outdir"] + "/output_FCNC_USER.root", "jobId=$INDEX", "metaConditions=" + meta_conds[year]) 
+                command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True useAAA=True doPdfWeights=False processId=%s %s %s %s %s %s" % (proc_name, coupling_selection, syst_selection, "outputFile=" + couplings[coupling][year]["outdir"] + "/output_FCNC_USER.root", "jobId=-1", "metaConditions=" + meta_conds[year]) 
             else:
-                command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True doPdfWeights=False processId=%s" % (proc_name)
+                command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True doPdfWeights=False processId=%s %s %s %s %s" % (proc_name, coupling_selection, syst_selection, "outputFile=" + couplings[coupling][year]["outdir"] + "/output_FCNC_USER.root", "jobId=-1")
 
             print "\n Proc: %s, Command: %s \n" % (proc, command)
 
