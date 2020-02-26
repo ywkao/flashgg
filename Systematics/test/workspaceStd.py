@@ -833,5 +833,5 @@ if customize.filenames:
     if "hadoop" in customize.filenames:
         files = cms.untracked.vstring([file.replace("/hadoop", "file:/hadoop") for file in customize.filenames.split(",")])
     else:
-        files =  cms.untracked.vstring(customize.filenames.split(","))
+        files = cms.untracked.vstring([file.replace("/store", "root://cms-xrd-global.cern.ch:1094//store") for file in customize.filenames.split(",")])
     process.source = cms.Source('PoolSource', fileNames=files)
