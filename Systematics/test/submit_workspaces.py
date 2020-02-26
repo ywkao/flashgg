@@ -79,7 +79,7 @@ for coupling in couplings.keys():
                 couplings[coupling][year]["datasets"][process] = { "sample" : info[0].split("/")[1], "catalog_name" : info[0], "cmdLine" : datasets_to_add["cmdLine"] , "production" : production}
                 productions[info[0].split("/")[1]] = production
              
-                  
+
 catalogs = ["Era2016_RR-17Jul2018_v2", "Era2017_RR-31Mar2018_v2", "Era2018_RR-17Sep2018_v2"]
 samples = get_samples_from_catalogs(catalogs, productions)
 
