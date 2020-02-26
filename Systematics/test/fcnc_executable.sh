@@ -45,12 +45,14 @@ ls $X509_USER_PROXY
 mkdir .dasmaps
 mv das_maps_dbs_prod.js .dasmaps/
 
-echo "[wrapper `date +\"%Y%m%d %k:%M:%S\"`] running: COMMAND ${ARGS}"
-COMMAND ${ARGS}
+echo "[wrapper `date +\"%Y%m%d %k:%M:%S\"`] running: COMMAND filenames=${INPUTFILENAMES} ${ARGS}"
+COMMAND filenames=${INPUTFILENAMES} ${ARGS}
 
 if [ "$?" != "0" ]; then
     echo "Removing output file because cmsRun crashed with exit code $?"
-    rm *.root
+    for file in $(find -name '*.root'); do
+        rm $file
+    done
 fi
 
 cd MY_DIR

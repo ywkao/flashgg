@@ -830,5 +830,8 @@ if customize.verboseSystDump:
 customize(process)
 
 if customize.filenames:
-    files = cms.untracked.vstring([file.replace("/hadoop", "file:/hadoop") for file in filenames.split(",")])
-    cms.Source('PoolSource', fileNames=files)
+    if "hadoop" in customize.filenames:
+        files = cms.untracked.vstring([file.replace("/hadoop", "file:/hadoop") for file in customize.filenames.split(",")])
+    else:
+        files =  cms.untracked.vstring(customize.filenames.split(","))
+    process.source = cms.Source('PoolSource', fileNames=files)

@@ -142,7 +142,7 @@ for year in years:
                         "files" : files,
                         "nEvents" : "nEvents",
                         "weights" : weights,
-                        "args" : cmdLine + " dataset=%s" % catalog_name,
+                        "args" : cmdLine + " dataset=%s" % catalog_name + " processId=%s" % sample,
                         "proc" : proc,
                         "year" : year,
                         }
@@ -187,10 +187,7 @@ for coupling, info in couplings.iteritems():
             if proc == "fcnc":
                 command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True useAAA=True doPdfWeights=False processId=%s %s %s %s %s %s" % (proc_name, coupling_selection, syst_selection, "outputFile=" + couplings[coupling][year]["outdir"] + "/output_FCNC_USER.root", "jobId=-1", "metaConditions=" + meta_conds[year]) 
             else:
-                command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True doPdfWeights=False processId=%s %s %s %s %s" % (proc_name, coupling_selection, syst_selection, "outputFile=" + couplings[coupling][year]["outdir"] + "/output_FCNC_USER.root", "jobId=-1")
-
-            print "\n Proc: %s, Command: %s \n" % (proc, command)
-
+                command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True doPdfWeights=False %s %s %s %s" % (coupling_selection, syst_selection, "outputFile=" + couplings[coupling][year]["outdir"] + "/output_FCNC_USER.root", "jobId=-1")
             os.system("sed -i 's@COMMAND@%s@g' %s" % (command, fcnc_executable))
 
             metadata_["executable"] = fcnc_executable
@@ -199,7 +196,6 @@ for coupling, info in couplings.iteritems():
             metadata_["args"] = ""
             metadata_["fpo"] = fpo[proc]
 
-            #function = "python submit_jobs.py --proc %s --metadata '%s' --datasets '%s'" % (proc, json.dumps(metadata_), json.dumps(datasets[year]))      
             metadata_file = info[year]["outdir"] + "%s_metadata.json" % proc
             with open(metadata_file, "w") as f_out:
                 json.dump(metadata_, f_out, sort_keys=True, indent=4)
@@ -212,23 +208,6 @@ for coupling, info in couplings.iteritems():
 
             couplings[coupling][year]["command_" + proc] = function
             command_list.append(function)
-
-        #else:
-        #    for year in years:
-        #        metadata_ = copy.deepcopy(metadata)
-
-        #else:
-        #    for year in years:
-        #        if coupling == "Hut":
-        #            coupling_selection = "fcncHutTagsOnly=True"
-        #        elif coupling == "Hct":
-        #            coupling_selection = "fcncHctTagsOnly=True"
-        #        syst_selection = "" if proc == "data" else "doSystematics=%s" % syst
-        #        command = "fggRunJobs.py --load wsJSONs/legacy_runII_v1_%s_%s.json -d %s workspaceStd.py -n 300 --no-copy-proxy -b htcondor --stage-to %s -q workday doHTXS=True %s %s" % (year, proc, info[year]["outdir"], "gsiftp://gftp.t2.ucsd.edu" + info[year]["stage_dir"], coupling_selection, syst_selection)
-        #        
-        #        if not args.fcnc_only:
-        #            couplings[coupling][year]["command_" + proc] = command
-        #            command_list.append(command)
 
 # Bookkeeping
 with open("ws_jobs_summary_%s.json" % args.tag, "w") as f_out:
