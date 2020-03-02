@@ -78,6 +78,14 @@
 <class name="std::vector<flashgg::TTHLeptonicTag>"/>
 <class name="edm::Wrapper<std::vector<flashgg::TTHLeptonicTag> >"/>
 
+<class name="flashgg::FCNCLeptonicTag"/>
+<class name="std::vector<flashgg::FCNCLeptonicTag>"/>
+<class name="edm::Wrapper<std::vector<flashgg::FCNCLeptonicTag> >"/>
+
+<class name="flashgg::FCNCHadronicTag"/>
+<class name="std::vector<flashgg::FCNCHadronicTag>"/>
+<class name="edm::Wrapper<std::vector<flashgg::FCNCHadronicTag> >"/>
+
 <class name="flashgg::THQLeptonicTag"/>
 <class name="std::vector<flashgg::THQLeptonicTag>"/>
 <class name="edm::Wrapper<std::vector<flashgg::THQLeptonicTag> >"/>
