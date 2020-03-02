@@ -10,7 +10,7 @@ namespace flashgg {
     class DiPhotonTagBase : public WeightedObject
     {
     public:
-        enum tag_t { kUndefined = 0, kUntagged, kVBF, kTTHHadronic, kTTHLeptonic, kTHQLeptonic, kTTHDiLepton, kVHTight, kVHLoose, kVHHadronic, kVHEt,  kZHLeptonic, kWHLeptonic, kVHLeptonicLoose, kVHMet, kStageOneCombined };
+        enum tag_t { kUndefined = 0, kUntagged, kVBF, kTTHHadronic, kTTHLeptonic, kFCNCLeptonic, kFCNCHadronic, kTHQLeptonic, kTTHDiLepton, kVHTight, kVHLoose, kVHHadronic, kVHEt,  kZHLeptonic, kWHLeptonic, kVHLeptonicLoose, kVHMet, kStageOneCombined };
 
         enum stage1recoTag { LOGICERROR = -1, NOTAG = 0, RECO_0J_PTH_0_10_Tag0, RECO_0J_PTH_0_10_Tag1, RECO_0J_PTH_GT10_Tag0, RECO_0J_PTH_GT10_Tag1,
                              RECO_1J_PTH_0_60_Tag0, RECO_1J_PTH_0_60_Tag1, RECO_1J_PTH_60_120_Tag0, RECO_1J_PTH_60_120_Tag1,

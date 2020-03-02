@@ -20,6 +20,8 @@
 #include "flashgg/DataFormats/interface/SingleVertexView.h"
 #include "flashgg/DataFormats/interface/TTHHadronicTag.h"
 #include "flashgg/DataFormats/interface/TTHLeptonicTag.h"
+#include "flashgg/DataFormats/interface/FCNCHadronicTag.h"
+#include "flashgg/DataFormats/interface/FCNCLeptonicTag.h"
 #include "flashgg/DataFormats/interface/THQLeptonicTag.h"
 #include "flashgg/DataFormats/interface/THQLeptonicTagTruth.h"
 #include "flashgg/DataFormats/interface/TTHDiLeptonTag.h"
@@ -206,6 +208,10 @@ namespace  {
         std::vector<flashgg::TTHLeptonicTag> vec_tthl;
         edm::Wrapper<std::vector<flashgg::TTHLeptonicTag> > wrp_vec_tthl;
 
+        flashgg::FCNCLeptonicTag fcncl;
+        std::vector<flashgg::FCNCLeptonicTag> vec_fcncl;
+        edm::Wrapper<std::vector<flashgg::FCNCLeptonicTag> > wrp_vec_fcncl; 
+
         flashgg::THQLeptonicTag thql;
         std::vector<flashgg::THQLeptonicTag> vec_thql;
         edm::Wrapper<std::vector<flashgg::THQLeptonicTag> > wrp_vec_thql;
@@ -227,6 +233,10 @@ namespace  {
         flashgg::TTHHadronicTag tthh;
         std::vector<flashgg::TTHHadronicTag> vec_tthh;
         edm::Wrapper<std::vector<flashgg::TTHHadronicTag> > wrp_vec_tthh;
+
+        flashgg::FCNCHadronicTag fcnch;
+        std::vector<flashgg::FCNCHadronicTag> vec_fcnch;
+        edm::Wrapper<std::vector<flashgg::FCNCHadronicTag> > wrp_vec_fcnch;
 
         std::vector<edm::Ptr<flashgg::Jet> > vect_ptr_jet;
 

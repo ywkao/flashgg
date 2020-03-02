@@ -10,7 +10,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
-#include "flashgg/DataFormats/interface/TTHHadronicTag.h"
+#include "flashgg/DataFormats/interface/FCNCHadronicTag.h"
 #include "flashgg/DataFormats/interface/DiPhotonMVAResult.h"
 #include "flashgg/DataFormats/interface/Electron.h"
 #include "flashgg/DataFormats/interface/Muon.h"
@@ -609,11 +609,11 @@ namespace flashgg {
 
         if (modifySystematicsWorkflow) {
             for (auto & syst_name : systematicsLabels)
-                produces<vector<TTHHadronicTag>>(syst_name);
+                produces<vector<FCNCHadronicTag>>(syst_name);
         }
 
         else {
-            produces<vector<TTHHadronicTag> >();
+            produces<vector<FCNCHadronicTag> >();
         }
     }
 
@@ -787,7 +787,7 @@ namespace flashgg {
                     evt.getByToken(metTokens_[0], METs);
             }
 
-            std::unique_ptr<vector<TTHHadronicTag> > tthhtags( new vector<TTHHadronicTag> );
+            std::unique_ptr<vector<FCNCHadronicTag> > tthhtags( new vector<FCNCHadronicTag> );
 
             assert( diPhotons->size() == mvaResults->size() );
 
@@ -1298,7 +1298,7 @@ namespace flashgg {
                 
                 if( isTTHHadronicTagged ) {
 
-                    TTHHadronicTag tthhtags_obj( dipho, mvares, JetVect, BJetVect );
+                    FCNCHadronicTag tthhtags_obj( dipho, mvares, JetVect, BJetVect );
                     tthhtags_obj.setCategoryNumber(catnum  );
                     tthhtags_obj.setNjet( jetcount_ );
                     tthhtags_obj.setNBLoose( njets_btagloose_ );

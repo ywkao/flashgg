@@ -10,7 +10,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "flashgg/DataFormats/interface/DiPhotonCandidate.h"
-#include "flashgg/DataFormats/interface/TTHLeptonicTag.h"
+#include "flashgg/DataFormats/interface/FCNCLeptonicTag.h"
 #include "flashgg/DataFormats/interface/Electron.h"
 #include "flashgg/DataFormats/interface/Muon.h"
 #include "flashgg/DataFormats/interface/Met.h"
@@ -664,11 +664,11 @@ namespace flashgg {
 
         if (modifySystematicsWorkflow) {
             for (auto & syst_name : systematicsLabels)
-                produces<vector<TTHLeptonicTag>>(syst_name);
+                produces<vector<FCNCLeptonicTag>>(syst_name);
         }
 
         else {
-            produces<vector<TTHLeptonicTag> >();
+            produces<vector<FCNCLeptonicTag> >();
         }
 
     }
@@ -788,7 +788,7 @@ namespace flashgg {
 
             assert( diPhotons->size() == mvaResults->size() );
 
-            std::unique_ptr<vector<TTHLeptonicTag> > tthltags( new vector<TTHLeptonicTag> );
+            std::unique_ptr<vector<FCNCLeptonicTag> > tthltags( new vector<FCNCLeptonicTag> );
 
             if( ! evt.isRealData() )
             {
@@ -1410,7 +1410,7 @@ namespace flashgg {
 
                 if(catNumber!=-1)
                 {
-                    TTHLeptonicTag tthltags_obj( dipho, mvares );
+                    FCNCLeptonicTag tthltags_obj( dipho, mvares );
                     tthltags_obj.setCategoryNumber(catNumber);
 
                     for( unsigned int i = 0; i < tagJets.size(); ++i )
