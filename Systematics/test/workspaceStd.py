@@ -833,5 +833,10 @@ if customize.filenames:
     if "hadoop" in customize.filenames:
         files = cms.untracked.vstring([file.replace("/hadoop", "file:/hadoop") for file in customize.filenames.split(",")])
     else:
-        files = cms.untracked.vstring([file.replace("/store", "root://cms-xrd-global.cern.ch:1094//store") for file in customize.filenames.split(",")])
+        local_files = [file.split("/")[-1] for file in customize.filenames.split(",")]
+        local_files = [file for file in local_files if os.path.exists(file)]
+        if len(local_files) > 0:
+            files = cms.untracked.vstring(["file:./" + file for file in local_files])
+        else:
+            files = cms.untracked.vstring([file.replace("/store", "root://cms-xrd-global.cern.ch:1094//store") for file in customize.filenames.split(",")])
     process.source = cms.Source('PoolSource', fileNames=files)

@@ -45,6 +45,9 @@ ls $X509_USER_PROXY
 mkdir .dasmaps
 mv das_maps_dbs_prod.js .dasmaps/
 
+echo "[wrapper `date +\"%Y%m%d %k:%M:%S\"`] running: XRDCP"
+XRDCP
+
 echo "[wrapper `date +\"%Y%m%d %k:%M:%S\"`] running: COMMAND filenames=${INPUTFILENAMES} ${ARGS}"
 COMMAND filenames=${INPUTFILENAMES} ${ARGS}
 

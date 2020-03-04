@@ -18,10 +18,13 @@ parser.add_argument("--fcnc_wildcard", help = "wildcard to grab all fcnc samples
 parser.add_argument("--fcnc_only", help = "only run on fcnc locally", action="store_true")
 parser.add_argument("--save_tar", help = "don't remake tarball", action="store_true")
 parser.add_argument("--no_syst", help = "don't run systematics", action="store_true")
+parser.add_argument("--hadd_workspaces", help = "hadd all output workspaces", action="store_true")
 args = parser.parse_args()
 
 import parallel_utils
 from flashgg_utils import *
+
+sys.path.append("~/Utilities")
 
 couplings = {}
 for coupling in args.couplings.split(","):
@@ -184,6 +187,12 @@ for coupling, info in couplings.iteritems():
             os.system("cp fcnc_executable.sh %s" % fcnc_executable)
             os.system("sed -i 's@MY_DIR@%s@g' %s" % (info[year]["outdir"], fcnc_executable))
 
+            use_xrdcp = proc == "sig" or proc == "zh"
+            if use_xrdcp:
+                os.system("sed -i 's@XRDCP@%s@g' %s" % ("xrdcp root://cms-xrd-global.cern.ch:1094/${INPUTFILENAMES} .", fcnc_executable))
+            else:
+                os.system("sed -i 's@XRDCP@%s@g' %s" % ("", fcnc_executable))
+
             if proc == "fcnc":
                 command = "$CMSSW_BASE/src/flashgg/Systematics/test/workspaceStd.py doHTXS=True useAAA=True doPdfWeights=False processId=%s %s %s %s %s %s" % (proc_name, coupling_selection, syst_selection, "outputFile=" + couplings[coupling][year]["outdir"] + "/output_FCNC_USER.root", "jobId=-1", "metaConditions=" + meta_conds[year]) 
             else:
@@ -223,3 +232,100 @@ if args.dry_run:
 else:
     #parallel_utils.submit_jobs(command_list, 1, True, True)
     parallel_utils.submit_jobs(command_list, len(command_list), True, True)
+
+def search_for_command(dictionary):
+    for key, info in dictionary.iteritems():
+        if not isinstance(info, dict):
+            continue
+        elif "command" in info.keys():
+            print "hadding %d workspaces to create master workspace %s" % (len(info["inputs"]), info["master"])
+            if len(info["inputs"]) > 0:
+                os.system(info["command"])
+        else:
+            search_for_command(info)
+
+def trim_dictionary(dictionary, to_remove):
+    for key, info in dictionary.iteritems():
+        if not isinstance(info, dict):
+            continue
+        elif to_remove in info.keys():
+            del info[to_remove]
+        else:
+            trim_dictionary(info, to_remove)
+
+if args.hadd_workspaces:
+    workspaces = {}
+    hadd_summary = {}
+    for coupling, info in couplings.iteritems():
+        workspaces[coupling] = { "data" : {}, "sm_higgs" : {}, "fcnc" : {} }
+        for cat, cat_info in workspaces[coupling].iteritems():
+            for year in years:
+                cat_info[year] = {}
+
+    for coupling, info in workspaces.iteritems():
+        for cat, cat_info in info.iteritems():
+            if cat == "data":
+                cat_info["2016"] = { "globber" : "DoubleEG" }
+                cat_info["2017"] = { "globber" : "DoubleEG" }
+                cat_info["2018"] = { "globber" : "EGamma" }
+                for year in years:
+                    cat_info[year]["inputs"] = glob.glob(couplings[coupling][year]["stage_dir"] + "/*" + cat_info[year]["globber"] + "*/*.root")
+                    cat_info[year]["glob_command"] = couplings[coupling][year]["stage_dir"] + "/*" + cat_info[year]["globber"] + "*/*.root" 
+                    cat_info[year]["n_inputs"] = len(cat_info[year]["inputs"])
+                    cat_info[year]["targets"] = ""
+                    for input in cat_info[year]["inputs"]:
+                        cat_info[year]["targets"] += "%s " % input
+                    cat_info[year]["master"] = couplings[coupling][year]["outdir"] + "/ws_merged_data_%s_%s.root" % (coupling, year)
+                    cat_info[year]["command"] = '/usr/bin/ionice -c2 -n7 hadd -f -k -j 4 %s %s' % (cat_info[year]["master"], cat_info[year]["targets"])
+            if cat == "fcnc":
+                for year in years:
+                    cat_info[year] = { "tt" : { "globber" : "TT_FCNC" }, "st" : { "globber" : "ST_FCNC" } }
+                    for subcat, subcat_info in cat_info[year].iteritems():
+                        subcat_info["inputs"] = glob.glob(couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"] + "*/*.root")
+                        subcat_info["glob_command"] = couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"] + "*/*.root"
+                        subcat_info["n_inputs"] = len(subcat_info["inputs"] )
+                        subcat_info["targets"] = ""
+                        for input in subcat_info["inputs"]:
+                            subcat_info["targets"] += "%s " % input
+                        subcat_info["master"] = couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_%s_%s.root" % (coupling, subcat, year)
+                        subcat_info["command"] = '/usr/bin/ionice -c2 -n7 hadd -f -k -j 4 %s %s' % (subcat_info["master"], subcat_info["targets"])
+
+            if cat == "sm_higgs":
+                for year in years:
+                    cat_info[year] = { 
+                        "tth" : { "globber" : "ttHJetToGG" },
+                        "ggh" : { "globber" : "GluGluHToGG" },
+                        "thq" : { "globber" : "THQ" },
+                        "thw" : { "globber" : "THW" },
+                        "wh" : { "globber" : "sig_%s_VHToGG" % year },
+                        "zh" : { "globber" : "zh_%s_VHToGG" % year },
+                        "bbh" : { "globber" : "bbH" },
+                        "vbf" : { "globber" : "VBF" }
+                    }
+                    for subcat, subcat_info in cat_info[year].iteritems():
+                        for mass_point in ["120", "125", "130"]:
+                            subcat_info[mass_point] = {}
+                            subcat_info[mass_point]["inputs"] = glob.glob(couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"] + "*" + mass_point + "*/*.root")
+                            subcat_info[mass_point]["glob_command"] = couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"] + "*" + mass_point + "*/*.root"
+                            subcat_info[mass_point]["n_inputs"] = len(subcat_info[mass_point]["inputs"])
+                            subcat_info[mass_point]["targets"] = ""
+                            for input in subcat_info[mass_point]["inputs"]:
+                                subcat_info[mass_point]["targets"] += "%s " % input
+                            subcat_info[mass_point]["master"] = couplings[coupling][year]["outdir"] + "/ws_merged_sm_higgs_%s_%s_%s_%s.root" % (coupling, subcat, mass_point, year)
+                            subcat_info[mass_point]["command"]  = '/usr/bin/ionice -c2 -n7 hadd -f -k -j 4 %s %s' % (subcat_info[mass_point]["master"], subcat_info[mass_point]["targets"]) 
+
+    with open("ws_hadd_summary_%s.json" % args.tag, "w") as f_out:
+        json.dump(workspaces, f_out, sort_keys=True, indent=4)
+
+    workspaces_summary = copy.deepcopy(workspaces)
+    trim_dictionary(workspaces_summary, "targets")
+    trim_dictionary(workspaces_summary, "inputs")
+    trim_dictionary(workspaces_summary, "command")
+    trim_dictionary(workspaces_summary, "globber")
+
+    with open("ws_hadd_summary_trimmed_%s.json" % args.tag, "w") as f_out:
+        json.dump(workspaces_summary, f_out, sort_keys=True, indent=4)
+
+    search_for_command(workspaces)
+    
+

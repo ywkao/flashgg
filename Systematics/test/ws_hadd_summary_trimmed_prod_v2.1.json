@@ -1,0 +1,948 @@
+{
+    "Hct": {
+        "data": {
+            "2016": {
+                "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*DoubleEG*/*.root", 
+                "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_data_Hct_2016.root", 
+                "n_inputs": 465
+            }, 
+            "2017": {
+                "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*DoubleEG*/*.root", 
+                "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_data_Hct_2017.root", 
+                "n_inputs": 409
+            }, 
+            "2018": {
+                "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*EGamma*/*.root", 
+                "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_data_Hct_2018.root", 
+                "n_inputs": 465
+            }
+        }, 
+        "fcnc": {
+            "2016": {
+                "st": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*ST_FCNC*/*.root", 
+                    "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_fcnc_Hct_st_2016.root", 
+                    "n_inputs": 0
+                }, 
+                "tt": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*TT_FCNC*/*.root", 
+                    "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_fcnc_Hct_tt_2016.root", 
+                    "n_inputs": 0
+                }
+            }, 
+            "2017": {
+                "st": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*ST_FCNC*/*.root", 
+                    "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_fcnc_Hct_st_2017.root", 
+                    "n_inputs": 350
+                }, 
+                "tt": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*TT_FCNC*/*.root", 
+                    "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_fcnc_Hct_tt_2017.root", 
+                    "n_inputs": 274
+                }
+            }, 
+            "2018": {
+                "st": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*ST_FCNC*/*.root", 
+                    "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_fcnc_Hct_st_2018.root", 
+                    "n_inputs": 0
+                }, 
+                "tt": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*TT_FCNC*/*.root", 
+                    "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_fcnc_Hct_tt_2018.root", 
+                    "n_inputs": 0
+                }
+            }
+        }, 
+        "sm_higgs": {
+            "2016": {
+                "bbh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*bbH*120*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_bbh_120_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*bbH*125*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_bbh_125_2016.root", 
+                        "n_inputs": 30
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*bbH*130*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_bbh_130_2016.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "ggh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*GluGluHToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_ggh_120_2016.root", 
+                        "n_inputs": 17
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*GluGluHToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_ggh_125_2016.root", 
+                        "n_inputs": 33
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*GluGluHToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_ggh_130_2016.root", 
+                        "n_inputs": 18
+                    }
+                }, 
+                "thq": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*THQ*120*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thq_120_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*THQ*125*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thq_125_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*THQ*130*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thq_130_2016.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "thw": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*THW*120*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thw_120_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*THW*125*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thw_125_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*THW*130*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thw_130_2016.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "tth": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*ttHJetToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_tth_120_2016.root", 
+                        "n_inputs": 7
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*ttHJetToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_tth_125_2016.root", 
+                        "n_inputs": 8
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*ttHJetToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_tth_130_2016.root", 
+                        "n_inputs": 8
+                    }
+                }, 
+                "vbf": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*VBF*120*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_vbf_120_2016.root", 
+                        "n_inputs": 34
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*VBF*125*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_vbf_125_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*VBF*130*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_vbf_130_2016.root", 
+                        "n_inputs": 35
+                    }
+                }, 
+                "wh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*sig_2016_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_wh_120_2016.root", 
+                        "n_inputs": 8
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*sig_2016_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_wh_125_2016.root", 
+                        "n_inputs": 12
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*sig_2016_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_wh_130_2016.root", 
+                        "n_inputs": 8
+                    }
+                }, 
+                "zh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*zh_2016_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_zh_120_2016.root", 
+                        "n_inputs": 8
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*zh_2016_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_zh_125_2016.root", 
+                        "n_inputs": 12
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2016_prod_v2.1_2-March-2020//*zh_2016_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_zh_130_2016.root", 
+                        "n_inputs": 8
+                    }
+                }
+            }, 
+            "2017": {
+                "bbh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*bbH*120*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_bbh_120_2017.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*bbH*125*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_bbh_125_2017.root", 
+                        "n_inputs": 30
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*bbH*130*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_bbh_130_2017.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "ggh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*GluGluHToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_ggh_120_2017.root", 
+                        "n_inputs": 20
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*GluGluHToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_ggh_125_2017.root", 
+                        "n_inputs": 79
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*GluGluHToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_ggh_130_2017.root", 
+                        "n_inputs": 20
+                    }
+                }, 
+                "thq": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*THQ*120*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thq_120_2017.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*THQ*125*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thq_125_2017.root", 
+                        "n_inputs": 78
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*THQ*130*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thq_130_2017.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "thw": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*THW*120*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thw_120_2017.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*THW*125*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thw_125_2017.root", 
+                        "n_inputs": 36
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*THW*130*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thw_130_2017.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "tth": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*ttHJetToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_tth_120_2017.root", 
+                        "n_inputs": 11
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*ttHJetToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_tth_125_2017.root", 
+                        "n_inputs": 16
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*ttHJetToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_tth_130_2017.root", 
+                        "n_inputs": 13
+                    }
+                }, 
+                "vbf": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*VBF*120*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_vbf_120_2017.root", 
+                        "n_inputs": 41
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*VBF*125*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_vbf_125_2017.root", 
+                        "n_inputs": 78
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*VBF*130*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_vbf_130_2017.root", 
+                        "n_inputs": 41
+                    }
+                }, 
+                "wh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*sig_2017_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_wh_120_2017.root", 
+                        "n_inputs": 15
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*sig_2017_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_wh_125_2017.root", 
+                        "n_inputs": 24
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*sig_2017_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_wh_130_2017.root", 
+                        "n_inputs": 14
+                    }
+                }, 
+                "zh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*zh_2017_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_zh_120_2017.root", 
+                        "n_inputs": 15
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*zh_2017_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_zh_125_2017.root", 
+                        "n_inputs": 24
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2017_prod_v2.1_2-March-2020//*zh_2017_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_zh_130_2017.root", 
+                        "n_inputs": 14
+                    }
+                }
+            }, 
+            "2018": {
+                "bbh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*bbH*120*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_bbh_120_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*bbH*125*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_bbh_125_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*bbH*130*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_bbh_130_2018.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "ggh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*GluGluHToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_ggh_120_2018.root", 
+                        "n_inputs": 21
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*GluGluHToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_ggh_125_2018.root", 
+                        "n_inputs": 86
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*GluGluHToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_ggh_130_2018.root", 
+                        "n_inputs": 21
+                    }
+                }, 
+                "thq": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*THQ*120*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thq_120_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*THQ*125*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thq_125_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*THQ*130*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thq_130_2018.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "thw": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*THW*120*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thw_120_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*THW*125*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thw_125_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*THW*130*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_thw_130_2018.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "tth": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*ttHJetToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_tth_120_2018.root", 
+                        "n_inputs": 19
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*ttHJetToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_tth_125_2018.root", 
+                        "n_inputs": 11
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*ttHJetToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_tth_130_2018.root", 
+                        "n_inputs": 12
+                    }
+                }, 
+                "vbf": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*VBF*120*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_vbf_120_2018.root", 
+                        "n_inputs": 40
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*VBF*125*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_vbf_125_2018.root", 
+                        "n_inputs": 77
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*VBF*130*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_vbf_130_2018.root", 
+                        "n_inputs": 39
+                    }
+                }, 
+                "wh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*sig_2018_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_wh_120_2018.root", 
+                        "n_inputs": 14
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*sig_2018_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_wh_125_2018.root", 
+                        "n_inputs": 22
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*sig_2018_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_wh_130_2018.root", 
+                        "n_inputs": 14
+                    }
+                }, 
+                "zh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*zh_2018_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_zh_120_2018.root", 
+                        "n_inputs": 14
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*zh_2018_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_zh_125_2018.root", 
+                        "n_inputs": 22
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hct_2018_prod_v2.1_2-March-2020//*zh_2018_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hct_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hct_zh_130_2018.root", 
+                        "n_inputs": 14
+                    }
+                }
+            }
+        }
+    }, 
+    "Hut": {
+        "data": {
+            "2016": {
+                "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*DoubleEG*/*.root", 
+                "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_data_Hut_2016.root", 
+                "n_inputs": 465
+            }, 
+            "2017": {
+                "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*DoubleEG*/*.root", 
+                "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_data_Hut_2017.root", 
+                "n_inputs": 409
+            }, 
+            "2018": {
+                "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*EGamma*/*.root", 
+                "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_data_Hut_2018.root", 
+                "n_inputs": 465
+            }
+        }, 
+        "fcnc": {
+            "2016": {
+                "st": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*ST_FCNC*/*.root", 
+                    "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_fcnc_Hut_st_2016.root", 
+                    "n_inputs": 0
+                }, 
+                "tt": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*TT_FCNC*/*.root", 
+                    "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_fcnc_Hut_tt_2016.root", 
+                    "n_inputs": 0
+                }
+            }, 
+            "2017": {
+                "st": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*ST_FCNC*/*.root", 
+                    "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_fcnc_Hut_st_2017.root", 
+                    "n_inputs": 348
+                }, 
+                "tt": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*TT_FCNC*/*.root", 
+                    "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_fcnc_Hut_tt_2017.root", 
+                    "n_inputs": 271
+                }
+            }, 
+            "2018": {
+                "st": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*ST_FCNC*/*.root", 
+                    "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_fcnc_Hut_st_2018.root", 
+                    "n_inputs": 0
+                }, 
+                "tt": {
+                    "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*TT_FCNC*/*.root", 
+                    "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_fcnc_Hut_tt_2018.root", 
+                    "n_inputs": 0
+                }
+            }
+        }, 
+        "sm_higgs": {
+            "2016": {
+                "bbh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*bbH*120*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_bbh_120_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*bbH*125*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_bbh_125_2016.root", 
+                        "n_inputs": 30
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*bbH*130*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_bbh_130_2016.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "ggh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*GluGluHToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_ggh_120_2016.root", 
+                        "n_inputs": 17
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*GluGluHToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_ggh_125_2016.root", 
+                        "n_inputs": 33
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*GluGluHToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_ggh_130_2016.root", 
+                        "n_inputs": 18
+                    }
+                }, 
+                "thq": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*THQ*120*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thq_120_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*THQ*125*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thq_125_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*THQ*130*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thq_130_2016.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "thw": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*THW*120*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thw_120_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*THW*125*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thw_125_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*THW*130*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thw_130_2016.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "tth": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*ttHJetToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_tth_120_2016.root", 
+                        "n_inputs": 7
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*ttHJetToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_tth_125_2016.root", 
+                        "n_inputs": 8
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*ttHJetToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_tth_130_2016.root", 
+                        "n_inputs": 8
+                    }
+                }, 
+                "vbf": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*VBF*120*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_vbf_120_2016.root", 
+                        "n_inputs": 34
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*VBF*125*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_vbf_125_2016.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*VBF*130*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_vbf_130_2016.root", 
+                        "n_inputs": 35
+                    }
+                }, 
+                "wh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*sig_2016_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_wh_120_2016.root", 
+                        "n_inputs": 8
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*sig_2016_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_wh_125_2016.root", 
+                        "n_inputs": 12
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*sig_2016_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_wh_130_2016.root", 
+                        "n_inputs": 8
+                    }
+                }, 
+                "zh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*zh_2016_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_zh_120_2016.root", 
+                        "n_inputs": 8
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*zh_2016_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_zh_125_2016.root", 
+                        "n_inputs": 12
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2016_prod_v2.1_2-March-2020//*zh_2016_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2016_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_zh_130_2016.root", 
+                        "n_inputs": 8
+                    }
+                }
+            }, 
+            "2017": {
+                "bbh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*bbH*120*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_bbh_120_2017.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*bbH*125*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_bbh_125_2017.root", 
+                        "n_inputs": 30
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*bbH*130*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_bbh_130_2017.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "ggh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*GluGluHToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_ggh_120_2017.root", 
+                        "n_inputs": 20
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*GluGluHToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_ggh_125_2017.root", 
+                        "n_inputs": 79
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*GluGluHToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_ggh_130_2017.root", 
+                        "n_inputs": 20
+                    }
+                }, 
+                "thq": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*THQ*120*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thq_120_2017.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*THQ*125*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thq_125_2017.root", 
+                        "n_inputs": 78
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*THQ*130*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thq_130_2017.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "thw": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*THW*120*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thw_120_2017.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*THW*125*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thw_125_2017.root", 
+                        "n_inputs": 36
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*THW*130*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thw_130_2017.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "tth": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*ttHJetToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_tth_120_2017.root", 
+                        "n_inputs": 11
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*ttHJetToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_tth_125_2017.root", 
+                        "n_inputs": 16
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*ttHJetToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_tth_130_2017.root", 
+                        "n_inputs": 13
+                    }
+                }, 
+                "vbf": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*VBF*120*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_vbf_120_2017.root", 
+                        "n_inputs": 41
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*VBF*125*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_vbf_125_2017.root", 
+                        "n_inputs": 78
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*VBF*130*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_vbf_130_2017.root", 
+                        "n_inputs": 41
+                    }
+                }, 
+                "wh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*sig_2017_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_wh_120_2017.root", 
+                        "n_inputs": 15
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*sig_2017_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_wh_125_2017.root", 
+                        "n_inputs": 24
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*sig_2017_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_wh_130_2017.root", 
+                        "n_inputs": 14
+                    }
+                }, 
+                "zh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*zh_2017_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_zh_120_2017.root", 
+                        "n_inputs": 15
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*zh_2017_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_zh_125_2017.root", 
+                        "n_inputs": 24
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2017_prod_v2.1_2-March-2020//*zh_2017_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2017_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_zh_130_2017.root", 
+                        "n_inputs": 14
+                    }
+                }
+            }, 
+            "2018": {
+                "bbh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*bbH*120*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_bbh_120_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*bbH*125*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_bbh_125_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*bbH*130*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_bbh_130_2018.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "ggh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*GluGluHToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_ggh_120_2018.root", 
+                        "n_inputs": 21
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*GluGluHToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_ggh_125_2018.root", 
+                        "n_inputs": 86
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*GluGluHToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_ggh_130_2018.root", 
+                        "n_inputs": 21
+                    }
+                }, 
+                "thq": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*THQ*120*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thq_120_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*THQ*125*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thq_125_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*THQ*130*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thq_130_2018.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "thw": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*THW*120*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thw_120_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*THW*125*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thw_125_2018.root", 
+                        "n_inputs": 0
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*THW*130*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_thw_130_2018.root", 
+                        "n_inputs": 0
+                    }
+                }, 
+                "tth": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*ttHJetToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_tth_120_2018.root", 
+                        "n_inputs": 19
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*ttHJetToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_tth_125_2018.root", 
+                        "n_inputs": 11
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*ttHJetToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_tth_130_2018.root", 
+                        "n_inputs": 12
+                    }
+                }, 
+                "vbf": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*VBF*120*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_vbf_120_2018.root", 
+                        "n_inputs": 40
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*VBF*125*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_vbf_125_2018.root", 
+                        "n_inputs": 77
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*VBF*130*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_vbf_130_2018.root", 
+                        "n_inputs": 39
+                    }
+                }, 
+                "wh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*sig_2018_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_wh_120_2018.root", 
+                        "n_inputs": 14
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*sig_2018_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_wh_125_2018.root", 
+                        "n_inputs": 22
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*sig_2018_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_wh_130_2018.root", 
+                        "n_inputs": 14
+                    }
+                }, 
+                "zh": {
+                    "120": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*zh_2018_VHToGG*120*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_zh_120_2018.root", 
+                        "n_inputs": 14
+                    }, 
+                    "125": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*zh_2018_VHToGG*125*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_zh_125_2018.root", 
+                        "n_inputs": 22
+                    }, 
+                    "130": {
+                        "glob_command": "/hadoop/cms/store/user/smay/FCNC/workspaces_Hut_2018_prod_v2.1_2-March-2020//*zh_2018_VHToGG*130*/*.root", 
+                        "master": "workspaces_Hut_2018_prod_v2.1_2-March-2020//ws_merged_sm_higgs_Hut_zh_130_2018.root", 
+                        "n_inputs": 14
+                    }
+                }
+            }
+        }
+    }
+}
