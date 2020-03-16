@@ -253,6 +253,31 @@ def trim_dictionary(dictionary, to_remove):
         else:
             trim_dictionary(info, to_remove)
 
+max_ws = 30
+def hadd_workspaces(master, targets):
+    if len(targets.split(" ")) <= max_ws:
+        return "/usr/bin/ionice -c2 -n7 hadd_workspaces %s %s" % (master, targets)
+
+    target_list = targets.split(" ")
+    command = ""
+    intermediate_files = ""
+    for i in range((len(target_list)/max_ws) + 1):
+        intermediate_file = "intermediate_ws_%d.root" % i
+        partial_files = ""
+        for j in range(i*max_ws, min((i+1)*max_ws, len(target_list))):
+            partial_files += "%s " % target_list[j]
+        intermediate_command = "/usr/bin/ionice -c2 -n7 hadd_workspaces %s %s;" % (intermediate_file, partial_files)
+        intermediate_files += "%s " % intermediate_file
+        command += intermediate_command
+    command += "/usr/bin/ionice -c2 -n7 hadd_workspaces %s %s;" % (master, intermediate_files)
+    for file in intermediate_files.split(" "):
+        if file.isspace() or not file:
+            continue
+        command += "rm %s;" % file
+
+    return command
+        
+
 if args.hadd_workspaces:
     workspaces = {}
     hadd_summary = {}
@@ -276,7 +301,7 @@ if args.hadd_workspaces:
                     for input in cat_info[year]["inputs"]:
                         cat_info[year]["targets"] += "%s " % input
                     cat_info[year]["master"] = couplings[coupling][year]["outdir"] + "/ws_merged_data_%s_%s.root" % (coupling, year)
-                    cat_info[year]["command"] = '/usr/bin/ionice -c2 -n7 hadd -f -k -j 4 %s %s' % (cat_info[year]["master"], cat_info[year]["targets"])
+                    cat_info[year]["command"] = hadd_workspaces(cat_info[year]["master"], cat_info[year]["targets"])
             if cat == "fcnc":
                 for year in years:
                     cat_info[year] = { "tt" : { "globber" : "TT_FCNC" }, "st" : { "globber" : "ST_FCNC" } }
@@ -288,7 +313,7 @@ if args.hadd_workspaces:
                         for input in subcat_info["inputs"]:
                             subcat_info["targets"] += "%s " % input
                         subcat_info["master"] = couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_%s_%s.root" % (coupling, subcat, year)
-                        subcat_info["command"] = '/usr/bin/ionice -c2 -n7 hadd -f -k -j 4 %s %s' % (subcat_info["master"], subcat_info["targets"])
+                        subcat_info["command"] = hadd_workspaces(subcat_info["master"], subcat_info["targets"])
 
             if cat == "sm_higgs":
                 for year in years:
@@ -312,7 +337,7 @@ if args.hadd_workspaces:
                             for input in subcat_info[mass_point]["inputs"]:
                                 subcat_info[mass_point]["targets"] += "%s " % input
                             subcat_info[mass_point]["master"] = couplings[coupling][year]["outdir"] + "/ws_merged_sm_higgs_%s_%s_%s_%s.root" % (coupling, subcat, mass_point, year)
-                            subcat_info[mass_point]["command"]  = '/usr/bin/ionice -c2 -n7 hadd -f -k -j 4 %s %s' % (subcat_info[mass_point]["master"], subcat_info[mass_point]["targets"]) 
+                            subcat_info[mass_point]["command"]  = hadd_workspaces(subcat_info[mass_point]["master"], subcat_info[mass_point]["targets"]) 
 
     with open("ws_hadd_summary_%s.json" % args.tag, "w") as f_out:
         json.dump(workspaces, f_out, sort_keys=True, indent=4)
