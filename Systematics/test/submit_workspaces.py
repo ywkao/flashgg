@@ -176,7 +176,7 @@ for coupling, info in couplings.iteritems():
         coupling_selection = "fcncHctTagsOnly=True"
     syst_selection = "doSystematics=%s" % syst
     for proc in procs:
-        proc_name = "FCNC" if proc == "fcnc" else proc
+        proc_name = "fcnc_125" if proc == "fcnc" else proc
         for year in years:
             if len(datasets[year].keys()) == 0:
                 continue

@@ -603,7 +603,7 @@ for tag in tagList:
                            )
 
 # Require standard diphoton trigger
-if not customize.processId == "FCNC":
+if not customize.processId.count("fcnc"):
     filterHLTrigger(process, customize)
 
 process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )

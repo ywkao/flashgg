@@ -9,12 +9,13 @@ def customizeTagsDumper(process, customize):
         process.tagsDumper.className = "DiPhotonTagDumper"
     
     process.tagsDumper.src = "flashggSystTagMerger"
-    process.tagsDumper.processId = "test"
+    process.tagsDumper.processId = customize.processId
     process.tagsDumper.dumpTrees = customize.dumpTrees
     process.tagsDumper.dumpWorkspace = customize.dumpWorkspace
     process.tagsDumper.dumpHistos = False
     process.tagsDumper.quietRooFit = True
     process.tagsDumper.nameTemplate = cms.untracked.string("$PROCESS_$SQRTS_$CLASSNAME_$SUBCAT_$LABEL")
+    print "\n\n\n\n", process.tagsDumper.nameTemplate, "\n\n\n\n"
     process.tagsDumper.splitPdfByStage0Cat = cms.untracked.bool(customize.doHTXS)
     process.tagsDumper.splitPdfByStageOneCat = cms.untracked.bool(customize.doStageOne)
     
