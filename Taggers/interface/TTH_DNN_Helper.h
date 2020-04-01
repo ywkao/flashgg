@@ -20,11 +20,11 @@ bool sortByValue(const std::pair<int,double>& pair1, const std::pair<int,double>
     return pair1.second > pair2.second;
 }
 
-class DNN_Helper
+class TTH_DNN_Helper
 {
     public:
-        DNN_Helper(string weight_file, bool debug = false);
-        ~DNN_Helper();
+        TTH_DNN_Helper(string weight_file, bool debug = false);
+        ~TTH_DNN_Helper();
 
         void SetInputShapes(unsigned int length_global, unsigned int length_object, unsigned int length_object_sequence);
         void SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector<double> global_features);
@@ -61,13 +61,13 @@ class DNN_Helper
 };
 
 inline
-DNN_Helper::~DNN_Helper() {
+TTH_DNN_Helper::~TTH_DNN_Helper() {
     tensorflow::closeSession(session_);
     delete graph_;
 }
 
 inline
-DNN_Helper::DNN_Helper(string weight_file, bool debug) {
+TTH_DNN_Helper::TTH_DNN_Helper(string weight_file, bool debug) {
     weight_file_ = weight_file;
 
     graph_ = tensorflow::loadGraphDef((weight_file_).c_str());
@@ -80,7 +80,7 @@ DNN_Helper::DNN_Helper(string weight_file, bool debug) {
 }
 
 inline
-void DNN_Helper::SetPreprocessingSchemes(std::vector<double> preprocess_scheme_global_features_mean, std::vector<double> preprocess_scheme_global_features_stddev, std::vector<double> preprocess_scheme_object_features_mean, std::vector<double> preprocess_scheme_object_features_stddev) {
+void TTH_DNN_Helper::SetPreprocessingSchemes(std::vector<double> preprocess_scheme_global_features_mean, std::vector<double> preprocess_scheme_global_features_stddev, std::vector<double> preprocess_scheme_object_features_mean, std::vector<double> preprocess_scheme_object_features_stddev) {
 
     preprocess_scheme_global_features_mean_ = preprocess_scheme_global_features_mean;
     preprocess_scheme_global_features_stddev_ = preprocess_scheme_global_features_stddev;
@@ -109,7 +109,7 @@ void DNN_Helper::SetPreprocessingSchemes(std::vector<double> preprocess_scheme_g
 }
 
 inline
-void DNN_Helper::Preprocess() {
+void TTH_DNN_Helper::Preprocess() {
     if (global_features_.size() != preprocess_scheme_global_features_mean_.size() || global_features_.size() != preprocess_scheme_global_features_stddev_.size())
         throw "[DNN Helper] [ERROR]: Size of global features does not match size of preprocessing scheme";
 
@@ -134,14 +134,14 @@ void DNN_Helper::Preprocess() {
 }
 
 inline
-void DNN_Helper::SetInputShapes(unsigned int length_global, unsigned int length_object, unsigned int length_object_sequence) {
+void TTH_DNN_Helper::SetInputShapes(unsigned int length_global, unsigned int length_object, unsigned int length_object_sequence) {
     length_global_ = length_global;
     length_object_ = length_object;
     length_object_sequence_ = length_object_sequence;
 }
 
 inline
-void DNN_Helper::SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector<double> global_features) {
+void TTH_DNN_Helper::SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector<double> global_features) {
     if (global_features.size() != length_global_)
         throw "[DNN Helper] [ERROR]: Global features incorrectly configured!";
   
@@ -191,7 +191,7 @@ void DNN_Helper::SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector
 }
 
 inline
-void DNN_Helper::SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector<edm::Ptr<flashgg::Muon>> muons, std::vector<edm::Ptr<flashgg::Electron>> electrons, std::vector<double> global_features) {
+void TTH_DNN_Helper::SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector<edm::Ptr<flashgg::Muon>> muons, std::vector<edm::Ptr<flashgg::Electron>> electrons, std::vector<double> global_features) {
     if (global_features.size() != length_global_)
         throw "[DNN Helper] [ERROR]: Global features incorrectly configured!";
 
@@ -276,7 +276,7 @@ void DNN_Helper::SetInputs(std::vector<edm::Ptr<flashgg::Jet>> jets, std::vector
 }
 
 inline
-float DNN_Helper::EvaluateDNN() {
+float TTH_DNN_Helper::EvaluateDNN() {
     if (!inputs_set_)
         throw "[DNN Helper] [ERROR]: Inputs have not been reset since last evaluation!";
 
@@ -336,5 +336,68 @@ double helicity(const TLorentzVector particle_1, const TLorentzVector particle_2
     return abs(cos_theta_1);
 }
 
+inline
+void calculate_forward_jet_features(double &forward_jet_pt, double &forward_jet_eta, std::vector<edm::Ptr<flashgg::Jet>> jets, std::string btag_selector, double max1_btag) {
+    forward_jet_pt = -1;
+    forward_jet_eta = 0.0;
+
+    for (unsigned int i = 0; i < jets.size(); i++) {
+        if (jets[i]->bDiscriminator(btag_selector) >= max1_btag && jets.size() > 1)
+            continue;
+
+        if (abs(jets[i]->eta()) > forward_jet_eta) {
+            forward_jet_pt = log(jets[i]->pt());
+            forward_jet_eta = abs(jets[i]->eta());            
+        }        
+    }
+
+    return;
+}
+
+inline
+void calculate_lepton_charges(double &lep1_charge, double &lep2_charge, std::vector<edm::Ptr<flashgg::Muon>> muons, std::vector<edm::Ptr<flashgg::Electron>> electrons) {
+    lep1_charge = 0;
+    lep2_charge = 0;
+
+    double lead_pt(0), sublead_pt(0);
+
+    for (unsigned int i = 0; i < muons.size(); i++) {
+        if (muons[i]->pt() > lead_pt) {
+            lead_pt = muons[i]->pt();
+            lep1_charge = muons[i]->charge();
+        }
+    }
+
+    for (unsigned int i = 0; i < electrons.size(); i++) {
+        if (electrons[i]->pt() > lead_pt) {
+            lead_pt = electrons[i]->pt();
+            lep1_charge = electrons[i]->charge();
+        }
+    }
+
+    for (unsigned int i = 0; i < muons.size(); i++) {
+        if (muons[i]->pt() < lead_pt && muons[i]->pt() > sublead_pt) {
+            sublead_pt = muons[i]->pt();
+            lep2_charge = muons[i]->charge();
+        }
+    }
+
+    for (unsigned int i = 0; i < electrons.size(); i++) {
+        if (electrons[i]->pt() < lead_pt && electrons[i]->pt() > sublead_pt) {
+            sublead_pt = electrons[i]->pt();
+            lep2_charge = electrons[i]->charge();
+        }
+    }
+ 
+    return; 
+}
+
 }
 #endif // _DNN_HELPER_H_
+// Local Variables:
+// mode:c++
+// indent-tabs-mode:nil
+// tab-width:4
+// c-basic-offset:4
+// End:
+// vim: tabstop=4 expandtab shiftwidth=4 softtabstop=4
