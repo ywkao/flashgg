@@ -32,7 +32,7 @@ def submit_fcnc_workspaces(datasets, metadata):
                     tarfile = "dummy_tar",
                     condor_submit_params = { "sites" : "T2_US_UCSD" },
                     special_dir = metadata["hadoop_path"],
-                    arguments = metadata["args"]
+                    arguments = info["args"]
                     )
             task.process()
             if not task.complete():
