@@ -143,6 +143,11 @@ class JobConfig(object):
                                VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                                VarParsing.VarParsing.varType.string,          # string, int, or float
                                "puTarget")
+        self.options.register ('normalizationInfo',
+                               "", # default value
+                               VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                               VarParsing.VarParsing.varType.string,          # string, int, or float
+                               "normalizationInfo")
         self.options.register ('WeightName', # for THQ/THW samples the LHE weight should be mentioned
                                None, # default value
                                VarParsing.VarParsing.multiplicity.singleton, # singleton or list
@@ -260,6 +265,24 @@ class JobConfig(object):
         
                 
         files = self.inputFiles
+
+        # FCNC weight settting
+        if self.normalizationInfo and self.normalizationInfo != "":
+            if len(self.normalizationInfo.split(",")) != 2:
+                print "ERROR: normalization info for FCNC not passed in the correct format", self.normalizationInfo
+                sys.exit(1)
+            xsec,totEvents = self.normalizationInfo.split(",")
+
+            print "Setting normalization info for FCNC: "
+            print "xs: %.6f, totEvents: %.6f, targetLumi: %.6f, scale1fb: %.6f" % (float(xsec), float(totEvents), self.targetLumi, (float(xsec) / float(totEvents)) * self.targetLumi)
+
+            for name,obj in process.__dict__.iteritems():
+                if hasattr(obj,"lumiWeight"):
+                    wei = (float(xsec) / float(totEvents)) * self.targetLumi
+                    obj.lumiWeight = wei
+                if hasattr(obj,"intLumi"):
+                    obj.intLumi = self.targetLumi
+
         if self.dataset and self.dataset != "":
             dsetname,xsec,totEvents,files,maxEvents,sp_unused = self.dataset
             if type(xsec) == float or xsec == None:
