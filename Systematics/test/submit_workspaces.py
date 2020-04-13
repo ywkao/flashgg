@@ -60,6 +60,7 @@ if not args.dry_run and not args.save_tar:
 
 productions = {}
 procs = args.procs.split(",")
+all_procs = "sig,data,zh,fcnc".split(",")
 # Send tarball to multiple locations
 for coupling in couplings.keys():
     for year in years:
@@ -70,7 +71,7 @@ for coupling in couplings.keys():
             os.system("hadoop fs -setrep -R 30 %s" % (couplings[coupling][year]["stage_dir"].replace("/hadoop","") + "package.tar.gz"))
 
         couplings[coupling][year]["datasets"] = {}
-        for proc in procs:
+        for proc in all_procs:
             if proc == "fcnc":
                 continue
             with open("wsJSONs/legacy_runII_v1_%s_%s.json" % (year, proc), "r") as f_in:
@@ -119,7 +120,7 @@ for dataset in [dir for dir in glob.glob(args.fcnc_wildcard) if "RunIIFall17Mini
                 normalizationInfo = " normalizationInfo=%.6f,%.6f " % (samples[smp]["xs"], (samples[smp]["xs"]*1000.) / samples[smp]["2017"]["scale1fb"])
                 #print "Matched %s to %s, setting normalizationInfo as %s" % (sample, smp, normalizationInfo)
                 datasets[year]["fcnc"][sample]["args"] = normalizationInfo
-
+                datasets[year]["fcnc"][sample]["year"] = year
 
 for year in years:
     for proc in procs:
@@ -279,16 +280,19 @@ else:
     #parallel_utils.submit_jobs(command_list, 1, True, True)
     parallel_utils.submit_jobs(command_list, len(command_list), True, True)
 
-def search_for_command(dictionary):
+def search_for_command(dictionary, command_list = []):
     for key, info in dictionary.iteritems():
         if not isinstance(info, dict):
             continue
         elif "command" in info.keys():
+            print key, info.keys()
             print "hadding %d workspaces to create master workspace %s" % (len(info["inputs"]), info["master"])
             if len(info["inputs"]) > 0:
-                os.system(info["command"])
+                command_list.append(info["command"])
+                #os.system(info["command"])
         else:
-            search_for_command(info)
+            search_for_command(info, command_list)
+    return command_list
 
 def trim_dictionary(dictionary, to_remove):
     for key, info in dictionary.iteritems():
@@ -299,7 +303,7 @@ def trim_dictionary(dictionary, to_remove):
         else:
             trim_dictionary(info, to_remove)
 
-max_ws = 30
+max_ws = 25
 def hadd_workspaces(master, targets):
     if len(targets.split(" ")) <= max_ws:
         return "/usr/bin/ionice -c2 -n7 hadd_workspaces %s %s" % (master, targets)
@@ -308,13 +312,14 @@ def hadd_workspaces(master, targets):
     command = ""
     intermediate_files = ""
     for i in range((len(target_list)/max_ws) + 1):
-        intermediate_file = "intermediate_ws_%d.root" % i
+        intermediate_file = "intermediate_ws_%s_%d.root" % (master.split("/")[-1].replace(".root",""),i)
         partial_files = ""
         for j in range(i*max_ws, min((i+1)*max_ws, len(target_list))):
             partial_files += "%s " % target_list[j]
         intermediate_command = "/usr/bin/ionice -c2 -n7 hadd_workspaces %s %s;" % (intermediate_file, partial_files)
         intermediate_files += "%s " % intermediate_file
         command += intermediate_command
+        
     command += "/usr/bin/ionice -c2 -n7 hadd_workspaces %s %s;" % (master, intermediate_files)
     for file in intermediate_files.split(" "):
         if file.isspace() or not file:
@@ -348,9 +353,13 @@ if args.hadd_workspaces:
                         cat_info[year]["targets"] += "%s " % input
                     cat_info[year]["master"] = couplings[coupling][year]["outdir"] + "/ws_merged_data_%s_%s.root" % (coupling, year)
                     cat_info[year]["command"] = hadd_workspaces(cat_info[year]["master"], cat_info[year]["targets"])
+                cat_info["inputs"] = []
+                for year in years:
+                    cat_info["inputs"] += cat_info[year]["inputs"]
+                cat_info["n_inputs"] = len(cat_info["inputs"])
             if cat == "fcnc":
                 for year in years:
-                    cat_info[year] = { "tt_st" : { "globber" : "FCNC" }, "tt" : { "globber" : "TT_FCNC" }, "st" : { "globber" : "ST_FCNC" } }
+                    cat_info[year] = { "tt" : { "globber" : "TT_FCNC" }, "st" : { "globber" : "ST_FCNC" } }
                     for subcat, subcat_info in cat_info[year].iteritems():
                         subcat_info["inputs"] = glob.glob(couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"] + "*/*.root")
                         subcat_info["glob_command"] = couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"] + "*/*.root"
@@ -405,6 +414,11 @@ if args.hadd_workspaces:
     with open("ws_hadd_summary_trimmed_%s.json" % args.tag, "w") as f_out:
         json.dump(workspaces_summary, f_out, sort_keys=True, indent=4)
 
-    search_for_command(workspaces)
-    
+    command_list = search_for_command(workspaces)
+    parallel_utils.submit_jobs(command_list, 12)
+    for coupling, info in couplings.iteritems():
+        for year in years:
+            command = "hadd_workspaces %s %s %s" % (couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_st_%s.root" % (coupling, year), couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_%s.root" % (coupling, year), couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_st_%s.root" % (coupling, year))
+            print command
+            os.system(command)
 

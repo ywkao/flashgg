@@ -15,7 +15,7 @@ def submit_jobs(command_list, n_par, nice=True, stagger=False):
   for command in command_list:
     running_procs.append(Process(target=run, args=(command,nice,)))
     if stagger:
-        os.system("sleep 30s")
+        os.system("sleep 5s")
     running_procs[-1].start()
     while True:
       for i in range(len(running_procs)):

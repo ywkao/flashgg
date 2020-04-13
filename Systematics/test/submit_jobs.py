@@ -26,7 +26,7 @@ def submit_fcnc_workspaces(datasets, metadata):
                     flush = True,
                     files_per_output = metadata["fpo"],
                     output_name = "workspace_FCNC.root",
-                    tag = metadata["job_tag"],
+                    tag = metadata["job_tag"] + "_" + info["year"],
                     cmssw_version = metadata["cmssw_ver"],
                     executable = metadata["executable"],
                     tarfile = "dummy_tar",
