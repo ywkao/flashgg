@@ -103,15 +103,12 @@ namespace flashgg {
         std::vector<double> tthVsttGGDNN_global_stddev_;
         std::vector<double> tthVsttGGDNN_object_mean_;
         std::vector<double> tthVsttGGDNN_object_stddev_; 
-<<<<<<< HEAD
-=======
 
         FileInPath tthVstHDNNfile_;
         std::vector<double> tthVstHDNN_global_mean_;
         std::vector<double> tthVstHDNN_global_stddev_;
         std::vector<double> tthVstHDNN_object_mean_;
         std::vector<double> tthVstHDNN_object_stddev_; 
->>>>>>> 366a8d47... Updated STXS workflow (#1204)
 
         //Thresholds
 
@@ -418,8 +415,7 @@ namespace flashgg {
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag> ( "MVAResultTag" ) ) ),
         vertexToken_( consumes<View<reco::Vertex> >( iConfig.getParameter<InputTag> ( "VertexTag" ) ) ),
         genParticleToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
-        systLabel_( iConfig.getParameter<string> ( "SystLabel" ) ),
-        prefireToken_ ( consumes<double>( iConfig.getParameter<InputTag> ( "PrefireProbability" ) ) )
+        systLabel_( iConfig.getParameter<string> ( "SystLabel" ) )
     {
         systematicsLabels.push_back("");
         modifySystematicsWorkflow = iConfig.getParameter<bool> ( "ModifySystematicsWorkflow" );
@@ -498,8 +494,6 @@ namespace flashgg {
         for (auto & tag : metTags)
            metTokens_.push_back(consumes<edm::View<flashgg::Met>>(tag));
 
-        applyPrefireProbability_ = iConfig.getParameter<bool>( "applyPrefireProbability" );
-
         leadPhoOverMassThreshold_ = iConfig.getParameter<double>( "leadPhoOverMassThreshold");
         subleadPhoOverMassThreshold_ = iConfig.getParameter<double>( "subleadPhoOverMassThreshold");
         MVAThreshold_ = iConfig.getParameter<std::vector<double>>( "MVAThreshold");
@@ -561,15 +555,12 @@ namespace flashgg {
         tthVsttGGDNN_global_stddev_ = iConfig.getParameter<std::vector<double>>( "tthVsttGGDNN_global_stddev" );
         tthVsttGGDNN_object_mean_ = iConfig.getParameter<std::vector<double>>( "tthVsttGGDNN_object_mean" );
         tthVsttGGDNN_object_stddev_ = iConfig.getParameter<std::vector<double>>( "tthVsttGGDNN_object_stddev" );
-<<<<<<< HEAD
-=======
 
         tthVstHDNNfile_ = iConfig.getParameter<edm::FileInPath>( "tthVstHDNNfile" );
         tthVstHDNN_global_mean_ = iConfig.getParameter<std::vector<double>>( "tthVstHDNN_global_mean" );
         tthVstHDNN_global_stddev_ = iConfig.getParameter<std::vector<double>>( "tthVstHDNN_global_stddev" );
         tthVstHDNN_object_mean_ = iConfig.getParameter<std::vector<double>>( "tthVstHDNN_object_mean" );
         tthVstHDNN_object_stddev_ = iConfig.getParameter<std::vector<double>>( "tthVstHDNN_object_stddev" );
->>>>>>> 366a8d47... Updated STXS workflow (#1204)
             
         tthMVA_RunII_weightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVA_RunII_weightfile" );
         
@@ -1439,10 +1430,10 @@ namespace flashgg {
 
               mvaValue = tthMvaVal_RunII_; // use Run II MVA for categorization
 
-                //int catNumber = -1;
-                //catNumber = chooseCategory( mvaValue , debug_);  
-                int catNumber_pt = -1;
-                catNumber_pt = chooseCategory_pt( mvaValue , dipho->pt());  
+                int catNumber = -1;
+                catNumber = chooseCategory( mvaValue , debug_);  
+                //int catNumber_pt = -1;
+                //catNumber_pt = chooseCategory_pt( mvaValue , dipho->pt());  
 
                 if(debug_)
                     cout << "I'm going to check selections, mva value: " << mvaValue << endl;
@@ -1482,13 +1473,13 @@ namespace flashgg {
                     cout << "MetPt " << MetPt_ << endl;
                     cout << "Lepton pT and Eta " << lepton_leadPt_ << " " << lepton_leadEta_ << endl;
                     cout << "--------------------------------------" << endl;
-                    cout << "TTHLeptonicTag -- output MVA value " << mvaValue << " " << DiphotonMva_-> EvaluateMVA( "BDT" ) << ", category " << catNumber_pt << endl;
+                    cout << "TTHLeptonicTag -- output MVA value " << mvaValue << " " << DiphotonMva_-> EvaluateMVA( "BDT" ) << ", category " << catNumber << endl;
                 }
 
-                if(catNumber_pt!=-1)
+                if(catNumber!=-1)
                 {
                     TTHLeptonicTag tthltags_obj( dipho, mvares );
-                    tthltags_obj.setCategoryNumber(catNumber_pt);
+                    tthltags_obj.setCategoryNumber(catNumber);
                     //tthltags_obj.setCategoryNumber(catNumber);
 
                     int chosenTag = computeStage1Kinematics( tthltags_obj );
@@ -1505,13 +1496,6 @@ namespace flashgg {
 
                     for( unsigned int i = 0; i < Electrons.size(); ++i )
                         tthltags_obj.includeWeights( *Electrons.at(i));
-
-
-                    if (applyPrefireProbability_) {
-                        tthltags_obj.setWeight("prefireProbability", *(prefireProb.product())); // add the prefire probability
-                        if (!evt.isRealData())
-                            tthltags_obj.setCentralWeight(tthltags_obj.centralWeight() * (1. - *(prefireProb.product())) );
-                    }
 
 
                     tthltags_obj.includeWeights( *dipho );

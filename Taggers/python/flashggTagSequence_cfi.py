@@ -36,7 +36,6 @@ def flashggPrepareTagSequence(process, options):
                                       * flashggVBFMVA
                                       * flashggVHhadMVA
                                       * flashggVBFDiPhoDiJetMVA
-                                      * flashggPrefireWeight
                                       * ( flashggUntagged
                                       #                                  *( flashggSigmaMoMpToMTag
                                           + flashggVBFTag

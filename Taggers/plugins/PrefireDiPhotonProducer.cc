@@ -61,13 +61,13 @@ namespace flashgg {
 
         isRelevant_ = iConfig.getParameter<bool>("isRelevant"); // used to skip all this for 2018
 
-        if (isRelevant_) {
+        if (isRelevant_) { 
             applyToCentral_ = iConfig.getParameter<bool>("applyToCentral");
 
             photonFileName_ = iConfig.getParameter<edm::FileInPath>( "photonFileName" );
             TFile* photonFile = TFile::Open(photonFileName_.fullPath().c_str());
             photonHistName_ = iConfig.getUntrackedParameter<std::string>("photonHistName");
-            photonHist_ = (TH2F*)((TH2F*) photonFile->Get(photonHistName_.c_str()))->Clone();
+            photonHist_ = (TH2F*)((TH2F*) photonFile->Get(photonHistName_.c_str()))->Clone(); 
             photonFile->Close();
             delete photonFile;
 

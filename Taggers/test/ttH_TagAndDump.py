@@ -18,7 +18,7 @@ if len(sys.argv) >= 5:
   print "Setting max number of events to %d" % (n_events)
 
 
-doSystematics = True
+doSystematics = False
 
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
@@ -50,6 +50,7 @@ musystlabels = []
 
 from flashgg.MetaData.MetaConditionsReader import *
 metaConditions = MetaConditionsReader(meta_conditions)
+print "Metaconds: ", metaConditions["L1Prefiring"]
 
 ISDATA = False
 if "DoubleEG" in file_names[0] or "EGamma" in file_names[0]:
@@ -106,7 +107,9 @@ from flashgg.Systematics.SystematicsCustomize import *
 from flashgg.MetaData.JobConfig import customize
 customize.metaConditions = metaConditions
 customize.processId = processId
-customize.doL1Prefiring = True
+customize.doSystematics = doSystematics
+customize.doGranularJEC = False
+
 
 jetSystematicsInputTags = createStandardSystematicsProducers(process , customize)
 modifyTagSequenceForSystematics(process,jetSystematicsInputTags)
@@ -115,6 +118,8 @@ modifyTagSequenceForSystematics(process,jetSystematicsInputTags)
 process.load("flashgg/MicroAOD/flashggDiPhotons_cfi")
 process.flashggDiPhotons.whichVertex = cms.uint32(0)
 process.flashggDiPhotons.useZerothVertexFromMicro = cms.bool(True)
+
+applyL1Prefiring = customizeForL1Prefiring(process, customize.metaConditions, customize.processId)
 
 # Remove unneeded tags
 process.flashggTagSequence.remove(process.flashggTHQLeptonicTag)
@@ -160,11 +165,6 @@ musystlabels = []
 
 
 
-if customize.doL1Prefiring:
-    customizeForL1Prefiring(process, customize.metaConditions, customize.processId)
-else:
-    process.flashggTagSequence.remove(process.flashggPrefireWeight)
-
 if not ISDATA:
     if ISSIGNAL:
         variablesToUse = minimalVariables
@@ -199,8 +199,8 @@ if not ISDATA:
             variablesToUse.append("ElectronWeight%s01sigma[1,-999999.,999999.] := weight(\"ElectronWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("JetBTagCutWeight%s01sigma[1,-999999.,999999.] := weight(\"JetBTagCutWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("JetBTagReshapeWeight%s01sigma[1,-999999.,999999.] := weight(\"JetBTagReshapeWeight%s01sigma\")" % (direction,direction))
-            if customize.doL1Prefiring:
-                variablesToUse.append("prefireProbability := weight(\"prefireProbability\")")
+            #if customize.doL1Prefiring:
+            #    variablesToUse.append("prefireProbability := weight(\"prefireProbability\")")
             variablesToUse.append("weight_JetBTagWeight:=weight(\"JetBTagReshapeWeightCentral\")")
             for r9 in ["HighR9","LowR9"]:
                 for region in ["EB","EE"]:
@@ -710,7 +710,7 @@ for tag in tagList:
 
         currentVariables = list(set(currentVariables))
         isBinnedOnly = (systlabel !=  "")
-        cfgTools.addCategory(process.tagsDumper, systlabel, classname=tagName, cutbased=cutstring, subcats=tagCats, variables=currentVariables, histograms=[], binnedOnly=isBinnedOnly, dumpPdfWeights=False, splitPdfByStage0Cat=False)
+        cfgTools.addCategory(process.tagsDumper, systlabel, classname=tagName, cutbased=cutstring, subcats=tagCats, variables=currentVariables, histograms=[], binnedOnly=isBinnedOnly, dumpPdfWeights=False)
         currentVariables = []
 
 

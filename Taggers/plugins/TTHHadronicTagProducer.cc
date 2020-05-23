@@ -74,6 +74,7 @@ namespace flashgg {
         EDGetTokenT<View<DiPhotonMVAResult> > mvaResultToken_;
         EDGetTokenT<View<flashgg::Met> > METToken_;
         std::vector<edm::EDGetTokenT<edm::View<flashgg::Met>>> metTokens_;
+        EDGetTokenT<View<reco::GenParticle> > genParticleToken_;
         EDGetTokenT<double> rhoTag_;
         EDGetTokenT<edm::TriggerResults> triggerRECO_;
         string systLabel_;
@@ -392,10 +393,10 @@ namespace flashgg {
         vertexToken_( consumes<View<reco::Vertex> >( iConfig.getParameter<InputTag> ( "VertexTag" ) ) ),
         mvaResultToken_( consumes<View<flashgg::DiPhotonMVAResult> >( iConfig.getParameter<InputTag>( "MVAResultTag" ) ) ),
         METToken_( consumes<View<flashgg::Met> >( iConfig.getParameter<InputTag> ( "METTag" ) ) ),
+        genParticleToken_( consumes<View<reco::GenParticle> >( iConfig.getParameter<InputTag> ( "GenParticleTag" ) ) ),
         rhoTag_( consumes<double>( iConfig.getParameter<InputTag>( "rhoTag" ) ) ),
 	    triggerRECO_( consumes<edm::TriggerResults>(iConfig.getParameter<InputTag>("RECOfilters") ) ),
         systLabel_( iConfig.getParameter<string> ( "SystLabel" ) ),
-        prefireToken_ ( consumes<double>( iConfig.getParameter<InputTag> ( "PrefireProbability" ) ) ),
         _MVAMethod( iConfig.getParameter<string> ( "MVAMethod" ) )
     {
         systematicsLabels.push_back("");
@@ -473,8 +474,6 @@ namespace flashgg {
 
         for (auto & tag : metTags)
            metTokens_.push_back(consumes<edm::View<flashgg::Met>>(tag)); 
-
-        applyPrefireProbability_ = iConfig.getParameter<bool>( "applyPrefireProbability" );
 
         boundaries = iConfig.getParameter<vector<double > >( "Boundaries" );
         boundaries_pt1 = iConfig.getParameter<vector<double > >( "Boundaries_pt1" );
@@ -848,7 +847,7 @@ namespace flashgg {
 	    }
 	  }
     
-
+        Handle<View<reco::GenParticle> > genParticles;
         //std::unique_ptr<vector<TTHHadronicTag> > tthhtags( new vector<TTHHadronicTag> );
         
         // Here we loop over all systematics (DiPhoton, Jets, Met), with the following logic:
@@ -1407,21 +1406,21 @@ namespace flashgg {
                 tthMvaVal_ = tthMvaVal_RunII_; // use Run II MVA
 
                 bool isTTHHadronicTagged = false;
-                //int catnum =-1;
-                int catnum_pt =-1;
+                int catnum =-1;
+                //int catnum_pt =-1;
                 if( !useTTHHadronicMVA_ && njets_btagloose_ >= bjetsLooseNumberThreshold_ && njets_btagmedium_ >= bjetsNumberThreshold_ && jetcount_ >= jetsNumberThreshold_ ) {
 
-                    catnum_pt=0;
+                    catnum=0;
                     isTTHHadronicTagged = true;
                     
                 } else if ( useTTHHadronicMVA_  && njets_btagloose_ >= bjetsLooseNumberTTHHMVAThreshold_ && njets_btagmedium_ >= bjetsNumberTTHHMVAThreshold_ && jetcount_ >= jetsNumberTTHHMVAThreshold_ ) {
                     //&& tthMvaVal_ >= tthHadMVAThresholdMin_  && tthMvaVal_ < tthHadMVAThresholdMax_ ) 
                     
-                    catnum_pt = chooseCategory_pt( tthMvaVal_, dipho->pt() );                
-                    //catnum = chooseCategory( tthMvaVal_ );                
+                    //catnum_pt = chooseCategory_pt( tthMvaVal_, dipho->pt() );                
+                    catnum = chooseCategory( tthMvaVal_ );                
                     //                cout<<" catNum="<<catnum<<endl;
-                    if(catnum_pt>=0){
-                    //if(catnum>=0){
+                    //if(catnum_pt>=0){
+                    if(catnum>=0){
                         isTTHHadronicTagged = true;
                         //                    cout<<" TAGGED "<< endl;
                     }
@@ -1441,7 +1440,7 @@ namespace flashgg {
                     }
  
                     TTHHadronicTag tthhtags_obj( dipho, mvares, JetVect, BJetVect );
-                    tthhtags_obj.setCategoryNumber(catnum_pt  );
+                    tthhtags_obj.setCategoryNumber(catnum  );
                     tthhtags_obj.setNjet( jetcount_ );
                     tthhtags_obj.setNBLoose( njets_btagloose_ );
                     tthhtags_obj.setNBMedium( njets_btagmedium_ );
@@ -1707,12 +1706,6 @@ namespace flashgg {
                         }                    
                     }
                     tthhtags_obj.includeWeights( *dipho );
-                    if (applyPrefireProbability_) {
-                        tthhtags_obj.setWeight("prefireProbability", *(prefireProb.product())); // add the prefire probability
-                        if (!evt.isRealData())
-                            tthhtags_obj.setCentralWeight(tthhtags_obj.centralWeight() * (1. - *(prefireProb.product())) );
-                    }
-
                     tthhtags->push_back( tthhtags_obj );
                 }
             }
