@@ -100,11 +100,11 @@ namespace flashgg {
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
         void setMuons( std::vector<edm::Ptr<Muon> > Muons ) {Muons_ = Muons;}
         void setElectrons( std::vector<edm::Ptr<Electron> > Electrons ) {Electrons_ = Electrons;}
-        void setLepPt( std::vector<double> lepPt) { lepPt_ = lepPt; }
-        void setLepE( std::vector<double> lepE) { lepE_ = lepE; }
-        void setLepEta( std::vector<double> lepEta) { lepEta_ = lepEta; }
-        void setLepPhi( std::vector<double> lepPhi) { lepPhi_ = lepPhi; }
-        void setLepType( std::vector<int> lepType) { lepType_ = lepType; }
+        void setLepPt( std::vector<double> lepPt ) { lepPt_ = lepPt; }
+        void setLepE( std::vector<double> lepE ) { lepE_ = lepE; }
+        void setLepEta( std::vector<double> lepEta ) { lepEta_ = lepEta; }
+        void setLepPhi( std::vector<double> lepPhi ) { lepPhi_ = lepPhi; }
+        void setLepType( std::vector<int> lepType ) { lepType_ = lepType; }
 
         void setLeadPrompt(int leadPrompt) { leadPrompt_ = leadPrompt; }
         void setSubleadPrompt(int subleadPrompt) { subleadPrompt_ = subleadPrompt; }
