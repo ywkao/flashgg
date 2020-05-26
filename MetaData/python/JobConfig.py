@@ -193,6 +193,7 @@ class JobConfig(object):
             
         #self.pu_distribs_hack_2017 = {  }
 
+        
         # try:
         #     import importlib
         #     from os import listdir,environ
@@ -415,7 +416,6 @@ class JobConfig(object):
                 if lumisToSkip: 
                     target = target.__sub__(lumisToSkip)                    
                 process.source.lumisToProcess = target.getVLuminosityBlockRange()
-
                 print process.source.lumisToProcess
 
         flist = []
@@ -516,7 +516,6 @@ class JobConfig(object):
             self.filePrepend = "root://cms-xrd-global.cern.ch/"
         elif self.useEOS:
             self.filePrepend = "root://eoscms.cern.ch//eos/cms"
-        
         self.samplesMan = None
         dataset = None
         if self.dataset != "":
