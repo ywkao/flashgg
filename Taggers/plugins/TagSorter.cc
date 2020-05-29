@@ -258,8 +258,8 @@ namespace flashgg {
                                            int(htxsClassification->stage1_cat_pTjet30GeV),
                                            int(htxsClassification->stage1_1_cat_pTjet30GeV),
                                            int(htxsClassification->stage1_1_fine_cat_pTjet30GeV),
-                                           int(htxsClassification->stage1_2_cat_pTjet30GeV),
-                                           int(htxsClassification->stage1_2_fine_cat_pTjet30GeV),
+                                           int(htxsClassification->stage1_1_cat_pTjet30GeV), // hack to prevent errors
+                                           int(htxsClassification->stage1_1_fine_cat_pTjet30GeV), // hack to prevent errors
                                            float(htxsClassification->jets30.size()),
                                            float(htxsClassification->p4decay_higgs.pt()),
                                            float(htxsClassification->p4decay_V.pt()) );
@@ -382,8 +382,8 @@ namespace flashgg {
                                        int(htxsClassification->stage1_cat_pTjet30GeV),
                                        int(htxsClassification->stage1_1_cat_pTjet30GeV),
                                        int(htxsClassification->stage1_1_fine_cat_pTjet30GeV),
-                                       int(htxsClassification->stage1_2_cat_pTjet30GeV),
-                                       int(htxsClassification->stage1_2_fine_cat_pTjet30GeV),
+                                       int(htxsClassification->stage1_1_cat_pTjet30GeV), // hack to prevent errors
+                                       int(htxsClassification->stage1_1_fine_cat_pTjet30GeV), //hack to prevent errors
                                        float(htxsClassification->jets30.size()),
                                        float(htxsClassification->p4decay_higgs.pt()),
                                        float(htxsClassification->p4decay_V.pt()) );
