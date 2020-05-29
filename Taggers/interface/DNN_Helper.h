@@ -37,8 +37,8 @@ class DNN_Helper
     tensorflow::GraphDef* graph_;
     tensorflow::Session*  session_;
     
-    std::vector<double> 		global_features_; // e.g. Met, N_jets, max b-tag score, etc.
-    std::vector<std::vector<double>> 	object_features_; // pT ordered list of jets (and leptons)
+    std::vector<double>         global_features_; // e.g. Met, N_jets, max b-tag score, etc.
+    std::vector<std::vector<double>>    object_features_; // pT ordered list of jets (and leptons)
 
     unsigned int length_global_; // number of global features
     unsigned int length_object_; // number of features per object
@@ -220,7 +220,7 @@ float DNN_Helper::EvaluateDNN() {
     for (unsigned int j = 0; j < length_object_; j++) {
       object_input.tensor<float,3>()(0,i,j) = float(object_features_[i][j]);
       if (debug_)
-	cout << "Object feature " << i << ", " << j << ": " << float(object_features_[i][j]) << endl;
+    cout << "Object feature " << i << ", " << j << ": " << float(object_features_[i][j]) << endl;
     } 
   }
 

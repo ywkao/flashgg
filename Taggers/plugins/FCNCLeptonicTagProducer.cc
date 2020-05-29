@@ -25,7 +25,7 @@
 #include "DataFormats/Common/interface/RefToPtr.h"
 
 #include "flashgg/Taggers/interface/BDT_resolvedTopTagger.h"
-#include "flashgg/Taggers/interface/DNN_Helper.h"
+#include "flashgg/Taggers/interface/TTH_DNN_Helper.h"
 
 #include <vector>
 #include <algorithm>
@@ -206,7 +206,7 @@ namespace flashgg {
         float fcncMvaVal_;
 
         BDT_resolvedTopTagger *topTagger;
-        DNN_Helper* dnn;
+        TTH_DNN_Helper* dnn;
 
         bool modifySystematicsWorkflow;
         std::vector<std::string> systematicsLabels;
@@ -653,7 +653,7 @@ namespace flashgg {
 
         if (useLargeMVAs) {
             topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
-            dnn = new DNN_Helper(tthVsttGGDNNfile_.fullPath());
+            dnn = new TTH_DNN_Helper(tthVsttGGDNNfile_.fullPath());
             dnn->SetInputShapes(19, 9, 8);
         }
 
