@@ -131,7 +131,9 @@ class MicroAODCustomize(object):
             if "Mu" in customize.datasetName:
                 self.customizeDataMuons(process)
         elif "sig" in self.processType.lower():
-            self.customizeSignal(process)
+            doRivet = not ("fcnc" in self.processType.lower())
+            self.customizeSignal(process, doRivet)
+
             if "tth" in customize.datasetName.lower():
                 self.customizeTTH(process)
             elif "vh" in customize.datasetName.lower() or "wmh" in customize.datasetName.lower() or "wph" in customize.datasetName.lower() or "wh" in customize.datasetName.lower() or "zh" in customize.datasetName.lower():
@@ -144,6 +146,8 @@ class MicroAODCustomize(object):
                 self.customizeTH(process)
             elif "hh" in customize.datasetName.lower():
                 self.customizeHH(process)
+            elif "fcnc" in customize.datasetName.lower():
+                self.customizeFCNC(process)
             else:
                 raise Exception,"processType=sig but datasetName does not contain recognized production mechanism - see MicroAODCustomize.py"
         if self.processType == "background" or self.processType == "bkg":
@@ -192,7 +196,7 @@ class MicroAODCustomize(object):
         print "Final customized process:",process.p
             
     # signal specific customization
-    def customizeSignal(self,process):
+    def customizeSignal(self,process,doRivet=True):
         print "customizeSignal"
         process.flashggGenPhotonsExtra.defaultType = 1
         import flashgg.MicroAOD.flashggMETs_cff
@@ -225,11 +229,14 @@ class MicroAODCustomize(object):
 
         #raise Exception,"Debugging ongoing for HTXS in CMSSW 9"
         process.load("SimGeneral.HepPDTESSource.pythiapdt_cfi")
-        process.rivetProducerHTXS = cms.EDProducer('HTXSRivetProducer',
-                                                   HepMCCollection = cms.InputTag('myGenerator','unsmeared'),
-                                                   LHERunInfo = cms.InputTag('externalLHEProducer'),
-                                                   ProductionMode = cms.string('AUTO'),
-        )
+
+        if doRivet:
+            print("[MicroAODCustomize.py] Running HTXSRivetProducer")
+            process.rivetProducerHTXS = cms.EDProducer('HTXSRivetProducer',
+                                                       HepMCCollection = cms.InputTag('myGenerator','unsmeared'),
+                                                       LHERunInfo = cms.InputTag('externalLHEProducer'),
+                                                       ProductionMode = cms.string('AUTO'),
+            )
 
         process.mergedGenParticles = cms.EDProducer("MergedGenParticleProducer",
                                                     inputPruned = cms.InputTag("prunedGenParticles"),
@@ -242,8 +249,10 @@ class MicroAODCustomize(object):
         )
         process.p *= process.mergedGenParticles
         process.p *= process.myGenerator
-        process.p *= process.rivetProducerHTXS
-        process.out.outputCommands.append('keep *_rivetProducerHTXS_*_*')
+
+        if doRivet:
+            process.p *= process.rivetProducerHTXS
+            process.out.outputCommands.append('keep *_rivetProducerHTXS_*_*')
 
         self.customizePDFs(process)
         self.customizeHLT(process)
@@ -532,7 +541,8 @@ class MicroAODCustomize(object):
     def customizeHH(self,process):
         print "using HH sample, treating them as signals"
 
-
+    def customizeFCNC(self,process):
+        print "using FCNC sample, treating them as signals"
 
     def customizeTH(self,process):
         print "customizeTH"
