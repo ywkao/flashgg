@@ -18,7 +18,7 @@ if len(sys.argv) >= 5:
   print "Setting max number of events to %d" % (n_events)
 
 
-doSystematics = False
+doSystematics = True
 
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
