@@ -1,20 +1,16 @@
 #ifdef _TOP_RECO_HELPER_H_
 #define _TOP_RECO_HELPER_H_
 
-//#chi-2 related
 //--------------------------------------------------//
+//#quadratic equation related
+//--------------------------------------------------//
+const double w_boson_mass = 80.379;
+const double top_quark_mass = 173.;
 //get_bjet_indices{{{
 double pfDeepCSVJetTags_loose  = 0.1522;
 vector<int> get_bjet_indices(vector<TLorentzVector> Jets, vector<double> btag_scores)
 {
     vector<int> indices;
-    //# consider all b-jet candidates
-    //for(size_t i=0; i!=Jets.size(); ++i)
-    //{
-    //    double btag_score = btag_scores[i];
-    //    if(btag_score >= pfDeepCSVJetTags_loose) indices.push_back(i);
-    //}
-
     //# consider the jet with the highest b-tag score only
     int index_bjet = std::max_element(btag_scores.begin(), btag_scores.end()) - btag_scores.begin();
     indices = {index_bjet};
@@ -22,8 +18,97 @@ vector<int> get_bjet_indices(vector<TLorentzVector> Jets, vector<double> btag_sc
     return indices;
 }
 //}}}
-//chi-2 with 3x3 covariance matrix{{{
-std::vector<int> get_bjjq_indices_chi2_3x3(std::vector<TLorentzVector> Jets, int index_bjet, TLorentzVector diphoton, double &chi2_min)
+//double evaluate_neutrino_pz(TLorentzVector lepton, vector<double> met_info){{{
+double evaluate_neutrino_pz(TLorentzVector lepton, vector<double> met_info)
+{
+    float met_pt = met_info[0];
+    float met_px = met_info[1];
+    float met_py = met_info[2];
+
+    float lepton_px = lepton.Px();
+    float lepton_py = lepton.Py();
+    float lepton_pz = lepton.Pz();
+    float lepton_energy = lepton.E();
+    float coefficient_factor = ( w_boson_mass*w_boson_mass + 2*lepton_px*met_px + 2*lepton_py*met_py ) / (2.*lepton_energy);
+    float coefficient_A = 1. - (lepton_pz*lepton_pz)/(lepton_energy*lepton_energy);
+    float coefficient_B = 2.*coefficient_factor*lepton_pz/lepton_energy;
+    float coefficient_C = met_pt*met_pt - coefficient_factor*coefficient_factor;
+    float coefficient_D = coefficient_B*coefficient_B - 4.*coefficient_A*coefficient_C;
+    
+    float met_pz_solution_1 = 0.0;
+    float met_pz_solution_2 = 0.0;
+
+    if(coefficient_D < 0){
+        met_pz_solution_1 = coefficient_B / (2.*coefficient_A);
+        met_pz_solution_2 = coefficient_B / (2.*coefficient_A);
+    } else{
+        met_pz_solution_1 = (coefficient_B + TMath::Sqrt(coefficient_D))/(2.*coefficient_A);
+        met_pz_solution_2 = (coefficient_B - TMath::Sqrt(coefficient_D))/(2.*coefficient_A);
+    }
+    //ordering
+    float larger_pz  = (abs(met_pz_solution_1) > abs(met_pz_solution_2) ) ? met_pz_solution_1 : met_pz_solution_2;
+    float smaller_pz = (abs(met_pz_solution_1) < abs(met_pz_solution_2) ) ? met_pz_solution_1 : met_pz_solution_2;
+    met_pz_solution_1 = larger_pz;
+    met_pz_solution_2 = smaller_pz;
+
+    return met_pz_solution_2;
+}
+//}}}
+//TLorentzVector derive_reco_neutrino(TLorentzVector lepton, vector<double> met_info){{{
+TLorentzVector derive_reco_neutrino(TLorentzVector lepton, vector<double> met_info)
+{
+    double neutrino_pz = evaluate_neutrino_pz(lepton, met_info);
+    double met_pt = met_info[0];
+    double met_px = met_info[1];
+    double met_py = met_info[2];
+    double neutrino_energy = TMath::Sqrt(met_pt*met_pt + neutrino_pz*neutrino_pz);
+
+    TLorentzVector reco_neutrino;
+    reco_neutrino.SetPxPyPzE( met_px, met_py, neutrino_pz, neutrino_energy );
+    return reco_neutrino;
+}
+//}}}
+//TLorentzVector derive_reco_wboson(TLorentzVector lepton, TLorentzVector reco_neutrino){{{
+TLorentzVector derive_reco_wboson(TLorentzVector lepton, TLorentzVector reco_neutrino)
+{
+    TLorentzVector reco_wboson = reco_neutrino + lepton;
+    return reco_wboson;
+}
+//}}}
+//TLorentzVector derive_reco_tbw(TLorentzVector reco_wboson, TLorentzVector bjet){{{
+TLorentzVector derive_reco_tbw(TLorentzVector reco_wboson, TLorentzVector bjet)
+{
+    TLorentzVector reco_tbw = reco_wboson + bjet;
+    return reco_tbw;
+}
+//}}}
+//int get_q_index_min_chi2(std::vector<TLorentzVector> Jets, int index_bjet, TLorentzVector diphoton){{{
+int get_q_index_min_chi2(std::vector<TLorentzVector> Jets, int index_bjet, TLorentzVector diphoton)
+{
+    std::vector<int> indices;
+    std::vector<double> top_fcnh_chi2;
+    for(std::size_t i=0; i!=Jets.size(); ++i){
+        if(i==index_bjet) continue; //skip the selected jets for bjet
+        TLorentzVector top_fcnh_tmp = diphoton + Jets[i];
+        double chi2 = (top_fcnh_tmp.M() - top_quark_mass) * (top_fcnh_tmp.M() - top_quark_mass);
+        indices.push_back(i);
+        top_fcnh_chi2.push_back(chi2);
+    }
+
+    int min_index =  std::min_element(top_fcnh_chi2.begin(), top_fcnh_chi2.end()) - top_fcnh_chi2.begin();
+    //double min    = *std::min_element(top_fcnh_chi2.begin(), top_fcnh_chi2.end());
+
+    int result = Jets.size() > 1 ? indices[min_index] : -1;
+    return result;
+}
+//}}}
+
+
+//--------------------------------------------------//
+//#chi-2 related
+//--------------------------------------------------//
+//chi-2 with 3x3 covariance matrix
+std::vector<int> get_bjjq_indices_chi2_3x3(std::vector<TLorentzVector> Jets, int index_bjet, TLorentzVector diphoton, double &chi2_min)//{{{
 {
     // 1. pick up 3 jets
     // 2. q-jj three combinations 
@@ -113,10 +198,8 @@ std::vector<int> get_bjjq_indices_chi2_3x3(std::vector<TLorentzVector> Jets, int
 
     std::vector<int> indices = {index_bjet, index_wjets[0], index_wjets[1], index_tqh_qjet};
     return indices;
-}
-
-
-std::vector<int> get_bjjq_indices_min_chi2_3x3(std::vector<TLorentzVector> Jets, std::vector<int> indices_bjet, TLorentzVector diphoton)
+}//}}}
+std::vector<int> get_bjjq_indices_min_chi2_3x3(std::vector<TLorentzVector> Jets, std::vector<int> indices_bjet, TLorentzVector diphoton)//{{{
 {
     vector<double> vec_chi2;
     vector<vector<int>> vec_indices_jet;
@@ -125,31 +208,15 @@ std::vector<int> get_bjjq_indices_min_chi2_3x3(std::vector<TLorentzVector> Jets,
         std::vector<int> index_jet_chi2 = get_bjjq_indices_chi2_3x3(Jets, indices_bjet[i], diphoton, chi2_min); // indices of b j j q
         vec_chi2.push_back(chi2_min);
         vec_indices_jet.push_back(index_jet_chi2);
-        //printf("[check-imp] [%d] (b, j, j, q) = ", i);
-        //printf("(%d, ", index_jet_chi2[0]);
-        //printf("%d, " , index_jet_chi2[1]);
-        //printf("%d, " , index_jet_chi2[2]);
-        //printf("%d), ", index_jet_chi2[3]);
-        //printf("chi2 = %7.3f\n", chi2_min);
     }
 
     int min_index =  std::min_element(vec_chi2.begin(), vec_chi2.end()) - vec_chi2.begin();
     double min    = *std::min_element(vec_chi2.begin(), vec_chi2.end());
-    //printf("[curiosity] begin, end, diff = %d, %d, %d\n", vec_chi2.begin(), vec_chi2.end(), vec_chi2.end() - vec_chi2.begin());
-    //printf("[curiosity] *begin, *end     = %f, %f\n", *vec_chi2.begin(), *(vec_chi2.end()-1));
-    //printf("[check-imp] min: [%d] (b, j, j, q) = ", min_index);
-    //printf("(%d, ", vec_indices_jet[min_index][0]);
-    //printf("%d, " , vec_indices_jet[min_index][1]);
-    //printf("%d, " , vec_indices_jet[min_index][2]);
-    //printf("%d), ", vec_indices_jet[min_index][3]);
-    //printf("chi2 = %7.3f\n", min);
     return vec_indices_jet[min_index];
-}
+}//}}}
 
-
-//}}}
-// chi-2 with 2x2 covariance matrix{{{
-int get_q_index_min_chi2(std::vector<TLorentzVector> Jets, std::vector<int> indices_bjj, TLorentzVector diphoton)
+// chi-2 with 2x2 covariance matrix
+int get_q_index_min_chi2(std::vector<TLorentzVector> Jets, std::vector<int> indices_bjj, TLorentzVector diphoton)//{{{
 {
     std::vector<int> indices;
     std::vector<double> top_fcnh_chi2;
@@ -159,22 +226,14 @@ int get_q_index_min_chi2(std::vector<TLorentzVector> Jets, std::vector<int> indi
         double chi2 = (top_fcnh_tmp.M() - top_quark_mass) * (top_fcnh_tmp.M() - top_quark_mass);
         indices.push_back(i);
         top_fcnh_chi2.push_back(chi2);
-        //printf("[check-ywk] q = ");
-        //printf("%d, " , i);
-        //printf("chi2 = %7.3f\n", chi2);
     }
 
     int min_index =  std::min_element(top_fcnh_chi2.begin(), top_fcnh_chi2.end()) - top_fcnh_chi2.begin();
     double min    = *std::min_element(top_fcnh_chi2.begin(), top_fcnh_chi2.end());
-    //printf("[check-ywk] min: q = ");
-    //printf("%d, " , indices[min_index]);
-    //printf("chi2 = %7.3f\n", top_fcnh_chi2[min_index]);
 
     return indices[min_index];
-}
-
-
-std::vector<int> get_indices_chi2(std::vector<TLorentzVector> Jets, int index_bjet, double &chi2_min, bool is_chi2_modified)
+}//}}}
+std::vector<int> get_indices_chi2(std::vector<TLorentzVector> Jets, int index_bjet, double &chi2_min, bool is_chi2_modified)//{{{
 {
     std::vector<int> indices_selected_jet(3, -999);
     indices_selected_jet[0] = index_bjet;
@@ -199,10 +258,8 @@ std::vector<int> get_indices_chi2(std::vector<TLorentzVector> Jets, int index_bj
     }//end of looping jets
 
     return indices_selected_jet; //indices of b j j
-}
-
-
-vector<int> get_bjj_indices_min_chi2(std::vector<TLorentzVector> Jets, std::vector<int> indices_bjet, bool is_chi2_modified)
+}//}}}
+vector<int> get_bjj_indices_min_chi2(std::vector<TLorentzVector> Jets, std::vector<int> indices_bjet, bool is_chi2_modified)//{{{
 {
     vector<double> vec_chi2;
     vector<vector<int>> vec_indices_jet;
@@ -213,29 +270,16 @@ vector<int> get_bjj_indices_min_chi2(std::vector<TLorentzVector> Jets, std::vect
         vec_indices_jet.push_back(index_jet_chi2);
     }
 
-    //printf("[check-ywk] ScanChain_ttHHadronic.h::get_bjj_indices_min_chi2::indices_bjet.size() = %d\n", indices_bjet.size());
-    //printf("[check-ywk] ScanChain_ttHHadronic.h::get_bjj_indices_min_chi2::vec_chi2.size()     = %d\n", vec_chi2.size());
 
     int min_index =  std::min_element(vec_chi2.begin(), vec_chi2.end()) - vec_chi2.begin();
     double min    = *std::min_element(vec_chi2.begin(), vec_chi2.end());
-    //printf("[curiosity] begin, end, diff = %d, %d, %d\n", vec_chi2.begin(), vec_chi2.end(), vec_chi2.end() - vec_chi2.begin());
-    //printf("[curiosity] *begin, *end     = %f, %f\n", *vec_chi2.begin(), *(vec_chi2.end()-1));
-    //printf("[check-ywk] min: [%d] (b, j, j) = ", min_index);
-    //printf("(%d, ", vec_indices_jet[min_index][0]);
-    //printf("%d, " , vec_indices_jet[min_index][1]);
-    //printf("%d), ", vec_indices_jet[min_index][2]);
-    //printf("chi2 = %7.3f\n\n", min);
     return vec_indices_jet[min_index];
-}
-
-
-vector<int> get_bjjq_indices_min_chi2(std::vector<TLorentzVector> Jets, std::vector<int> indices_bjet, TLorentzVector diphoton, bool is_chi2_modified)
+}//}}}
+vector<int> get_bjjq_indices_min_chi2(std::vector<TLorentzVector> Jets, std::vector<int> indices_bjet, TLorentzVector diphoton, bool is_chi2_modified)//{{{
 {
     std::vector<int> indices = get_bjj_indices_min_chi2(Jets, indices_bjet, is_chi2_modified);
     int index_q = get_q_index_min_chi2(Jets, indices, diphoton);
     indices.push_back(index_q);
     return indices;
-}
-//}}}
-//--------------------------------------------------//
+}//}}}
 #endif
