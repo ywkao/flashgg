@@ -206,6 +206,22 @@ namespace flashgg {
         float tthMvaVal_RunII_;
         float fcncMvaVal_;
 
+        //------------------------------//
+        float leptonic_neutrino_pz_;
+        float leptonic_tbw_mass_;
+        float leptonic_tbw_pt_;
+        float leptonic_tbw_eta_;
+        float leptonic_tbw_deltaR_dipho_;
+        float leptonic_qjet_pt_;
+        float leptonic_qjet_eta_;
+        float leptonic_qjet_btag_;
+        float leptonic_qjet_deltaR_dipho_;
+        float leptonic_tqh_ptOverM_;
+        float leptonic_tqh_eta_;
+        float leptonic_tqh_deltaR_tbw_;
+        float leptonic_tqh_deltaR_dipho_;
+        //------------------------------//
+
         BDT_resolvedTopTagger *topTagger;
         DNN_Helper* dnn;
 
@@ -640,6 +656,21 @@ namespace flashgg {
         FCNCMva_->AddVariable("lep_pt_", &lepton_leadPt_);
         FCNCMva_->AddVariable("lep_eta_", &lepton_leadEta_);
         FCNCMva_->AddVariable("n_lep_tight_", &lepton_nTight_);
+        //------------------------------//
+        FCNCMva_->AddVariable("leptonic_neutrino_pz_", &leptonic_neutrino_pz_);
+        FCNCMva_->AddVariable("leptonic_tbw_mass_", &leptonic_tbw_mass_);
+        FCNCMva_->AddVariable("leptonic_tbw_pt_", &leptonic_tbw_pt_);
+        FCNCMva_->AddVariable("leptonic_tbw_eta_", &leptonic_tbw_eta_);
+        FCNCMva_->AddVariable("leptonic_tbw_deltaR_dipho_", &leptonic_tbw_deltaR_dipho_);
+        FCNCMva_->AddVariable("leptonic_qjet_pt_", &leptonic_qjet_pt_);
+        FCNCMva_->AddVariable("leptonic_qjet_eta_", &leptonic_qjet_eta_);
+        FCNCMva_->AddVariable("leptonic_qjet_btag_", &leptonic_qjet_btag_);
+        FCNCMva_->AddVariable("leptonic_qjet_deltaR_dipho_", &leptonic_qjet_deltaR_dipho_);
+        FCNCMva_->AddVariable("leptonic_tqh_ptOverM_", &leptonic_tqh_ptOverM_);
+        FCNCMva_->AddVariable("leptonic_tqh_eta_", &leptonic_tqh_eta_);
+        FCNCMva_->AddVariable("leptonic_tqh_deltaR_tbw_", &leptonic_tqh_deltaR_tbw_);
+        FCNCMva_->AddVariable("leptonic_tqh_deltaR_dipho_", &leptonic_tqh_deltaR_dipho_);
+        //------------------------------//
 
         if (coupling_ == "Hut") {
             std::cout << "Coupling selected as " << coupling_ << ", loading the following MVA: " << fcncHutMVAWeightFile_.fullPath() << std::endl;
@@ -1359,27 +1390,27 @@ namespace flashgg {
                 TLorentzVector reco_wboson   = derive_reco_wboson(lepton, reco_neutrino);
 
                 TLorentzVector _nothing_;
-                int index_bjet_method_2      = std::max_element(btag_scores.begin(), btag_scores.end()) - btag_scores.begin();
-                TLorentzVector bjet          = is_moreThanOneJets_and_atLeastOneBjet ? jets[index_bjet_method_2]          : _nothing_;
+                int index_bjet               = std::max_element(btag_scores.begin(), btag_scores.end()) - btag_scores.begin();
+                TLorentzVector bjet          = is_moreThanOneJets_and_atLeastOneBjet ? jets[index_bjet]                   : _nothing_;
                 TLorentzVector reco_tbw      = is_moreThanOneJets_and_atLeastOneBjet ? derive_reco_tbw(reco_wboson, bjet) : _nothing_;
 
-                int index_q                  = get_q_index_min_chi2(jets, index_bjet_method_2, diphoton);
-                TLorentzVector chi2_qjet     = is_moreThanTwoJets_and_atLeastOneBjet ? jets[index_q]                      : _nothing_;
-                TLorentzVector chi2_tqh      = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet + diphoton               : _nothing_;
+                int index_q                  = get_q_index_min_chi2(jets, index_bjet, diphoton);
+                TLorentzVector leptonic_qjet = is_moreThanTwoJets_and_atLeastOneBjet ? jets[index_q]                      : _nothing_;
+                TLorentzVector leptonic_tqh  = is_moreThanTwoJets_and_atLeastOneBjet ? leptonic_qjet + diphoton           : _nothing_;
                 // variables
-                chi2_neutrino_pz_       = neutrino_pz;
-                chi2_tbw_mass_          = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.M()                            : -999.;
-                chi2_tbw_pt_            = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.Pt()                           : -999.;
-                chi2_tbw_eta_           = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.Eta()                          : -999.;
-                chi2_tbw_deltaR_dipho_  = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.DeltaR(diphoton)               : -999.;
-                chi2_qjet_pt_           = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet.Pt()                          : -999.;
-                chi2_qjet_eta_          = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet.Eta()                         : -999.;
-                chi2_qjet_btag_         = is_moreThanTwoJets_and_atLeastOneBjet ? btag_scores[index_q]                    : -999.;
-                chi2_qjet_deltaR_dipho_ = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet.DeltaR(diphoton)              : -999.;
-                chi2_tqh_ptOverM_       = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.Pt()/chi2_tqh.M()              : -999.;
-                chi2_tqh_eta_           = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.Eta()                          : -999.;
-                chi2_tqh_deltaR_tbw_    = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.DeltaR(reco_tbw)               : -999.;
-                chi2_tqh_deltaR_dipho_  = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.DeltaR(diphoton)               : -999.;
+                leptonic_neutrino_pz_        = neutrino_pz;
+                leptonic_tbw_mass_           = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.M()                       : -999.;
+                leptonic_tbw_pt_             = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.Pt()                      : -999.;
+                leptonic_tbw_eta_            = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.Eta()                     : -999.;
+                leptonic_tbw_deltaR_dipho_   = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.DeltaR(diphoton)          : -999.;
+                leptonic_qjet_pt_            = is_moreThanTwoJets_and_atLeastOneBjet ? leptonic_qjet.Pt()                 : -999.;
+                leptonic_qjet_eta_           = is_moreThanTwoJets_and_atLeastOneBjet ? leptonic_qjet.Eta()                : -999.;
+                leptonic_qjet_btag_          = is_moreThanTwoJets_and_atLeastOneBjet ? btag_scores[index_q]               : -999.;
+                leptonic_qjet_deltaR_dipho_  = is_moreThanTwoJets_and_atLeastOneBjet ? leptonic_qjet.DeltaR(diphoton)     : -999.;
+                leptonic_tqh_ptOverM_        = is_moreThanTwoJets_and_atLeastOneBjet ? leptonic_tqh.Pt()/leptonic_tqh.M() : -999.;
+                leptonic_tqh_eta_            = is_moreThanTwoJets_and_atLeastOneBjet ? leptonic_tqh.Eta()                 : -999.;
+                leptonic_tqh_deltaR_tbw_     = is_moreThanTwoJets_and_atLeastOneBjet ? leptonic_tqh.DeltaR(reco_tbw)      : -999.;
+                leptonic_tqh_deltaR_dipho_   = is_moreThanTwoJets_and_atLeastOneBjet ? leptonic_tqh.DeltaR(diphoton)      : -999.;
                 //------------------------------//
                 
                 float mvaValue = DiphotonMva_-> EvaluateMVA( "BDT" );
@@ -1423,6 +1454,22 @@ namespace flashgg {
                   cout << "met_: " << MetPt_ << endl;
                   cout << "dipho_pt_over_mass_: " << diPhoPtoM_ << endl;
                   cout << "helicity_angle_: " << helicity_angle_ << endl;
+
+                  //------------------------------//
+                  cout << "leptonic_neutrino_pz_:" << leptonic_neutrino_pz_ << endl;
+                  cout << "leptonic_tbw_mass_:" << leptonic_tbw_mass_ << endl;
+                  cout << "leptonic_tbw_pt_:" << leptonic_tbw_pt_ << endl;
+                  cout << "leptonic_tbw_eta_:" << leptonic_tbw_eta_ << endl;
+                  cout << "leptonic_tbw_deltaR_dipho_:" << leptonic_tbw_deltaR_dipho_ << endl;
+                  cout << "leptonic_qjet_pt_:" << leptonic_qjet_pt_ << endl;
+                  cout << "leptonic_qjet_eta_:" << leptonic_qjet_eta_ << endl;
+                  cout << "leptonic_qjet_btag_:" << leptonic_qjet_btag_ << endl;
+                  cout << "leptonic_qjet_deltaR_dipho_:" << leptonic_qjet_deltaR_dipho_ << endl;
+                  cout << "leptonic_tqh_ptOverM_:" << leptonic_tqh_ptOverM_ << endl;
+                  cout << "leptonic_tqh_eta_:" << leptonic_tqh_eta_ << endl;
+                  cout << "leptonic_tqh_deltaR_tbw_:" << leptonic_tqh_deltaR_tbw_ << endl;
+                  cout << "leptonic_tqh_deltaR_dipho_:" << leptonic_tqh_deltaR_dipho_ << endl;
+                  //------------------------------//
 
                   cout << "lep_pt_: " << lepton_leadPt_ << endl;
                   cout << "lep_eta_: " << lepton_leadEta_ << endl;
