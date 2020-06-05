@@ -1,4 +1,4 @@
-#include "FWCore/Framework/interface/EDProducer.h"//{{{
+#include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Utilities/interface/InputTag.h"
@@ -27,6 +27,8 @@
 #include "flashgg/Taggers/interface/BDT_resolvedTopTagger.h"
 #include "flashgg/Taggers/interface/DNN_Helper.h"
 
+#include "flashgg/Taggers/interface/TopRecoHelper.h"
+
 #include <vector>
 #include <algorithm>
 #include <string>
@@ -37,7 +39,6 @@
 
 using namespace std;
 using namespace edm;
-//}}}
 
 namespace flashgg {
 
@@ -750,7 +751,7 @@ namespace flashgg {
     }//}}}
 
     void FCNCHadronicTagProducer::produce( Event &evt, const EventSetup & )
-    {
+    {//{{{
         //!modifySystematicsWorkflow{{{ _ywk_
         //Handle<View<flashgg::Jet> > theJets;
         //evt.getByToken( thejetToken_, theJets );
@@ -1343,8 +1344,7 @@ namespace flashgg {
                   pho2.SetPtEtaPhiE(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), dipho->subLeadingPhoton()->energy());
                   helicity_angle_ = helicity(pho1, pho2);
 
-                  //------------------------------//
-                  //#chi-2 related
+                  //#chi-2 related{{{
                   vector<int> _null_vector_;
                   vector<int> indices_bjet = get_bjet_indices(jets, btag_scores);
 
@@ -1395,7 +1395,7 @@ namespace flashgg {
                   chi2_3x3_tqh_eta_             = is_moreThanThreeJets_and_atLeastOneBjet ? chi2_3x3_tqh.Eta()                              : -999;
                   chi2_3x3_tqh_deltaR_tbw_      = is_moreThanThreeJets_and_atLeastOneBjet ? chi2_3x3_tqh.DeltaR(chi2_3x3_tbw)               : -999;
                   chi2_3x3_tqh_deltaR_dipho_    = is_moreThanThreeJets_and_atLeastOneBjet ? chi2_3x3_tqh.DeltaR(diphoton)                   : -999;
-                  //------------------------------//
+                  //------------------------------//}}}
 
                   calculate_masses(JetVect, dipho, m_ggj_, m_jjj_); 
 
@@ -1405,7 +1405,7 @@ namespace flashgg {
 
                   tthMvaVal_RunII_ = convert_tmva_to_prob(TThMva_RunII_->EvaluateMVA( _MVAMethod.c_str() ));
                   fcncMvaVal_ = convert_tmva_to_prob(FCNCMva_RunII_->EvaluateMVA( _MVAMethod.c_str() ));
-                  if (debug_) {
+                  if (debug_) {//{{{
                     cout << "TTH Hadronic Tag -- input MVA variables for Run II MVA: " << endl;
                     cout << "--------------------------------------------------------" << endl;
                     cout << "maxIDMVA_: " << maxPhoID_ << endl;
@@ -1543,9 +1543,7 @@ namespace flashgg {
             }
         evt.put( std::move( tthhtags ), systematicsLabels[syst_idx] );
         }
-    }
+    }//}}}
 }
 typedef flashgg::FCNCHadronicTagProducer FlashggFCNCHadronicTagProducer;
 DEFINE_FWK_MODULE( FlashggFCNCHadronicTagProducer );
-
-

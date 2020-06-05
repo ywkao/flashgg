@@ -26,6 +26,7 @@
 
 #include "flashgg/Taggers/interface/BDT_resolvedTopTagger.h"
 #include "flashgg/Taggers/interface/DNN_Helper.h"
+#include "flashgg/Taggers/interface/TopRecoHelper.h"
 
 #include <vector>
 #include <algorithm>
@@ -841,11 +842,6 @@ namespace flashgg {
                 edm::Ptr<flashgg::DiPhotonMVAResult> mvares = mvaResults->ptrAt( diphoIndex );
 
 
-                TLorentzVector pho1, pho2;
-                pho1.SetPtEtaPhiE(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), dipho->leadingPhoton()->energy());
-                pho2.SetPtEtaPhiE(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), dipho->subLeadingPhoton()->energy());
-                TLorentzVector diphoton = pho1 + pho2;
-
                 if( dipho->leadingPhoton()->pt() < ( dipho->mass() )*leadPhoOverMassThreshold_ ) { continue; }
                 if( dipho->subLeadingPhoton()->pt() < ( dipho->mass() )*subleadPhoOverMassThreshold_ ) { continue; }
                 idmva1 = dipho->leadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
@@ -1291,6 +1287,9 @@ namespace flashgg {
                 pho1.SetPtEtaPhiE(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), dipho->leadingPhoton()->energy());
                 pho2.SetPtEtaPhiE(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), dipho->subLeadingPhoton()->energy());
                 helicity_angle_ = helicity(pho1, pho2);
+
+                TLorentzVector diphoton = pho1 + pho2;
+
 
                 std::vector<double> global_features;
                 global_features.resize(19);
