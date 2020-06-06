@@ -10,7 +10,6 @@ using namespace std;
 //--------------------------------------------------//
 // quadratic equation related
 //--------------------------------------------------//
-double pfDeepCSVJetTags_loose  = 0.1522;
 inline vector<int> get_bjet_indices(vector<TLorentzVector> Jets, vector<double> btag_scores)//{{{
 {
     vector<int> indices;
@@ -28,7 +27,7 @@ inline double evaluate_neutrino_pz(TLorentzVector lepton, vector<double> met_inf
     float lepton_py = lepton.Py();
     float lepton_pz = lepton.Pz();
     float lepton_energy = lepton.E();
-    float coefficient_factor = ( w_boson_mass*w_boson_mass + 2*lepton_px*met_px + 2*lepton_py*met_py ) / (2.*lepton_energy);
+    float coefficient_factor = ( W_BOSON_MASS*W_BOSON_MASS + 2*lepton_px*met_px + 2*lepton_py*met_py ) / (2.*lepton_energy);
     float coefficient_A = 1. - (lepton_pz*lepton_pz)/(lepton_energy*lepton_energy);
     float coefficient_B = 2.*coefficient_factor*lepton_pz/lepton_energy;
     float coefficient_C = met_pt*met_pt - coefficient_factor*coefficient_factor;
@@ -78,7 +77,7 @@ inline int get_q_index_min_chi2(std::vector<TLorentzVector> Jets, int index_bjet
     for(std::size_t i=0; i!=Jets.size(); ++i){
         if((int)i==index_bjet) continue; //skip the selected jets for bjet
         TLorentzVector top_fcnh_tmp = diphoton + Jets[i];
-        double chi2 = (top_fcnh_tmp.M() - top_quark_mass) * (top_fcnh_tmp.M() - top_quark_mass);
+        double chi2 = (top_fcnh_tmp.M() - TOP_QUARK_MASS) * (top_fcnh_tmp.M() - TOP_QUARK_MASS);
         indices.push_back(i);
         top_fcnh_chi2.push_back(chi2);
     }
@@ -92,7 +91,7 @@ inline int get_q_index_min_chi2(std::vector<TLorentzVector> Jets, int index_bjet
 // chi-2 related
 //--------------------------------------------------//
 //chi-2 with 3x3 covariance matrix
-std::vector<int> get_bjjq_indices_chi2_3x3(std::vector<TLorentzVector> Jets, int index_bjet, TLorentzVector diphoton, double &chi2_min)//{{{
+inline std::vector<int> get_bjjq_indices_chi2_3x3(std::vector<TLorentzVector> Jets, int index_bjet, TLorentzVector diphoton, double &chi2_min)//{{{
 {
     // 1. pick up 3 jets
     // 2. q-jj three combinations 
@@ -194,7 +193,7 @@ inline int get_q_index_min_chi2(std::vector<TLorentzVector> Jets, std::vector<in
     for(std::size_t i=0; i!=Jets.size(); ++i){
         if((int)i==indices_bjj[0] || (int)i==indices_bjj[1] || (int)i==indices_bjj[2]) continue; //skip the selected jets for bjj
         TLorentzVector top_fcnh_tmp = diphoton + Jets[i];
-        double chi2 = (top_fcnh_tmp.M() - top_quark_mass) * (top_fcnh_tmp.M() - top_quark_mass);
+        double chi2 = (top_fcnh_tmp.M() - TOP_QUARK_MASS) * (top_fcnh_tmp.M() - TOP_QUARK_MASS);
         indices.push_back(i);
         top_fcnh_chi2.push_back(chi2);
     }
