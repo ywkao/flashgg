@@ -658,19 +658,19 @@ namespace flashgg {
         FCNCMva_->AddVariable("lep_eta_", &lepton_leadEta_);
         FCNCMva_->AddVariable("n_lep_tight_", &lepton_nTight_);
         //------------------------------//
-        FCNCMva_->AddVariable("leptonic_neutrino_pz_", &leptonic_neutrino_pz_);
-        FCNCMva_->AddVariable("leptonic_tbw_mass_", &leptonic_tbw_mass_);
-        FCNCMva_->AddVariable("leptonic_tbw_pt_", &leptonic_tbw_pt_);
-        FCNCMva_->AddVariable("leptonic_tbw_eta_", &leptonic_tbw_eta_);
-        FCNCMva_->AddVariable("leptonic_tbw_deltaR_dipho_", &leptonic_tbw_deltaR_dipho_);
-        FCNCMva_->AddVariable("leptonic_qjet_pt_", &leptonic_qjet_pt_);
-        FCNCMva_->AddVariable("leptonic_qjet_eta_", &leptonic_qjet_eta_);
-        FCNCMva_->AddVariable("leptonic_qjet_btag_", &leptonic_qjet_btag_);
-        FCNCMva_->AddVariable("leptonic_qjet_deltaR_dipho_", &leptonic_qjet_deltaR_dipho_);
-        FCNCMva_->AddVariable("leptonic_tqh_ptOverM_", &leptonic_tqh_ptOverM_);
-        FCNCMva_->AddVariable("leptonic_tqh_eta_", &leptonic_tqh_eta_);
-        FCNCMva_->AddVariable("leptonic_tqh_deltaR_tbw_", &leptonic_tqh_deltaR_tbw_);
-        FCNCMva_->AddVariable("leptonic_tqh_deltaR_dipho_", &leptonic_tqh_deltaR_dipho_);
+        //FCNCMva_->AddVariable("leptonic_neutrino_pz_", &leptonic_neutrino_pz_);
+        //FCNCMva_->AddVariable("leptonic_tbw_mass_", &leptonic_tbw_mass_);
+        //FCNCMva_->AddVariable("leptonic_tbw_pt_", &leptonic_tbw_pt_);
+        //FCNCMva_->AddVariable("leptonic_tbw_eta_", &leptonic_tbw_eta_);
+        //FCNCMva_->AddVariable("leptonic_tbw_deltaR_dipho_", &leptonic_tbw_deltaR_dipho_);
+        //FCNCMva_->AddVariable("leptonic_qjet_pt_", &leptonic_qjet_pt_);
+        //FCNCMva_->AddVariable("leptonic_qjet_eta_", &leptonic_qjet_eta_);
+        //FCNCMva_->AddVariable("leptonic_qjet_btag_", &leptonic_qjet_btag_);
+        //FCNCMva_->AddVariable("leptonic_qjet_deltaR_dipho_", &leptonic_qjet_deltaR_dipho_);
+        //FCNCMva_->AddVariable("leptonic_tqh_ptOverM_", &leptonic_tqh_ptOverM_);
+        //FCNCMva_->AddVariable("leptonic_tqh_eta_", &leptonic_tqh_eta_);
+        //FCNCMva_->AddVariable("leptonic_tqh_deltaR_tbw_", &leptonic_tqh_deltaR_tbw_);
+        //FCNCMva_->AddVariable("leptonic_tqh_deltaR_dipho_", &leptonic_tqh_deltaR_dipho_);
         //------------------------------//
 
         if (coupling_ == "Hut") {

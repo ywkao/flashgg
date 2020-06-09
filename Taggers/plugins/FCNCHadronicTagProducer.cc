@@ -637,30 +637,30 @@ namespace flashgg {
             //FCNCMva_RunII_->AddVariable("dnn_score_1", &dnn_score_1_);
 
             //------------------------------//
-            FCNCMva_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
-            FCNCMva_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
-            FCNCMva_RunII_->AddVariable("chi2_tbw_eta_", &chi2_tbw_eta_);
-            FCNCMva_RunII_->AddVariable("chi2_tbw_deltaR_dipho_", &chi2_tbw_deltaR_dipho_);
-            FCNCMva_RunII_->AddVariable("chi2_qjet_pt_", &chi2_qjet_pt_);
-            FCNCMva_RunII_->AddVariable("chi2_qjet_eta_", &chi2_qjet_eta_);
-            FCNCMva_RunII_->AddVariable("chi2_qjet_btag_", &chi2_qjet_btag_);
-            FCNCMva_RunII_->AddVariable("chi2_qjet_deltaR_dipho_", &chi2_qjet_deltaR_dipho_);
-            FCNCMva_RunII_->AddVariable("chi2_tqh_ptOverM_", &chi2_tqh_ptOverM_);
-            FCNCMva_RunII_->AddVariable("chi2_tqh_eta_", &chi2_tqh_eta_);
-            FCNCMva_RunII_->AddVariable("chi2_tqh_deltaR_tbw_", &chi2_tqh_deltaR_tbw_);
-            FCNCMva_RunII_->AddVariable("chi2_tqh_deltaR_dipho_", &chi2_tqh_deltaR_dipho_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_mass_", &chi2_3x3_tbw_mass_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_pt_", &chi2_3x3_tbw_pt_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_eta_", &chi2_3x3_tbw_eta_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_deltaR_dipho_", &chi2_3x3_tbw_deltaR_dipho_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_pt_", &chi2_3x3_qjet_pt_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_eta_", &chi2_3x3_qjet_eta_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_btag_", &chi2_3x3_qjet_btag_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_deltaR_dipho_", &chi2_3x3_qjet_deltaR_dipho_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_ptOverM_", &chi2_3x3_tqh_ptOverM_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_eta_", &chi2_3x3_tqh_eta_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_deltaR_tbw_", &chi2_3x3_tqh_deltaR_tbw_);
-            FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_deltaR_dipho_", &chi2_3x3_tqh_deltaR_dipho_);
+            //FCNCMva_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
+            //FCNCMva_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
+            //FCNCMva_RunII_->AddVariable("chi2_tbw_eta_", &chi2_tbw_eta_);
+            //FCNCMva_RunII_->AddVariable("chi2_tbw_deltaR_dipho_", &chi2_tbw_deltaR_dipho_);
+            //FCNCMva_RunII_->AddVariable("chi2_qjet_pt_", &chi2_qjet_pt_);
+            //FCNCMva_RunII_->AddVariable("chi2_qjet_eta_", &chi2_qjet_eta_);
+            //FCNCMva_RunII_->AddVariable("chi2_qjet_btag_", &chi2_qjet_btag_);
+            //FCNCMva_RunII_->AddVariable("chi2_qjet_deltaR_dipho_", &chi2_qjet_deltaR_dipho_);
+            //FCNCMva_RunII_->AddVariable("chi2_tqh_ptOverM_", &chi2_tqh_ptOverM_);
+            //FCNCMva_RunII_->AddVariable("chi2_tqh_eta_", &chi2_tqh_eta_);
+            //FCNCMva_RunII_->AddVariable("chi2_tqh_deltaR_tbw_", &chi2_tqh_deltaR_tbw_);
+            //FCNCMva_RunII_->AddVariable("chi2_tqh_deltaR_dipho_", &chi2_tqh_deltaR_dipho_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_mass_", &chi2_3x3_tbw_mass_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_pt_", &chi2_3x3_tbw_pt_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_eta_", &chi2_3x3_tbw_eta_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_deltaR_dipho_", &chi2_3x3_tbw_deltaR_dipho_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_pt_", &chi2_3x3_qjet_pt_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_eta_", &chi2_3x3_qjet_eta_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_btag_", &chi2_3x3_qjet_btag_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_deltaR_dipho_", &chi2_3x3_qjet_deltaR_dipho_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_ptOverM_", &chi2_3x3_tqh_ptOverM_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_eta_", &chi2_3x3_tqh_eta_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_deltaR_tbw_", &chi2_3x3_tqh_deltaR_tbw_);
+            //FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_deltaR_dipho_", &chi2_3x3_tqh_deltaR_dipho_);
             //------------------------------//
             
             if (coupling_ == "Hut") {
