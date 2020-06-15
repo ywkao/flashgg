@@ -265,6 +265,7 @@ namespace flashgg {
 
     };//}}}
 
+
     FCNCHadronicTagProducer::FCNCHadronicTagProducer( const ParameterSet &iConfig ) :
         diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
         inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) ),
@@ -278,10 +279,12 @@ namespace flashgg {
         systLabel_( iConfig.getParameter<string> ( "SystLabel" ) ),
         _MVAMethod( iConfig.getParameter<string> ( "MVAMethod" ) )
     {//{{{
+        printf("FCNCHadronicTagProducer::FCNCHadronicTagProducer::Hello world\n");
         systematicsLabels.push_back("");
         modifySystematicsWorkflow = iConfig.getParameter<bool> ( "ModifySystematicsWorkflow" );
 
         useLargeMVAs = iConfig.getParameter<bool> ( "UseLargeMVAs" );
+        //useLargeMVAs = false;
 
         coupling_ = iConfig.getParameter<std::string>( "Coupling" );
 
@@ -629,39 +632,39 @@ namespace flashgg {
             FCNCMva_RunII_->AddVariable("dipho_pt_over_mass_", &diPhoPtoM_);
 
             FCNCMva_RunII_->AddVariable("helicity_angle_", &helicity_angle_);
-            FCNCMva_RunII_->AddVariable("m_ggj_", &m_ggj_); 
-            FCNCMva_RunII_->AddVariable("m_jjj_", &m_jjj_); 
 
-            //FCNCMva_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+            FCNCMva_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
             //FCNCMva_RunII_->AddVariable("dnn_score_0", &dnn_score_0_);
             //FCNCMva_RunII_->AddVariable("dnn_score_1", &dnn_score_1_);
 
             //------------------------------//
-            //FCNCMva_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
-            //FCNCMva_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
-            //FCNCMva_RunII_->AddVariable("chi2_tbw_eta_", &chi2_tbw_eta_);
-            //FCNCMva_RunII_->AddVariable("chi2_tbw_deltaR_dipho_", &chi2_tbw_deltaR_dipho_);
-            //FCNCMva_RunII_->AddVariable("chi2_qjet_pt_", &chi2_qjet_pt_);
-            //FCNCMva_RunII_->AddVariable("chi2_qjet_eta_", &chi2_qjet_eta_);
-            //FCNCMva_RunII_->AddVariable("chi2_qjet_btag_", &chi2_qjet_btag_);
-            //FCNCMva_RunII_->AddVariable("chi2_qjet_deltaR_dipho_", &chi2_qjet_deltaR_dipho_);
-            //FCNCMva_RunII_->AddVariable("chi2_tqh_ptOverM_", &chi2_tqh_ptOverM_);
-            //FCNCMva_RunII_->AddVariable("chi2_tqh_eta_", &chi2_tqh_eta_);
-            //FCNCMva_RunII_->AddVariable("chi2_tqh_deltaR_tbw_", &chi2_tqh_deltaR_tbw_);
-            //FCNCMva_RunII_->AddVariable("chi2_tqh_deltaR_dipho_", &chi2_tqh_deltaR_dipho_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_mass_", &chi2_3x3_tbw_mass_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_pt_", &chi2_3x3_tbw_pt_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_eta_", &chi2_3x3_tbw_eta_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_deltaR_dipho_", &chi2_3x3_tbw_deltaR_dipho_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_pt_", &chi2_3x3_qjet_pt_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_eta_", &chi2_3x3_qjet_eta_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_btag_", &chi2_3x3_qjet_btag_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_deltaR_dipho_", &chi2_3x3_qjet_deltaR_dipho_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_ptOverM_", &chi2_3x3_tqh_ptOverM_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_eta_", &chi2_3x3_tqh_eta_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_deltaR_tbw_", &chi2_3x3_tqh_deltaR_tbw_);
-            //FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_deltaR_dipho_", &chi2_3x3_tqh_deltaR_dipho_);
+            FCNCMva_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
+            FCNCMva_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
+            FCNCMva_RunII_->AddVariable("chi2_tbw_eta_", &chi2_tbw_eta_);
+            FCNCMva_RunII_->AddVariable("chi2_tbw_deltaR_dipho_", &chi2_tbw_deltaR_dipho_);
+            FCNCMva_RunII_->AddVariable("chi2_qjet_pt_", &chi2_qjet_pt_);
+            FCNCMva_RunII_->AddVariable("chi2_qjet_eta_", &chi2_qjet_eta_);
+            FCNCMva_RunII_->AddVariable("chi2_qjet_btag_", &chi2_qjet_btag_);
+            FCNCMva_RunII_->AddVariable("chi2_qjet_deltaR_dipho_", &chi2_qjet_deltaR_dipho_);
+            FCNCMva_RunII_->AddVariable("chi2_tqh_ptOverM_", &chi2_tqh_ptOverM_);
+            FCNCMva_RunII_->AddVariable("chi2_tqh_eta_", &chi2_tqh_eta_);
+            FCNCMva_RunII_->AddVariable("chi2_tqh_deltaR_tbw_", &chi2_tqh_deltaR_tbw_);
+            FCNCMva_RunII_->AddVariable("chi2_tqh_deltaR_dipho_", &chi2_tqh_deltaR_dipho_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_mass_", &chi2_3x3_tbw_mass_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_pt_", &chi2_3x3_tbw_pt_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_eta_", &chi2_3x3_tbw_eta_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_tbw_deltaR_dipho_", &chi2_3x3_tbw_deltaR_dipho_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_pt_", &chi2_3x3_qjet_pt_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_eta_", &chi2_3x3_qjet_eta_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_btag_", &chi2_3x3_qjet_btag_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_qjet_deltaR_dipho_", &chi2_3x3_qjet_deltaR_dipho_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_ptOverM_", &chi2_3x3_tqh_ptOverM_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_eta_", &chi2_3x3_tqh_eta_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_deltaR_tbw_", &chi2_3x3_tqh_deltaR_tbw_);
+            FCNCMva_RunII_->AddVariable("chi2_3x3_tqh_deltaR_dipho_", &chi2_3x3_tqh_deltaR_dipho_);
             //------------------------------//
+            FCNCMva_RunII_->AddVariable("m_ggj_", &m_ggj_); 
+            FCNCMva_RunII_->AddVariable("m_jjj_", &m_jjj_); 
             
             if (coupling_ == "Hut") {
                 std::cout << "Coupling selected as " << coupling_ << ", loading the following MVA: " << fcncHutMVAWeightFile_.fullPath() << std::endl;
@@ -675,15 +678,18 @@ namespace flashgg {
  
         }       
 
+        printf("plugins/FCNCHadronicTagProducer.cc:: before useLargeMVAs\n");
         if (useLargeMVAs) {
             topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
 
+            printf("plugins/FCNCHadronicTagProducer.cc:: before dnn_dipho\n");
             dnn_dipho = new TTH_DNN_Helper(tthVsDiphoDNNfile_.fullPath());
             dnn_ttGG  = new TTH_DNN_Helper(tthVsttGGDNNfile_.fullPath());
 
             dnn_dipho->SetInputShapes(18, 8, 8);
             dnn_ttGG->SetInputShapes(18, 8, 8);
         }
+        printf("plugins/FCNCHadronicTagProducer.cc:: after useLargeMVAs\n");
 
         for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
             auto token = consumes<View<flashgg::Jet> >(inputTagJets_[i]);
@@ -702,6 +708,7 @@ namespace flashgg {
 
     int FCNCHadronicTagProducer::chooseCategory( float tthmvavalue )
     {//{{{
+        printf("FCNCHadronicTagProducer::chooseCategory::Hello world\n");
         // should return 0 if mva above all the numbers, 1 if below the first, ..., boundaries.size()-N if below the Nth, ...
         int n;
         for( n = 0 ; n < ( int )boundaries.size() ; n++ ) {
@@ -712,6 +719,7 @@ namespace flashgg {
 
     void FCNCHadronicTagProducer::calculate_masses(std::vector<edm::Ptr<flashgg::Jet>> jets, edm::Ptr<flashgg::DiPhotonCandidate> dipho, float &m_ggj, float &m_jjj)
     {//{{{
+        printf("FCNCHadronicTagProducer::calculate_masses::Hello world\n");
         if (jets.size() < 4) {
             m_ggj = -9.;
             m_jjj = -9.;
@@ -751,7 +759,8 @@ namespace flashgg {
     }//}}}
 
     void FCNCHadronicTagProducer::produce( Event &evt, const EventSetup & )
-    {//{{{
+    {
+        printf("FCNCHadronicTagProducer::produce::Hello world\n");
         //!modifySystematicsWorkflow{{{ _ywk_
         //Handle<View<flashgg::Jet> > theJets;
         //evt.getByToken( thejetToken_, theJets );
@@ -1331,8 +1340,10 @@ namespace flashgg {
 
                   float dnn_score_dipho(0.5), dnn_score_ttGG(0.5);
                   if (useLargeMVAs) {
+                      printf("plugins/FCNCHadronicTagProducer.cc:: before SetInputs\n");
                       dnn_dipho->SetInputs(JetVect, global_features);
                       dnn_score_dipho = dnn_dipho->EvaluateDNN();
+                      printf("plugins/FCNCHadronicTagProducer.cc:: after Evaluation\n");
 
                       dnn_ttGG->SetInputs(JetVect, global_features);
                       dnn_score_ttGG = dnn_ttGG->EvaluateDNN();
