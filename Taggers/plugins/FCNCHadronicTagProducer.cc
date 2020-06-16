@@ -239,8 +239,8 @@ namespace flashgg {
         vector<double> boundaries;
 
         BDT_resolvedTopTagger *topTagger;
-        TTH_DNN_Helper* dnn_dipho;
-        TTH_DNN_Helper* dnn_ttGG;
+        //TTH_DNN_Helper* dnn_dipho;
+        //TTH_DNN_Helper* dnn_ttGG;
 
         bool modifySystematicsWorkflow;
         std::vector<std::string> systematicsLabels;
@@ -683,11 +683,11 @@ namespace flashgg {
             topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
 
             printf("plugins/FCNCHadronicTagProducer.cc:: before dnn_dipho\n");
-            dnn_dipho = new TTH_DNN_Helper(tthVsDiphoDNNfile_.fullPath());
-            dnn_ttGG  = new TTH_DNN_Helper(tthVsttGGDNNfile_.fullPath());
+            //dnn_dipho = new TTH_DNN_Helper(tthVsDiphoDNNfile_.fullPath());
+            //dnn_ttGG  = new TTH_DNN_Helper(tthVsttGGDNNfile_.fullPath());
 
-            dnn_dipho->SetInputShapes(18, 8, 8);
-            dnn_ttGG->SetInputShapes(18, 8, 8);
+            //dnn_dipho->SetInputShapes(18, 8, 8);
+            //dnn_ttGG->SetInputShapes(18, 8, 8);
         }
         printf("plugins/FCNCHadronicTagProducer.cc:: after useLargeMVAs\n");
 
@@ -1340,13 +1340,13 @@ namespace flashgg {
 
                   float dnn_score_dipho(0.5), dnn_score_ttGG(0.5);
                   if (useLargeMVAs) {
-                      printf("plugins/FCNCHadronicTagProducer.cc:: before SetInputs\n");
-                      dnn_dipho->SetInputs(JetVect, global_features);
-                      dnn_score_dipho = dnn_dipho->EvaluateDNN();
-                      printf("plugins/FCNCHadronicTagProducer.cc:: after Evaluation\n");
+                      //printf("plugins/FCNCHadronicTagProducer.cc:: before SetInputs\n");
+                      //dnn_dipho->SetInputs(JetVect, global_features);
+                      //dnn_score_dipho = dnn_dipho->EvaluateDNN();
+                      //printf("plugins/FCNCHadronicTagProducer.cc:: after Evaluation\n");
 
-                      dnn_ttGG->SetInputs(JetVect, global_features);
-                      dnn_score_ttGG = dnn_ttGG->EvaluateDNN();
+                      //dnn_ttGG->SetInputs(JetVect, global_features);
+                      //dnn_score_ttGG = dnn_ttGG->EvaluateDNN();
                   }
 
 
@@ -1411,8 +1411,8 @@ namespace flashgg {
                   calculate_masses(JetVect, dipho, m_ggj_, m_jjj_); 
 
                   top_tag_score_ = mvaEval.size() > 0 ? (mvaEval[0] != - 99 ? mvaEval[0] : -1) : - 1;
-                  dnn_score_0_ = dnn_score_dipho;
-                  dnn_score_1_ = dnn_score_ttGG;
+                  //dnn_score_0_ = dnn_score_dipho;
+                  //dnn_score_1_ = dnn_score_ttGG;
 
                   tthMvaVal_RunII_ = convert_tmva_to_prob(TThMva_RunII_->EvaluateMVA( _MVAMethod.c_str() ));
                   fcncMvaVal_ = convert_tmva_to_prob(FCNCMva_RunII_->EvaluateMVA( _MVAMethod.c_str() ));

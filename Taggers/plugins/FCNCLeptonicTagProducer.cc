@@ -225,7 +225,7 @@ namespace flashgg {
         //------------------------------//
 
         BDT_resolvedTopTagger *topTagger;
-        TTH_DNN_Helper* dnn;
+        //TTH_DNN_Helper* dnn;
 
         bool modifySystematicsWorkflow;
         std::vector<std::string> systematicsLabels;
@@ -688,8 +688,8 @@ namespace flashgg {
 
         if (useLargeMVAs) {
             topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
-            dnn = new TTH_DNN_Helper(tthVsttGGDNNfile_.fullPath());
-            dnn->SetInputShapes(19, 9, 8);
+            //dnn = new TTH_DNN_Helper(tthVsttGGDNNfile_.fullPath());
+            //dnn->SetInputShapes(19, 9, 8);
         }
 
         for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
@@ -1316,8 +1316,9 @@ namespace flashgg {
                 global_features[18] = lepton_nTight_;
 
                 if (useLargeMVAs) {
-                    dnn->SetInputs(tagJets, Muons, Electrons, global_features);
-                    dnn_score_0_ = dnn->EvaluateDNN();
+                    //dnn->SetInputs(tagJets, Muons, Electrons, global_features);
+                    //dnn_score_0_ = dnn->EvaluateDNN();
+                    dnn_score_0_ = -1;
                 }
 
                 vector<float> mvaEval; 

@@ -86,6 +86,22 @@ void TTH_DNN_Helper::SetPreprocessingSchemes(std::vector<double> preprocess_sche
     preprocess_scheme_global_features_stddev_ = preprocess_scheme_global_features_stddev;
     preprocess_scheme_object_features_mean_ = preprocess_scheme_object_features_mean;
     preprocess_scheme_object_features_stddev_ = preprocess_scheme_object_features_stddev;
+    
+    cout << "Global feature means: " << endl;
+    for (unsigned int i = 0; i < preprocess_scheme_global_features_mean_.size(); i++)
+        cout << i << ": " << preprocess_scheme_global_features_mean_[i] << endl;
+
+    cout << "Global feature stddevs: " << endl;
+    for (unsigned int i = 0; i < preprocess_scheme_global_features_stddev_.size(); i++)
+        cout << i << ": " << preprocess_scheme_global_features_stddev_[i] << endl;
+
+    cout << "Object feature means: " << endl;
+    for (unsigned int i = 0; i < preprocess_scheme_object_features_mean_.size(); i++)
+        cout << i << ": " << preprocess_scheme_object_features_mean_[i] << endl;
+
+    cout << "Object feature stddevs: " << endl;
+    for (unsigned int i = 0; i < preprocess_scheme_object_features_stddev_.size(); i++)
+        cout << i << ": " << preprocess_scheme_object_features_stddev_[i] << endl;
 
     if (debug_) {
         cout << "Global feature means: " << endl;
@@ -111,7 +127,12 @@ void TTH_DNN_Helper::SetPreprocessingSchemes(std::vector<double> preprocess_sche
 inline
 void TTH_DNN_Helper::Preprocess() {
     if (global_features_.size() != preprocess_scheme_global_features_mean_.size() || global_features_.size() != preprocess_scheme_global_features_stddev_.size())
+    {
+        printf("global_features_.size() = %d\n", (int) global_features_.size());
+        printf("preprocess_scheme_global_features_mean_.size() = %d\n", (int) preprocess_scheme_global_features_mean_.size());
+        printf("preprocess_scheme_global_features_stddev_.size() = %d\n", (int) preprocess_scheme_global_features_stddev_.size());
         throw "[DNN Helper] [ERROR]: Size of global features does not match size of preprocessing scheme";
+    }
 
     for (unsigned int i = 0; i < object_features_.size(); i++) {
         if (object_features_[i].size() != preprocess_scheme_object_features_mean_.size() || object_features_[i].size() != preprocess_scheme_object_features_stddev_.size())
