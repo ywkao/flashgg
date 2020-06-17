@@ -125,12 +125,15 @@ customize.options.register('doMuFilter',
                            VarParsing.VarParsing.varType.bool,
                            'doMuFilter'
                            )
+<<<<<<< HEAD
 customize.options.register('doFiducial',
                            False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'doFiducial'
                            )
+=======
+>>>>>>> 29483262... Fix a few known bugs
 customize.options.register('acceptance',
                            'NONE',
                            VarParsing.VarParsing.multiplicity.singleton,
@@ -509,9 +512,7 @@ if customize.processId == "tHq":
 #]
 
 
-if customize.doFiducial:
-    tagList=[["SigmaMpTTag",3]]
-elif customize.tthTagsOnly:
+if customize.tthTagsOnly:
     tagList=[
         ["TTHHadronicTag",4],
         ["TTHLeptonicTag",4]
