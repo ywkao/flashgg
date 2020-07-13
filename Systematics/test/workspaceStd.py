@@ -149,6 +149,12 @@ customize.options.register('doPdfWeights',
                            VarParsing.VarParsing.varType.bool,
                            'doPdfWeights'
                            )
+customize.options.register('ignoreNegR9',
+                           True,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'ignoreNegR9'
+                           )
 customize.options.register('dumpTrees',
                            False,
                            VarParsing.VarParsing.multiplicity.singleton,
