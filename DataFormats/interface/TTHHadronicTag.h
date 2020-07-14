@@ -53,6 +53,11 @@ namespace flashgg {
         double dnn_score_ttH_vs_dipho() const { return dnn_score_ttH_vs_dipho_; }
         double dnn_score_ttH_vs_ttgg() const { return dnn_score_ttH_vs_ttgg_; }
 
+        double fcnc_bdt_nrb_hut_score() const { return fcnc_bdt_nrb_hut_score_; }
+        double fcnc_bdt_smh_hut_score() const { return fcnc_bdt_smh_hut_score_; }
+        double fcnc_bdt_nrb_hct_score() const { return fcnc_bdt_nrb_hct_score_; }
+        double fcnc_bdt_smh_hct_score() const { return fcnc_bdt_smh_hct_score_; }
+
         float topTagScore() const { return topTagScore_; }
         float topTagTopMass() const { return topTagTopMass_; }
         float topTagWMass() const { return topTagWMass_; }
@@ -82,10 +87,6 @@ namespace flashgg {
         int subleadPassFrix() const { return sublead_passFrix_; }
         double subleadSmallestDr() const { return sublead_smallestDr_; }
  
-
-
-
-
         void setNjet( int nb ) { Njet_ = nb; }
         void setNBLoose( int nb ) { Nbtagloose_ = nb; }
         void setNBMedium( int nb ) { Nbtagmedium_ = nb; }
@@ -118,6 +119,11 @@ namespace flashgg {
         void setRand(double rand) { rand_ = rand; }
         void setDNNScorettHVsDipho(double dnn_score_ttH_vs_dipho) { dnn_score_ttH_vs_dipho_ = dnn_score_ttH_vs_dipho; }
         void setDNNScorettHVsTtgg(double dnn_score_ttH_vs_ttgg) { dnn_score_ttH_vs_ttgg_ = dnn_score_ttH_vs_ttgg; }
+
+        void set_fcnc_bdt_nrb_hut_score(double fcnc_bdt_nrb_hut_score) { fcnc_bdt_nrb_hut_score_ = fcnc_bdt_nrb_hut_score; }
+        void set_fcnc_bdt_smh_hut_score(double fcnc_bdt_smh_hut_score) { fcnc_bdt_smh_hut_score_ = fcnc_bdt_smh_hut_score; }
+        void set_fcnc_bdt_nrb_hct_score(double fcnc_bdt_nrb_hct_score) { fcnc_bdt_nrb_hct_score_ = fcnc_bdt_nrb_hct_score; }
+        void set_fcnc_bdt_smh_hct_score(double fcnc_bdt_smh_hct_score) { fcnc_bdt_smh_hct_score_ = fcnc_bdt_smh_hct_score; }
 
         void setTopTagScore(float toptagScore) { topTagScore_ = toptagScore; }
         void setTopTagTopMass(float toptagTopMass) { topTagTopMass_ = toptagTopMass; }
@@ -223,32 +229,15 @@ namespace flashgg {
         double dnn_score_ttH_vs_dipho_;
         double dnn_score_ttH_vs_ttgg_;
 
+        double fcnc_bdt_nrb_hut_score_;
+        double fcnc_bdt_smh_hut_score_;
+        double fcnc_bdt_nrb_hct_score_;
+        double fcnc_bdt_smh_hct_score_;
+
     };
 }
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Local Variables:
 // mode:c++

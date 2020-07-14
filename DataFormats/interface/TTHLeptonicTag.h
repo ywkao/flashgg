@@ -96,6 +96,11 @@ namespace flashgg {
 
         double dnn_score_ttH_vs_ttgg() const { return dnn_score_ttH_vs_ttgg_; }
 
+        double fcnc_bdt_nrb_hut_score() const { return fcnc_bdt_nrb_hut_score_; }
+        double fcnc_bdt_smh_hut_score() const { return fcnc_bdt_smh_hut_score_; }
+        double fcnc_bdt_nrb_hct_score() const { return fcnc_bdt_nrb_hct_score_; }
+        double fcnc_bdt_smh_hct_score() const { return fcnc_bdt_smh_hct_score_; }
+
         void setJets( std::vector<edm::Ptr<Jet> > Jets ) { Jets_ = Jets; }
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
         void setMuons( std::vector<edm::Ptr<Muon> > Muons ) {Muons_ = Muons;}
@@ -172,6 +177,11 @@ namespace flashgg {
         void setSubleadPhoGenPhi(double subleadPhoGenPhi) { subleadPhoGenPhi_ = subleadPhoGenPhi; }
 
         void setDNNScorettHVsTtgg(double dnn_score_ttH_vs_ttgg) { dnn_score_ttH_vs_ttgg_ = dnn_score_ttH_vs_ttgg; }
+
+        void set_fcnc_bdt_nrb_hut_score(double fcnc_bdt_nrb_hut_score) { fcnc_bdt_nrb_hut_score_ = fcnc_bdt_nrb_hut_score; }
+        void set_fcnc_bdt_smh_hut_score(double fcnc_bdt_smh_hut_score) { fcnc_bdt_smh_hut_score_ = fcnc_bdt_smh_hut_score; }
+        void set_fcnc_bdt_nrb_hct_score(double fcnc_bdt_nrb_hct_score) { fcnc_bdt_nrb_hct_score_ = fcnc_bdt_nrb_hct_score; }
+        void set_fcnc_bdt_smh_hct_score(double fcnc_bdt_smh_hct_score) { fcnc_bdt_smh_hct_score_ = fcnc_bdt_smh_hct_score; }
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHLeptonic; }
 
@@ -258,6 +268,11 @@ namespace flashgg {
         double rand_;
 
         double dnn_score_ttH_vs_ttgg_;
+
+        double fcnc_bdt_nrb_hut_score_;
+        double fcnc_bdt_smh_hut_score_;
+        double fcnc_bdt_nrb_hct_score_;
+        double fcnc_bdt_smh_hct_score_;
 
         float mvaRes_;
         float mva_RunII_Res_;

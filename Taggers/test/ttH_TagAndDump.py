@@ -374,6 +374,10 @@ dipho_variables=["dipho_sumpt      := diPhoton.sumPt",
                  "topTag_topMass := topTagTopMass",
                  "topTag_WMass := topTagWMass",
                  "dnn_score_ttgg  := dnn_score_ttH_vs_ttgg",
+                 "fcnc_bdt_nrb_hut_score := fcnc_bdt_nrb_hut_score",
+                 "fcnc_bdt_nrb_hct_score := fcnc_bdt_nrb_hct_score",
+                 "fcnc_bdt_smh_hut_score := fcnc_bdt_smh_hut_score",
+                 "fcnc_bdt_smh_hct_score := fcnc_bdt_smh_hct_score",
 ]
 
 leptonic_variables = [  "n_ele    := electrons.size",
