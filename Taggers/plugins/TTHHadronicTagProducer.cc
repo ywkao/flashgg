@@ -1549,6 +1549,8 @@ namespace flashgg {
                     if(bTag_ == "pfDeepCSV") bDiscriminatorValue = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
                     else  bDiscriminatorValue = thejet->bDiscriminator( bTag_ );
 
+                    btag_scores.push_back(bDiscriminatorValue);
+
                     float bDiscriminatorValue_noBB = -2;
                     if(bTag_ == "pfDeepCSV") bDiscriminatorValue_noBB = thejet->bDiscriminator("pfDeepCSVJetTags:probb");
                     else  bDiscriminatorValue_noBB = thejet->bDiscriminator( bTag_ );
