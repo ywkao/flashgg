@@ -849,4 +849,8 @@ if customize.filenames:
             files = cms.untracked.vstring(["file:./" + file for file in local_files])
         else:
             files = cms.untracked.vstring([file.replace("/store", "root://cms-xrd-global.cern.ch:1094//store") for file in customize.filenames.split(",")])
-    process.source = cms.Source('PoolSource', fileNames=files)
+    process.source = cms.Source('PoolSource', fileNames=files, inputCommands=cms.untracked.vstring(
+                  'keep *',
+                  'drop flashggGenJetExtras_flashggGenJetsExtra__FLASHggMicroAOD', 
+                  'drop flashggGenLeptonExtras_flashggGenLeptonsExtra__FLASHggMicroAOD',
+          ))
