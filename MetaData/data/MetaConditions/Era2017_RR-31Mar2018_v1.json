@@ -208,6 +208,10 @@
 
 	"bTagger" : "pfDeepJet",
 
+	"cDiscriminatorValue_pfDeepCSV" : 0.15,
+	"cTagCalibrationFile_Reshape_pfDeepCSV" : "flashgg/Systematics/data/DeepCSV_ctagSF_MiniAOD94X_2017_pTincl.root",
+	"cTagCalibrationFile_WPCut_pfDeepCSV" : "flashgg/Systematics/data/DeepCSV_94XSF_WP_V4_B_F.csv",
+
 	"bDiscriminatorValue_pfDeepCSV" : 0.4941,
 	"bTagCalibrationFile_Reshape_pfDeepCSV" : "flashgg/Systematics/data/DeepCSV_94XSF_V4_B_F.csv",
 	"bTagCalibrationFile_WPCut_pfDeepCSV" : "flashgg/Systematics/data/DeepCSV_94XSF_WP_V4_B_F.csv",
