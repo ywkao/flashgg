@@ -148,20 +148,21 @@ fcnc_map = {
     "ST_FCNC-TH_Thadronic_HToaa_eta_hut-MadGraph5-pythia8_RunIIAutumn18MiniAOD-tauDecays_102X_upgrade2018_realistic_v15-v1_MINIAODSIM_microAOD_v1.2_29May2020" : ("ST_FCNC-TH_Thadronic_HToaa_eta_hut-MadGraph5-pythia8", "2018")
 }
 
-for dataset in [dir for dir in glob.glob(args.fcnc_wildcard) if "FCNC" in dir]:
-    sample = dataset.split("/")[-2] # assumes a trailing "/"
-    smp_match, year = fcnc_map[sample]
+if "fcnc" in procs:
+    for dataset in [dir for dir in glob.glob(args.fcnc_wildcard) if "FCNC" in dir]:
+        sample = dataset.split("/")[-2] # assumes a trailing "/"
+        smp_match, year = fcnc_map[sample]
 
-    print dataset, smp_match, year
+        print dataset, smp_match, year
 
-    datasets[year]["fcnc"][sample] = { "input_loc" : dataset }
+        datasets[year]["fcnc"][sample] = { "input_loc" : dataset }
 
-    normalizationInfo = ""
-    split_factor = 3
+        normalizationInfo = ""
+        split_factor = 3
 
-    normalizationInfo = " normalizationInfo=%.6f,%.6f splitFactor=%d" % (samples[smp_match]["xs"], (samples[smp_match]["xs"]*1000.) / samples[smp_match][year]["scale1fb"], split_factor)
-    datasets[year]["fcnc"][sample]["args"] = normalizationInfo
-    datasets[year]["fcnc"][sample]["year"] = year
+        normalizationInfo = " normalizationInfo=%.6f,%.6f splitFactor=%d" % (samples[smp_match]["xs"], (samples[smp_match]["xs"]*1000.) / samples[smp_match][year]["scale1fb"], split_factor)
+        datasets[year]["fcnc"][sample]["args"] = normalizationInfo
+        datasets[year]["fcnc"][sample]["year"] = year
 
 for year in years:
     for proc in procs:
@@ -324,18 +325,18 @@ else:
     #parallel_utils.submit_jobs(command_list, 1, True, True)
     parallel_utils.submit_jobs(command_list, len(command_list), True, True)
 
-def search_for_command(dictionary, command_list = []):
+def search_for_command(dictionary, command_list = [], command = "command"):
     for key, info in dictionary.iteritems():
         if not isinstance(info, dict):
             continue
-        elif "command" in info.keys():
+        elif command in info.keys():
             print key, info.keys()
             print "hadding %d workspaces to create master workspace %s" % (len(info["inputs"]), info["master"])
             if len(info["inputs"]) > 0:
-                command_list.append(info["command"])
+                command_list.append(info[command])
                 #os.system(info["command"])
         else:
-            search_for_command(info, command_list)
+            search_for_command(info, command_list, command)
     return command_list
 
 def trim_dictionary(dictionary, to_remove):
@@ -347,7 +348,7 @@ def trim_dictionary(dictionary, to_remove):
         else:
             trim_dictionary(info, to_remove)
 
-max_ws = 15
+max_ws = 25
 def hadd_workspaces(master, targets):
     if len(targets.split(" ")) <= max_ws:
         return "/usr/bin/ionice -c2 -n7 hadd_workspaces %s %s" % (master, targets)
@@ -384,6 +385,8 @@ if args.hadd_workspaces:
 
     for coupling, info in workspaces.iteritems():
         for cat, cat_info in info.iteritems():
+            if (cat not in procs and cat != "sm_higgs") or (cat == "sm_higgs" and "zh" not in procs and "sig" not in procs):
+                continue
             if cat == "data":
                 cat_info["2016"] = { "globber" : "DoubleEG" }
                 cat_info["2017"] = { "globber" : "DoubleEG" }
@@ -439,12 +442,13 @@ if args.hadd_workspaces:
                             subcat_info[mass_point]["command"]  = hadd_workspaces(subcat_info[mass_point]["master"], subcat_info[mass_point]["targets"]) 
 
     # add all data files to make master data file
-    for coupling, info in workspaces.iteritems():
-        info["data"]["master"] = (os.popen("pwd").read()).rstrip() + "/ws_merged_data_%s_all.root" % (coupling)
-        info["data"]["targets"] = ""
-        for year in years:
-            info["data"]["targets"] += info["data"][year]["master"] + " "
-        info["data"]["command"] = hadd_workspaces(info["data"]["master"], info["data"]["targets"])
+    if "data" in procs:
+        for coupling, info in workspaces.iteritems():
+            info["data"]["master"] = (os.popen("pwd").read()).rstrip() + "/ws_merged_data_%s_all.root" % (coupling)
+            info["data"]["targets"] = ""
+            for year in years:
+                info["data"]["targets"] += info["data"][year]["master"] + " "
+            info["data"]["master_command"] = hadd_workspaces(info["data"]["master"], info["data"]["targets"])
 
     with open("ws_hadd_summary_%s.json" % args.tag, "w") as f_out:
         json.dump(workspaces, f_out, sort_keys=True, indent=4)
@@ -459,10 +463,15 @@ if args.hadd_workspaces:
         json.dump(workspaces_summary, f_out, sort_keys=True, indent=4)
 
     command_list = search_for_command(workspaces)
-    parallel_utils.submit_jobs(command_list, 3)
-    for coupling, info in couplings.iteritems():
-        for year in years:
-            command = "hadd_workspaces %s %s %s" % (couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_st_%s.root" % (coupling, year), couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_%s.root" % (coupling, year), couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_st_%s.root" % (coupling, year))
-            print command
-            os.system(command)
+    parallel_utils.submit_jobs(command_list, 1)
+
+    command_list = search_for_command(workspaces, [], "master_command")
+    parallel_utils.submit_jobs(command_list, 1)
+
+    if "fcnc" in procs:
+        for coupling, info in couplings.iteritems():
+            for year in years:
+                command = "hadd_workspaces %s %s %s" % (couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_st_%s.root" % (coupling, year), couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_%s.root" % (coupling, year), couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_st_%s.root" % (coupling, year))
+                print command
+                os.system(command)
 
