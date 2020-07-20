@@ -332,7 +332,7 @@ def search_for_command(dictionary, command_list = [], command = "command"):
         elif command in info.keys():
             print key, info.keys()
             print "hadding %d workspaces to create master workspace %s" % (len(info["inputs"]), info["master"])
-            if len(info["inputs"]) > 0:
+            if len(info["inputs"]) > 0 and not command == "":
                 command_list.append(info[command])
                 #os.system(info["command"])
         else:
@@ -350,6 +350,13 @@ def trim_dictionary(dictionary, to_remove):
 
 max_ws = 25
 def hadd_workspaces(master, targets):
+    if os.path.exists(master):
+        print "File %s already exists" % master
+        return ""
+
+    else:
+        print "File %s does not already exist" % master
+
     if len(targets.split(" ")) <= max_ws:
         return "/usr/bin/ionice -c2 -n7 hadd_workspaces %s %s" % (master, targets)
 
@@ -406,10 +413,11 @@ if args.hadd_workspaces:
                 cat_info["n_inputs"] = len(cat_info["inputs"])
             if cat == "fcnc":
                 for year in years:
-                    cat_info[year] = { "tt" : { "globber" : "TT_FCNC" }, "st" : { "globber" : "ST_FCNC" } }
+                    cat_info[year] = { "tt" : { "globber" : ["TT_FCNC", "FCNC_private_TT"] }, "st" : { "globber" : ["ST_FCNC", "FCNC_private_ST"] } }
                     for subcat, subcat_info in cat_info[year].iteritems():
-                        subcat_info["inputs"] = glob.glob(couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"] + "*/*.root")
-                        subcat_info["glob_command"] = couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"] + "*/*.root"
+                        subcat_info["inputs"] = glob.glob(couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"][0] + "*/*.root")
+                        subcat_info["inputs"] += glob.glob(couplings[coupling][year]["stage_dir"] + "/*" + subcat_info["globber"][1] + "*/*.root")
+                        subcat_info["glob_command"] = [couplings[coupling][year]["stage_dir"] + "/*" + globber + "*/*.root" for globber in subcat_info["globber"]]
                         subcat_info["n_inputs"] = len(subcat_info["inputs"] )
                         subcat_info["targets"] = ""
                         for input in subcat_info["inputs"]:
@@ -463,15 +471,23 @@ if args.hadd_workspaces:
         json.dump(workspaces_summary, f_out, sort_keys=True, indent=4)
 
     command_list = search_for_command(workspaces)
-    parallel_utils.submit_jobs(command_list, 1)
+    command_list = [command for command in command_list if not command == ""]
+    command_list_separated = []
+    for command in command_list:
+        command_list_separated += command.split(";")
+    parallel_utils.submit_jobs(command_list_separated, 1)
 
     command_list = search_for_command(workspaces, [], "master_command")
+    command_list = [command for command in command_list if not command == ""]
     parallel_utils.submit_jobs(command_list, 1)
 
+    # Combine st and tt fcnc
     if "fcnc" in procs:
         for coupling, info in couplings.iteritems():
             for year in years:
-                command = "hadd_workspaces %s %s %s" % (couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_st_%s.root" % (coupling, year), couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_%s.root" % (coupling, year), couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_st_%s.root" % (coupling, year))
-                print command
-                os.system(command)
+                master = couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_st_%s.root" % (coupling, year)
+                if not os.path.exists(master):
+                    command = "hadd_workspaces %s %s %s" % (master, couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_tt_%s.root" % (coupling, year), couplings[coupling][year]["outdir"] + "/ws_merged_fcnc_%s_st_%s.root" % (coupling, year))
+                    print command
+                    os.system(command)
 
