@@ -189,6 +189,14 @@
 
     "Ele_reco_SF_FileName" : "flashgg/Systematics/data/2018_reco-eff.json",
 
+    "cTagSystematics" :
+    {
+        "cTagger" : "pfDeepCSV",
+	    "cTagCalibrationFile_Reshape_pfDeepCSV" : "flashgg/Systematics/data/DeepCSV_ctagSF_MiniAOD94X_2017_pTincl.root",
+
+        "eta" : 2.5
+    },
+
     "bTagSystematics" :
     {
 

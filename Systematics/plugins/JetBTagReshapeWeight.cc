@@ -119,11 +119,16 @@ namespace flashgg {
             if(bTag_=="pfDeepJet") JetBDiscriminator = obj.bDiscriminator("mini_pfDeepFlavourJetTags:probb")+ obj.bDiscriminator("mini_pfDeepFlavourJetTags:probbb")+ obj.bDiscriminator("mini_pfDeepFlavourJetTags:problepb"); 
             else JetBDiscriminator = obj.bDiscriminator("pfDeepCSVJetTags:probb")+ obj.bDiscriminator("pfDeepCSVJetTags:probbb"); //JM
             //   else JetBDiscriminator= obj.bDiscriminator("pfCombinedInclusiveSecondaryVertexV2BJetTags");
+            
+            float cvsl = obj.bDiscriminator("pfDeepCSVJetTags:probc") / (obj.bDiscriminator("pfDeepCSVJetTags:probc") + obj.bDiscriminator("pfDeepCSVJetTags:probudsg")) ;
+            float cvsb = obj.bDiscriminator("pfDeepCSVJetTags:probc") / (obj.bDiscriminator("pfDeepCSVJetTags:probc") + obj.bDiscriminator("pfDeepCSVJetTags:probb") + obj.bDiscriminator("pfDeepCSVJetTags:probbb")) ;
 
             if( this->debug_ ) {
                 std::cout << " In JetBTagReshapeWeight before calib reader: " << shiftLabel( syst_shift ) << ": Object has pt= " << obj.pt() << " eta=" << obj.eta() << " flavour=" << obj.hadronFlavour()
                           << " values for scale factors : "<< JetPt <<" "<< JetEta <<" "<<JetFlav 
-                          << " b-tagger = " << bTag_<< " BTag Values : "<< JetBDiscriminator <<endl;
+                          << " b-tagger = " << bTag_<< " BTag Values : "<< JetBDiscriminator
+                          << " CvsL values: " << cvsl
+                          << " CvsB values: " << cvsb <<endl;
             }
 
             //get scale factors from calib reader
@@ -138,25 +143,48 @@ namespace flashgg {
             bool usingCtagReshape = true;
             if(usingCtagReshape){
                 /* to be worked on here */
-                //First step: summarize sys. uncertainties
-                //01. StatUp
-                //02. EleIDSFUp
-                //03. LHEScaleWeight_muFUp
-                //04. LHEScaleWeight_muRUp
-                //05. MuIDSFUp
-                //06. PSWeightFSRUp
-                //07. PSWeightISRUp
-                //08. PUWeightUp
-                //09. XSec_DYJetsUp
-                //10. XSec_STUp
-                //11. XSec_WJetsUp
-                //12. XSec_ttbarUp
-                //13. jerUp
-                //14. jesTotalUp
+                //--------------- First step: summarize sys. uncertainties (up/down) ---------------//
+                //01. Stat
+                //02. EleIDSF
+                //03. LHEScaleWeight_muF
+                //04. LHEScaleWeight_muR
+                //05. MuIDSF
+                //06. PSWeightFSR
+                //07. PSWeightISR
+                //08. PUWeight
+                //09. XSec_DYJets
+                //10. XSec_ST
+                //11. XSec_WJets
+                //12. XSec_ttbar
+                //13. jer
+                //14. jesTotal
                 //
-                //Second step: calculate CvsL and CvsB for each jet
+                //sys. uncertainties considered by the original method:
+                //" jes : "
+                //" lf : "
+                //" hfstats1 : "
+                //" hfstats2 : "
+                //" cferr1 : "
+                //" cferr2 : "
+                //" jes : "
+                //" hf : "
+                //" lfstats1 : "
+                //" lfstats1 : "
                 //
-                //Third step: retrieve SFs value from root files
+                //--------------- Second step: calculate CvsL and CvsB for each jet ---------------//
+                //--------------- Third step: retrieve SFs value from root files ---------------//
+                if(JetFlav == 5){// b jets
+                    jet_scalefactor = readerShapeC.eval_auto_bounds("central", BTagEntry::FLAV_C, JetEta, JetPt, JetBDiscriminator); 
+                    
+                    jet_scalefactor_up = jet_scalefactor;
+                    jet_scalefactor_do = jet_scalefactor;
+                    if(bTagReshapeSystOption_ == 1){
+                    }
+                } else if(JetFlav == 4){// c jets
+                } else{//light jets
+                }
+                //
+                //
                 //
             }
             else{

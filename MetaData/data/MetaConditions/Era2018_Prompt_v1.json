@@ -70,6 +70,14 @@
 
     "Ele_ID_eff_bin" : "binInfo2018",
 
+    "cTagSystematics" :
+    {
+        "cTagger" : "pfDeepCSV",
+	    "cTagCalibrationFile_Reshape_pfDeepCSV" : "flashgg/Systematics/data/DeepCSV_ctagSF_MiniAOD94X_2017_pTincl.root",
+
+        "eta" : 2.5
+    },
+
     "bTagSystematics" :
     {
 
