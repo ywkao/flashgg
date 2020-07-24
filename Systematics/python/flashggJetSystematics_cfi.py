@@ -163,6 +163,7 @@ class jetSystematicsCustomize:
    def createJetSystematicsForTag(self, jetInputTag):
       num = jetInputTag.productInstanceLabel
       newName = 'flashggJetSystematics'+num
+      cTagger = self.metaConditions['cTagSystematics']['cTagger']
       bTagger = self.metaConditions['bTagSystematics']['bTagger']
       eta = self.metaConditions['bTagSystematics']['eta'] 
       allJetUncerts = cms.VPSet(cms.PSet( MethodName = cms.string("FlashggJetEnergyCorrector"),
@@ -201,6 +202,19 @@ class jetSystematicsCustomize:
                                         Debug = cms.untracked.bool(False),
                                         ApplyCentralValue = cms.bool(True)
                                      ),
+                              #--- modified ---#
+                              cms.PSet( MethodName = cms.string("FlashggJetCTagReshapeWeight"),
+                                        Label = cms.string("JetCTagReshapeWeight"),
+                                        NSigmas = cms.vint32(-1,1),
+                                        OverallRange = cms.string("pt>25.0&&abs(eta)<" + str(eta)),
+                                        BinList = getattr(self, self.metaConditions['bTagSystematics']['bTagEffBins']),
+                                        cTag = cms.string(str(cTagger)), 
+                                        cTagCalibrationFile = cms.FileInPath(str(self.metaConditions['cTagSystematics']['cTagCalibrationFile_Reshape_'+ str(cTagger)])),
+                                        cTagReshapeSystOption = cms.int32(1),#For changing the source of uncertainty
+                                        Debug = cms.untracked.bool(False),
+                                        ApplyCentralValue = cms.bool(True)
+                                     ),
+                              #--- original code ---#
                               cms.PSet( MethodName = cms.string("FlashggJetBTagReshapeWeight"),
                                         Label = cms.string("JetBTagReshapeWeight"),
                                         NSigmas = cms.vint32(-1,1),
@@ -247,6 +261,16 @@ class jetSystematicsCustomize:
                                                     JetCorrectorTag = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
                                                   ) 
                                         )
+
+      if self.metaConditions['flashggJetSystematics']['doHEMuncertainty'] and self.options.doSystematics:
+          allJetUncerts += cms.VPSet( cms.PSet( MethodName = cms.string("FlashggJetHEMCorrector"),
+                                                Label = cms.string("JetHEM"),
+                                                NSigmas = cms.vint32(-1,1),
+                                                OverallRange = cms.string("abs(eta)<5.0"),
+                                                Debug = cms.untracked.bool(False),
+                                                ApplyCentralValue = cms.bool(False)
+                                              ) 
+                                    )
           
       setattr(self.process, newName,
               cms.EDProducer('FlashggJetSystematicProducer',

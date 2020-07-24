@@ -1544,7 +1544,8 @@ namespace flashgg {
                         }
                     } else {
                         for( unsigned num = 0; num < JetVect.size(); num++ ) {
-                            tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight");
+                            tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetCTagReshapeWeight");
+                            //tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight");
                         }                    
                     }
                     tthhtags_obj.includeWeights( *dipho );
