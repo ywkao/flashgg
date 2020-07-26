@@ -15,7 +15,7 @@ class retrieve_scale_factor{
         ~retrieve_scale_factor();
 
         void set_type_sys_uncertainty(TString);
-        void set_cvsl_cvsb(double, double);
+        void setcvsl_temporarycvsb(double, double);
         void find_bin();
         double get_scale_factor(TString, double, double);
         void debug_mode();
@@ -32,6 +32,17 @@ class retrieve_scale_factor{
         double cvsb;
 
         bool debug_;
+
+        //int nbinx;
+        //int nbiny;
+        //double xmin;
+        //double xmax;
+        //double ymin;
+        //double ymax;
+        //double step;
+        //int counter;
+        //double cvsl_temporary;
+        //double cvsb_temporary;
 };
 
 #endif
