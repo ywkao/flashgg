@@ -9,18 +9,20 @@
 #include <TRandom3.h>
 #include <TString.h>
 
+
 class retrieve_scale_factor{
     public:
-        retrieve_scale_factor();
+        retrieve_scale_factor(std::string);
         ~retrieve_scale_factor();
 
         void set_type_sys_uncertainty(TString);
-        void setcvsl_temporarycvsb(double, double);
+        void set_cvsl_cvsb(double, double);
         void find_bin();
         double get_scale_factor(TString, double, double);
         void debug_mode();
 
     private:
+
         TFile *file;
         TH2D *h;
         int bin_cvsl;
@@ -32,17 +34,6 @@ class retrieve_scale_factor{
         double cvsb;
 
         bool debug_;
-
-        //int nbinx;
-        //int nbiny;
-        //double xmin;
-        //double xmax;
-        //double ymin;
-        //double ymax;
-        //double step;
-        //int counter;
-        //double cvsl_temporary;
-        //double cvsb_temporary;
 };
 
 #endif

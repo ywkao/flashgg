@@ -4,7 +4,9 @@
 #include "DataFormats/Common/interface/PtrVector.h"
 #include "flashgg/DataFormats/interface/Jet.h"
 #include "CommonTools/Utils/interface/StringCutObjectSelector.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "flashgg/Systematics/interface/ctag_reshaping.h"
+
 
 namespace flashgg {
 
@@ -23,6 +25,7 @@ namespace flashgg {
         bool debug_;
         std::string cTag_;
         int cTagReshapeSystOption_;
+        std::string cTagReshapeFile_;
     };
 
     JetCTagReshapeWeight::JetCTagReshapeWeight( const edm::ParameterSet &conf, edm::ConsumesCollector && iC, const GlobalVariablesComputer * gv ) : 
@@ -33,6 +36,7 @@ namespace flashgg {
     {
         this->setMakesWeight( true );
         cTagReshapeSystOption_ = conf.getParameter<int>( "cTagReshapeSystOption"); 
+        cTagReshapeFile_ = conf.getParameter<edm::FileInPath>("cTagCalibrationFile").fullPath();
     }
 
     std::string JetCTagReshapeWeight::shiftLabel( int syst_value ) const
@@ -104,15 +108,14 @@ namespace flashgg {
                 type_flavour = "l";
             }
 
+            printf("[check] JetCTagReshapeWeight.cc :: cTagReshapeSystOption_ = %d\n", cTagReshapeSystOption_);
             TString string_scale_factor     = "SF" + type_flavour + "_" + "hist";
             TString string_scale_factor_sys = "SF" + type_flavour + "_" + "hist" + "_" + type_uncertainty[cTagReshapeSystOption_];
 
-            printf("[check] preparing scale factor retriever..\n");
-            retrieve_scale_factor sf_retriever;
-            printf("[check] set sf_retriever in debug_mode..\n");
+            retrieve_scale_factor sf_retriever(cTagReshapeFile_);
             sf_retriever.debug_mode();
 
-            jet_scalefactor = sf_retriever.get_scale_factor(string_scale_factor + "Up", cvsl, cvsb);
+            jet_scalefactor = sf_retriever.get_scale_factor(string_scale_factor, cvsl, cvsb);
             jet_scalefactor_up = sf_retriever.get_scale_factor(string_scale_factor_sys + "Up", cvsl, cvsb); 
             jet_scalefactor_do = sf_retriever.get_scale_factor(string_scale_factor_sys + "Down", cvsl, cvsb); 
             if( this->debug_ )  { std::cout << " In JetCTagReshapeWeight Systematics : "<< type_uncertainty[cTagReshapeSystOption_] << " : "

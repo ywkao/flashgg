@@ -1,19 +1,9 @@
 #include "flashgg/Systematics/interface/ctag_reshaping.h"
 
-retrieve_scale_factor::retrieve_scale_factor()
+retrieve_scale_factor::retrieve_scale_factor(std::string path)
 {
-    printf("[check] This is the start of constructor\n");
-    file = TFile::Open("flashgg/Systematics/rootfiles/DeepCSV_ctagSF_MiniAOD94X_2017_pTincl.root");
-    //file = TFile::Open("../rootfiles/DeepCSV_ctagSF_MiniAOD94X_2017_pTincl.root");
-    printf("[check] after open the root file...\n");
-
-    //debug_ = false;
-    //nbinx = 50;
-    //nbiny = 50;
-    //xmin = 0.;
-    //xmax = 1.;
-    //ymin = 0.;
-    //ymax = 1.;
+    debug_ = false;
+    file = TFile::Open(path.c_str());
 }
 
 retrieve_scale_factor::~retrieve_scale_factor()
@@ -26,25 +16,21 @@ void retrieve_scale_factor::set_type_sys_uncertainty(TString input)
 {
     type_sys_uncertainty = input;
     h = (TH2D*) file->Get(type_sys_uncertainty);
-    if(debug_) printf("type:%s, ", type_sys_uncertainty.Data());
+    if(debug_) printf("[check] type: %s\n", type_sys_uncertainty.Data());
 }
 
-void retrieve_scale_factor::setcvsl_temporarycvsb(double cvsl_, double cvsb_)
+void retrieve_scale_factor::set_cvsl_cvsb(double cvsl_, double cvsb_)
 {
     cvsl = cvsl_;
     cvsb = cvsb_;
-    if(debug_) printf("cvsl = %.3f, cvsb = %.3f\n", cvsl, cvsb);
+    if(debug_) printf("[check] cvsl = %.3f, cvsb = %.3f\n", cvsl, cvsb);
 }
 
 double retrieve_scale_factor::get_scale_factor(TString input, double cvsl, double cvsb)
 {
-    printf("[check] retrieve_scale_factor::get_scale_factor::OK\n");
     set_type_sys_uncertainty(input);
-    printf("[check] retrieve_scale_factor::get_scale_factor::set_type_sys_uncertaint is OK\n");
-    setcvsl_temporarycvsb(cvsl, cvsb);
-    printf("[check] retrieve_scale_factor::get_scale_factor::setcvsl_temporarycvsb is OK\n");
+    set_cvsl_cvsb(cvsl, cvsb);
     find_bin();
-    printf("[check] retrieve_scale_factor::get_scale_factor::find_bin is OK\n");
     
     scale_factor = h->GetBinContent(bin_cvsl, bin_cvsb);
     if(debug_) printf("sf = %.2f\n", scale_factor);
@@ -55,36 +41,7 @@ void retrieve_scale_factor::find_bin()
 {
     bin_cvsl = h->GetXaxis()->FindBin(cvsl);
     bin_cvsb = h->GetYaxis()->FindBin(cvsb);
-    if(debug_) printf("cvsl = %.3f (nbin = %d)\n", cvsl, bin_cvsl);
-    if(debug_) printf("cvsb = %.3f (nbin = %d)\n", cvsb, bin_cvsb);
-
-    //int nbinx = h->GetNbinsX();
-    //int nbiny = h->GetNbinsY();
-    //double xmin = h->GetXaxis()->GetXmin();
-    //double xmax = h->GetXaxis()->GetXmax();
-    //double ymin = h->GetYaxis()->GetXmin();
-    //double ymax = h->GetYaxis()->GetXmax();
-
-    //cvsl_temporary = cvsl;
-    //cvsb_temporary = cvsb;
-
-    //step = (ymax - ymin) / (double) nbiny;
-    //counter = 0;
-    //while(cvsb_temporary >= step)
-    //{
-    //    cvsb_temporary -= step;
-    //    counter += 1;
-    //}
-    //bin_cvsb = counter + 1;
-
-    //step = (xmax - xmin) / (double) nbinx;
-    //counter = 0;
-    //while(cvsl_temporary >= step)
-    //{
-    //    cvsl_temporary -= step;
-    //    counter += 1;
-    //}
-    //bin_cvsl = counter + 1;
+    if(debug_) printf("[check] bin_cvsl = %d, bin_cvsb = %d\n", bin_cvsl, bin_cvsb);
 }
 
 void retrieve_scale_factor::debug_mode()

@@ -42,8 +42,9 @@ using namespace edm;
 
 namespace flashgg {
 
+// def class  FCNCHadronicTagProducer{{{
     class FCNCHadronicTagProducer : public EDProducer
-    {//{{{
+    {
 
     public:
         FCNCHadronicTagProducer( const ParameterSet & );
@@ -263,9 +264,10 @@ namespace flashgg {
 
         std::string coupling_;
 
-    };//}}}
+    };
+//}}}
 
-
+    // Constructor {{{
     FCNCHadronicTagProducer::FCNCHadronicTagProducer( const ParameterSet &iConfig ) :
         diPhotonToken_( consumes<View<flashgg::DiPhotonCandidate> >( iConfig.getParameter<InputTag> ( "DiPhotonTag" ) ) ),
         inputTagJets_( iConfig.getParameter<std::vector<edm::InputTag> >( "inputTagJets" ) ),
@@ -278,8 +280,8 @@ namespace flashgg {
 	    triggerRECO_( consumes<edm::TriggerResults>(iConfig.getParameter<InputTag>("RECOfilters") ) ),
         systLabel_( iConfig.getParameter<string> ( "SystLabel" ) ),
         _MVAMethod( iConfig.getParameter<string> ( "MVAMethod" ) )
-    {//{{{
-        printf("FCNCHadronicTagProducer::FCNCHadronicTagProducer::Hello world\n");
+    {
+        printf("FCNCHadronicTagProducer::Constructor::Hello World\n");
         systematicsLabels.push_back("");
         modifySystematicsWorkflow = iConfig.getParameter<bool> ( "ModifySystematicsWorkflow" );
 
@@ -706,9 +708,10 @@ namespace flashgg {
         }
     }//}}}
 
+    //function chooseCategory{{{
     int FCNCHadronicTagProducer::chooseCategory( float tthmvavalue )
-    {//{{{
-        printf("FCNCHadronicTagProducer::chooseCategory::Hello world\n");
+    {
+        printf("FCNCHadronicTagProducer::chooseCategory::Called!\n");
         // should return 0 if mva above all the numbers, 1 if below the first, ..., boundaries.size()-N if below the Nth, ...
         int n;
         for( n = 0 ; n < ( int )boundaries.size() ; n++ ) {
@@ -717,9 +720,10 @@ namespace flashgg {
         return -1; // Does not pass, object will not be produced
     }//}}}
 
+    //function calculate_masses{{{
     void FCNCHadronicTagProducer::calculate_masses(std::vector<edm::Ptr<flashgg::Jet>> jets, edm::Ptr<flashgg::DiPhotonCandidate> dipho, float &m_ggj, float &m_jjj)
-    {//{{{
-        printf("FCNCHadronicTagProducer::calculate_masses::Hello world\n");
+    {
+        printf("FCNCHadronicTagProducer::calculate_masses::Called!\n");
         if (jets.size() < 4) {
             m_ggj = -9.;
             m_jjj = -9.;
@@ -760,7 +764,7 @@ namespace flashgg {
 
     void FCNCHadronicTagProducer::produce( Event &evt, const EventSetup & )
     {
-        printf("FCNCHadronicTagProducer::produce::Hello world\n");
+        printf("FCNCHadronicTagProducer::produce::HelloWorld\n");
         //!modifySystematicsWorkflow{{{ _ywk_
         //Handle<View<flashgg::Jet> > theJets;
         //evt.getByToken( thejetToken_, theJets );
@@ -1516,6 +1520,11 @@ namespace flashgg {
                     }
                 }
                 
+                if( isTTHHadronicTagged )
+                    printf("[check] FCNCHadronicTagProducer.cc :: isTTHHadronicTagged is true\n");
+                else
+                    printf("[check] FCNCHadronicTagProducer.cc :: isTTHHadronicTagged is false\n");
+
                 if( isTTHHadronicTagged ) {//{{{
 
                     FCNCHadronicTag tthhtags_obj( dipho, mvares, JetVect, BJetVect );
@@ -1538,11 +1547,13 @@ namespace flashgg {
                     tthhtags_obj.setMET( theMET );
 
                     if(!useTTHHadronicMVA_){
+                        printf("[check] FCNCHadronicTagProducer.cc :: useTTHHadronicMVA_ is false\n");
                         for( unsigned num = 0; num < JetVect.size(); num++ ) {
                             tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagCutWeight");
                             //tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight");
                         }
                     } else {
+                        printf("[check] FCNCHadronicTagProducer.cc :: useTTHHadronicMVA_ is true\n");
                         for( unsigned num = 0; num < JetVect.size(); num++ ) {
                             tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetCTagReshapeWeight");
                             //tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight");
