@@ -4,6 +4,7 @@ retrieve_scale_factor::retrieve_scale_factor(std::string path)
 {
     debug_ = false;
     file = TFile::Open(path.c_str());
+    printf("[check] retrieve_scale_factor::retrieve_scale_factor\n");
 }
 
 retrieve_scale_factor::~retrieve_scale_factor()

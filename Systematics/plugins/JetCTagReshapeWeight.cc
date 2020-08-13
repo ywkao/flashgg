@@ -54,6 +54,7 @@ namespace flashgg {
 
     float JetCTagReshapeWeight::makeWeight( const flashgg::Jet &obj, int syst_shift ) 
     {
+        printf("[check] JetCTagReshapeWeight.cc :: makeWeight !\n");
 
         if( this->debug_ ) {
             std::cout<<"In JetCTagReshapeProducer and syst_shift="<<  syst_shift <<std::endl;
