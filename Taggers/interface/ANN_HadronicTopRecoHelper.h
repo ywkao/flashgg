@@ -1,5 +1,5 @@
-#ifndef _ANNTOPTAGGER_H_
-#define _ANNTOPTAGGER_H_
+#ifndef _ANN_HADRONIC_TOP_RECO_HELPER_
+#define _ANN_HADRONIC_TOP_RECO_HELPER_
 
 #include "flashgg/Taggers/interface/ANN_self_defined_objects.h"
 
@@ -89,7 +89,7 @@ public:
   };
   
   void addPhoton(float pt,float eta, float phi, float mass, float IDMVA){
-    photons.push_back(std::make_shared<ANN_rTT_Photon>(pt,eta,phi,mass,IDMVA));
+    photons.push_back(std::make_shared<ANN_rTT_Photon>(pt,eta,phi,mass, IDMVA));
   };
   
   void clear();
@@ -112,30 +112,26 @@ private:
   std::shared_ptr<TMVA::Reader> reader_tt = nullptr;
   std::shared_ptr<TMVA::Reader> reader_st = nullptr;
 
-  float LeadPho_Pt = -99;
-  float LeadPho_Eta = -99;
-  float LeadPho_Phi = -99;
-  float LeadPho_IDMVA = -99;
-  float SubleadPho_Pt = -99;
-  float SubleadPho_Eta = -99;
-  float SubleadPho_Phi = -99;
-  float SubleadPho_IDMVA = -99;
   float bJet_Pt = -99;
   float bJet_Eta = -99;
-  float bJet_Phi = -99;
   float bJet_btag = -99;
   float M1Jet_Pt = -99;
   float M1Jet_Eta = -99;
-  float M1Jet_Phi = -99;
   float M1Jet_btag = -99;
   float WJet1_Pt = -99;
   float WJet1_Eta = -99;
-  float WJet1_Phi = -99;
   float WJet1_btag = -99;
   float WJet2_Pt = -99;
   float WJet2_Eta = -99;
-  float WJet2_Phi = -99;
   float WJet2_btag = -99;
+  float M1 = -99;
+  float M2 = -99;
+  float MW = -99;
+  float dR_qH = -99;
+  float dR_bW = -99;
+  float dR_tt = -99;
+  float dR_qq = -99;
+  float dR_tH = -99;
 
   bool debug = false;
 
@@ -148,31 +144,26 @@ void ANN_HadronicTopTagger::Init_tt(std::string weight_file_name){
 
   reader_tt = std::make_shared<TMVA::Reader>( "!Color:!Silent" );
 
-  reader_tt->AddVariable("LeadPho_Pt", &LeadPho_Pt);
-  reader_tt->AddVariable("LeadPho_Eta", &LeadPho_Eta);
-  reader_tt->AddVariable("LeadPho_Phi", &LeadPho_Phi);
-  reader_tt->AddVariable("LeadPho_IDMVA", &LeadPho_IDMVA);
-  reader_tt->AddVariable("SubleadPho_Pt", &SubleadPho_Pt);
-  reader_tt->AddVariable("SubleadPho_Eta", &SubleadPho_Eta);
-  reader_tt->AddVariable("SubleadPho_Phi", &SubleadPho_Phi);
-  reader_tt->AddVariable("SubleadPho_IDMVA", &SubleadPho_IDMVA);
   reader_tt->AddVariable("bJet_Pt", &bJet_Pt);
   reader_tt->AddVariable("bJet_Eta", &bJet_Eta);
-  reader_tt->AddVariable("bJet_Phi", &bJet_Phi);
   reader_tt->AddVariable("bJet_btag", &bJet_btag);
   reader_tt->AddVariable("M1Jet_Pt", &M1Jet_Pt);
   reader_tt->AddVariable("M1Jet_Eta", &M1Jet_Eta);
-  reader_tt->AddVariable("M1Jet_Phi", &M1Jet_Phi);
   reader_tt->AddVariable("M1Jet_btag", &M1Jet_btag);
   reader_tt->AddVariable("WJet1_Pt", &WJet1_Pt);
   reader_tt->AddVariable("WJet1_Eta", &WJet1_Eta);
-  reader_tt->AddVariable("WJet1_Phi", &WJet1_Phi);
   reader_tt->AddVariable("WJet1_btag", &WJet1_btag);
   reader_tt->AddVariable("WJet2_Pt", &WJet2_Pt);
   reader_tt->AddVariable("WJet2_Eta", &WJet2_Eta);
-  reader_tt->AddVariable("WJet2_Phi", &WJet2_Phi);
   reader_tt->AddVariable("WJet2_btag", &WJet2_btag);
-  
+  reader_tt->AddVariable("M1", &M1);
+  reader_tt->AddVariable("M2", &M2);
+  reader_tt->AddVariable("MW", &MW);
+  reader_tt->AddVariable("dR_qH", &dR_qH);
+  reader_tt->AddVariable("dR_bW", &dR_bW);
+  reader_tt->AddVariable("dR_tt", &dR_tt);
+  reader_tt->AddVariable("dR_qq", &dR_qq);
+
   reader_tt->BookMVA("TT_had_MVA", weight_file_name);
 };
 //}}}
@@ -182,26 +173,20 @@ void ANN_HadronicTopTagger::Init_st(std::string weight_file_name){
 
   reader_st = std::make_shared<TMVA::Reader>( "!Color:!Silent" );
 
-  reader_st->AddVariable("LeadPho_Pt", &LeadPho_Pt);
-  reader_st->AddVariable("LeadPho_Eta", &LeadPho_Eta);
-  reader_st->AddVariable("LeadPho_Phi", &LeadPho_Phi);
-  reader_st->AddVariable("LeadPho_IDMVA", &LeadPho_IDMVA);
-  reader_st->AddVariable("SubleadPho_Pt", &SubleadPho_Pt);
-  reader_st->AddVariable("SubleadPho_Eta", &SubleadPho_Eta);
-  reader_st->AddVariable("SubleadPho_Phi", &SubleadPho_Phi);
-  reader_st->AddVariable("SubleadPho_IDMVA", &SubleadPho_IDMVA);
   reader_st->AddVariable("bJet_Pt", &bJet_Pt);
   reader_st->AddVariable("bJet_Eta", &bJet_Eta);
-  reader_st->AddVariable("bJet_Phi", &bJet_Phi);
   reader_st->AddVariable("bJet_btag", &bJet_btag);
   reader_st->AddVariable("WJet1_Pt", &WJet1_Pt);
   reader_st->AddVariable("WJet1_Eta", &WJet1_Eta);
-  reader_st->AddVariable("WJet1_Phi", &WJet1_Phi);
   reader_st->AddVariable("WJet1_btag", &WJet1_btag);
   reader_st->AddVariable("WJet2_Pt", &WJet2_Pt);
   reader_st->AddVariable("WJet2_Eta", &WJet2_Eta);
-  reader_st->AddVariable("WJet2_Phi", &WJet2_Phi);
   reader_st->AddVariable("WJet2_btag", &WJet2_btag);
+  reader_st->AddVariable("M1", &M1);
+  reader_st->AddVariable("MW", &MW);
+  reader_st->AddVariable("dR_bW", &dR_bW);
+  reader_st->AddVariable("dR_tH", &dR_tH);
+  reader_st->AddVariable("dR_qq", &dR_qq);
   
   reader_st->BookMVA("ST_had_MVA", weight_file_name);
 };
@@ -213,30 +198,27 @@ void ANN_HadronicTopTagger::clear(){
   jets.clear();
   photons.clear();
 
-  LeadPho_Pt = -99;
-  LeadPho_Eta = -99;
-  LeadPho_Phi = -99;
-  LeadPho_IDMVA = -99;
-  SubleadPho_Pt = -99;
-  SubleadPho_Eta = -99;
-  SubleadPho_Phi = -99;
-  SubleadPho_IDMVA = -99;
   bJet_Pt = -99;
   bJet_Eta = -99;
-  bJet_Phi = -99;
   bJet_btag = -99;
   M1Jet_Pt = -99;
   M1Jet_Eta = -99;
-  M1Jet_Phi = -99;
   M1Jet_btag = -99;
   WJet1_Pt = -99;
   WJet1_Eta = -99;
-  WJet1_Phi = -99;
   WJet1_btag = -99;
   WJet2_Pt = -99;
   WJet2_Eta = -99;
-  WJet2_Phi = -99;
   WJet2_btag = -99;
+  M1 = -99;
+  M2 = -99;
+  MW = -99;
+  dR_qH = -99;
+  dR_bW = -99;
+  dR_tt = -99;
+  dR_tH = -99;
+  dR_qq = -99;
+
 }
 //}}}
 //std::vector<float> ANN_HadronicTopTagger::EvalMVA_tt(){{{
@@ -318,58 +300,48 @@ std::vector<float> ANN_HadronicTopTagger::EvalMVA_st(){
 inline
 float ANN_HadronicTopTagger::EvalScore_tt(const std::shared_ptr<ANN_Hadronic_top_pair> object){
 
-  LeadPho_Pt       = object->leading_photon->pt();
-  LeadPho_Eta      = object->leading_photon->eta();
-  LeadPho_Phi      = object->leading_photon->phi();
-  LeadPho_IDMVA    = object->leading_photon->IDMVA();
-  SubleadPho_Pt    = object->subleading_photon->pt();
-  SubleadPho_Eta   = object->subleading_photon->eta();
-  SubleadPho_Phi   = object->subleading_photon->phi();
-  SubleadPho_IDMVA = object->subleading_photon->IDMVA();
-  bJet_Pt          = object->b->pt();
-  bJet_Eta         = object->b->eta();
-  bJet_Phi         = object->b->phi();
-  bJet_btag        = object->b->deepcsv();
-  WJet1_Pt         = object->j2->pt();
-  WJet1_Eta        = object->j2->eta();
-  WJet1_Phi        = object->j2->phi();
-  WJet1_btag       = object->j2->deepcsv();
-  WJet2_Pt         = object->j3->pt();
-  WJet2_Eta        = object->j3->eta();
-  WJet2_Phi        = object->j3->phi();
-  WJet2_btag       = object->j3->deepcsv();
-  M1Jet_Pt         = object->j4->pt();
-  M1Jet_Eta        = object->j4->eta();
-  M1Jet_Phi        = object->j4->phi();
-  M1Jet_btag       = object->j4->deepcsv();
+  bJet_Pt    = object->b->pt();
+  bJet_Eta   = object->b->eta();
+  bJet_btag  = object->b->deepcsv();
+  WJet1_Pt   = object->j3->pt();
+  WJet1_Eta  = object->j3->eta();
+  WJet1_btag = object->j3->deepcsv();
+  WJet2_Pt   = object->j4->pt();
+  WJet2_Eta  = object->j4->eta();
+  WJet2_btag = object->j4->deepcsv();
+  M1Jet_Pt   = object->j2->pt();
+  M1Jet_Eta  = object->j2->eta();
+  M1Jet_btag = object->j2->deepcsv();
+  M1         = object->top_tqh->mass();
+  M2         = object->top_tbw->mass();
+  MW         = object->wboson->mass();
+  dR_qH      = deltaR(object->j2->eta(),object->j2->phi(),object->diphoton->eta(),object->diphoton->phi());
+  dR_bW      = deltaR(object->b->eta(),object->b->phi(),object->wboson->eta(),object->wboson->phi());
+  dR_tt      = deltaR(object->top_tbw->eta(),object->top_tbw->phi(),object->top_tqh->eta(),object->top_tqh->phi());
+  dR_qq      = deltaR(object->j3->eta(),object->j3->phi(),object->j4->eta(),object->j4->phi());
 
   float score = reader_tt->EvaluateMVA("TT_had_MVA");
 
   if (debug) {
-    std::cout << LeadPho_Pt << " " ;
-    std::cout << LeadPho_Eta << " " ;
-    std::cout << LeadPho_Phi << " " ;
-    std::cout << LeadPho_IDMVA << " " ;
-    std::cout << SubleadPho_Pt << " " ;
-    std::cout << SubleadPho_Eta << " " ;
-    std::cout << SubleadPho_Phi << " " ;
-    std::cout << SubleadPho_IDMVA << " " ;
     std::cout << bJet_Pt << " " ;
     std::cout << bJet_Eta << " " ;
-    std::cout << bJet_Phi << " " ;
     std::cout << bJet_btag << " " ;
-    std::cout << M1Jet_Pt << " " ;
-    std::cout << M1Jet_Eta << " " ;
-    std::cout << M1Jet_Phi << " " ;
-    std::cout << M1Jet_btag << " " ;
     std::cout << WJet1_Pt << " " ;
     std::cout << WJet1_Eta << " " ;
-    std::cout << WJet1_Phi << " " ;
     std::cout << WJet1_btag << " " ;
     std::cout << WJet2_Pt << " " ;
     std::cout << WJet2_Eta << " " ;
-    std::cout << WJet2_Phi << " " ;
     std::cout << WJet2_btag << " " ;
+    std::cout << M1Jet_Pt << " " ;
+    std::cout << M1Jet_Eta << " " ;
+    std::cout << M1Jet_btag << " " ;
+    std::cout << M1 << " " ;
+    std::cout << M2 << " " ;
+    std::cout << MW << " " ;
+    std::cout << dR_qH << " " ;
+    std::cout << dR_bW << " " ;
+    std::cout << dR_tt << " " ;
+    std::cout << dR_qq << " " ;
 
     std::cout << object->top_tbw->mass() << " " << std::endl;
     std::cout << score << std::endl;
@@ -382,51 +354,39 @@ float ANN_HadronicTopTagger::EvalScore_tt(const std::shared_ptr<ANN_Hadronic_top
 inline
 float ANN_HadronicTopTagger::EvalScore_st(const std::shared_ptr<ANN_Hadronic_single_top> object){
 
-  LeadPho_Pt       = object->leading_photon->pt();
-  LeadPho_Eta      = object->leading_photon->eta();
-  LeadPho_Phi      = object->leading_photon->phi();
-  LeadPho_IDMVA    = object->leading_photon->IDMVA();
-  SubleadPho_Pt    = object->subleading_photon->pt();
-  SubleadPho_Eta   = object->subleading_photon->eta();
-  SubleadPho_Phi   = object->subleading_photon->phi();
-  SubleadPho_IDMVA = object->subleading_photon->IDMVA();
-  bJet_Pt          = object->b->pt();
-  bJet_Eta         = object->b->eta();
-  bJet_Phi         = object->b->phi();
-  bJet_btag        = object->b->deepcsv();
-  WJet1_Pt         = object->j2->pt();
-  WJet1_Eta        = object->j2->eta();
-  WJet1_Phi        = object->j2->phi();
-  WJet1_btag       = object->j2->deepcsv();
-  WJet2_Pt         = object->j3->pt();
-  WJet2_Eta        = object->j3->eta();
-  WJet2_Phi        = object->j3->phi();
-  WJet2_btag       = object->j3->deepcsv();
+  bJet_Pt    = object->b->pt();
+  bJet_Eta   = object->b->eta();
+  bJet_btag  = object->b->deepcsv();
+  WJet1_Pt   = object->j2->pt();
+  WJet1_Eta  = object->j2->eta();
+  WJet1_btag = object->j2->deepcsv();
+  WJet2_Pt   = object->j3->pt();
+  WJet2_Eta  = object->j3->eta();
+  WJet2_btag = object->j3->deepcsv();
+  M1         = object->top_tbw->mass(); // in single top had, M1 represent M_tbw
+  MW         = object->wboson->mass();
+  dR_bW      = deltaR(object->b->eta(),object->b->phi(),object->wboson->eta(),object->wboson->phi());
+  dR_tH      = deltaR(object->top_tbw->eta(),object->top_tbw->phi(),object->diphoton->eta(),object->diphoton->phi());
+  dR_qq      = deltaR(object->j2->eta(),object->j2->phi(),object->j3->eta(),object->j3->phi());
 
   float score = reader_st->EvaluateMVA("ST_had_MVA");
 
   if (debug) {
-    std::cout << LeadPho_Pt << " " ;
-    std::cout << LeadPho_Eta << " " ;
-    std::cout << LeadPho_Phi << " " ;
-    std::cout << LeadPho_IDMVA << " " ;
-    std::cout << SubleadPho_Pt << " " ;
-    std::cout << SubleadPho_Eta << " " ;
-    std::cout << SubleadPho_Phi << " " ;
-    std::cout << SubleadPho_IDMVA << " " ;
     std::cout << bJet_Pt << " " ;
     std::cout << bJet_Eta << " " ;
-    std::cout << bJet_Phi << " " ;
     std::cout << bJet_btag << " " ;
     std::cout << WJet1_Pt << " " ;
     std::cout << WJet1_Eta << " " ;
-    std::cout << WJet1_Phi << " " ;
     std::cout << WJet1_btag << " " ;
     std::cout << WJet2_Pt << " " ;
     std::cout << WJet2_Eta << " " ;
-    std::cout << WJet2_Phi << " " ;
     std::cout << WJet2_btag << " " ;
-
+    std::cout << M1 << " " ;
+    std::cout << MW << " " ;
+    std::cout << dR_bW << " " ;
+    std::cout << dR_tH << " " ;
+    std::cout << dR_qq << " " ;
+    
     std::cout << object->top_tbw->mass() << " " << std::endl;
     std::cout << score << std::endl;
   }
@@ -436,4 +396,4 @@ float ANN_HadronicTopTagger::EvalScore_st(const std::shared_ptr<ANN_Hadronic_sin
 //}}}
 }
 
-#endif // _ANNTOPTAGGER_H_
+#endif // _ANN_HADRONIC_TOP_RECO_HELPER_

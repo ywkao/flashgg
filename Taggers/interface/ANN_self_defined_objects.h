@@ -33,6 +33,15 @@ class ANN_rTT_Jet : public ANN_rTT_ptvec{
   float deepcsv() const {return _deepcsv;}
 };
 
+class ANN_rTT_Lepton : public ANN_rTT_ptvec{
+ public:
+  ANN_rTT_Lepton() : ANN_rTT_ptvec(0,0,0,0){};
+  ANN_rTT_Lepton(float pt,float eta, float phi, float mass, float id)
+      : ANN_rTT_ptvec(pt,eta,phi,mass), _id(id){};
+  float _id = 0;
+  float id() const {return _id;}
+};
+
 }
 
 #endif // _ANNSEFLOBJECTS_H_
