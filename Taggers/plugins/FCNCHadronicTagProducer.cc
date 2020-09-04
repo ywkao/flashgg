@@ -27,6 +27,7 @@
 #include "flashgg/Taggers/interface/BDT_resolvedTopTagger.h"
 #include "flashgg/Taggers/interface/TTH_DNN_Helper.h"
 #include "flashgg/Taggers/interface/TopRecoHelper.h"
+#include "flashgg/Taggers/interface/ANN_HadronicTopRecoHelper.h"
 
 #include <vector>
 #include <algorithm>
@@ -117,6 +118,8 @@ namespace flashgg {
         FileInPath tthMVAweightfile_;
         string _MVAMethod;
         FileInPath topTaggerXMLfile_;
+        FileInPath fcncTaggerXMLfile_tt_;
+        FileInPath fcncTaggerXMLfile_st_;
         FileInPath tthVsDiphoDNNfile_;
         FileInPath tthVsttGGDNNfile_;
         unique_ptr<TMVA::Reader>TThMva_RunII_;
@@ -211,6 +214,8 @@ namespace flashgg {
         float ht_;
         float helicity_angle_;
         float top_tag_score_;
+        float fcnc_tag_score_tt_;
+        float fcnc_tag_score_st_;
 
         float m_ggj_;
         float m_jjj_;
@@ -250,6 +255,7 @@ namespace flashgg {
         vector<double> boundaries_BDTSMH;
 
         BDT_resolvedTopTagger *topTagger;
+        ANN_HadronicTopTagger *fcncTagger;
         TTH_DNN_Helper* dnn_dipho;
         TTH_DNN_Helper* dnn_ttGG;
 
@@ -425,6 +431,8 @@ namespace flashgg {
 
         tthMVAweightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVAweightfile" ); 
         topTaggerXMLfile_ = iConfig.getParameter<edm::FileInPath>( "topTaggerXMLfile" );
+        fcncTaggerXMLfile_tt_ = iConfig.getParameter<edm::FileInPath>( "fcncTaggerXMLfile_tt" );
+        fcncTaggerXMLfile_st_ = iConfig.getParameter<edm::FileInPath>( "fcncTaggerXMLfile_st" );
         tthVsDiphoDNNfile_ = iConfig.getParameter<edm::FileInPath>( "tthVsDiphoDNNfile" );
         tthVsttGGDNNfile_ = iConfig.getParameter<edm::FileInPath>( "tthVsttGGDNNfile" );
         tthMVA_RunII_weightfile_ = iConfig.getParameter<edm::FileInPath>( "tthMVA_RunII_weightfile" );
@@ -506,6 +514,8 @@ namespace flashgg {
         helicity_angle_ = -999.;
 
         top_tag_score_ = -999.;
+        fcnc_tag_score_tt_ = -999.;
+        fcnc_tag_score_st_ = -999.;
         dnn_score_0_ = -999.;
         dnn_score_1_ = -999.;
 
@@ -660,6 +670,8 @@ namespace flashgg {
             FCNC_BDTNRB_RunII_->AddVariable("m_ggj_", &m_ggj_);
             FCNC_BDTNRB_RunII_->AddVariable("m_jjj_", &m_jjj_);
             FCNC_BDTNRB_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+            //FCNC_BDTNRB_RunII_->AddVariable("fcnc_tag_score_tt_", &fcnc_tag_score_tt_); // not yet
+            //FCNC_BDTNRB_RunII_->AddVariable("fcnc_tag_score_st_", &fcnc_tag_score_st_); // not yet
             FCNC_BDTNRB_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
             FCNC_BDTNRB_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
 
@@ -729,6 +741,8 @@ namespace flashgg {
             FCNC_BDTSMH_RunII_->AddVariable("m_ggj_", &m_ggj_);
             FCNC_BDTSMH_RunII_->AddVariable("m_jjj_", &m_jjj_);
             FCNC_BDTSMH_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+            //FCNC_BDTSMH_RunII_->AddVariable("fcnc_tag_score_tt_", &fcnc_tag_score_tt_); // not yet
+            //FCNC_BDTSMH_RunII_->AddVariable("fcnc_tag_score_st_", &fcnc_tag_score_st_); // not yet
             FCNC_BDTSMH_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
             FCNC_BDTSMH_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
             
@@ -775,6 +789,7 @@ namespace flashgg {
 
         if (useLargeMVAs) {
             topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
+            fcncTagger = new ANN_HadronicTopTagger(fcncTaggerXMLfile_tt_.fullPath(), fcncTaggerXMLfile_st_.fullPath());
 
             //dnn_dipho = new TTH_DNN_Helper(tthVsDiphoDNNfile_.fullPath());
             //dnn_ttGG  = new TTH_DNN_Helper(tthVsttGGDNNfile_.fullPath());
@@ -1088,6 +1103,8 @@ namespace flashgg {
                 ht_ = 0.;
                 helicity_angle_ = -999.;
                 top_tag_score_ = -999.;
+                fcnc_tag_score_tt_ = -999.;
+                fcnc_tag_score_st_ = -999.;
                 dnn_score_0_ = -999.;
                 dnn_score_1_ = -999.;
                 tthMvaVal_RunII_ = -999.;
@@ -1172,6 +1189,10 @@ namespace flashgg {
                         evt.getByToken(jetTokens_[jet_syst_idx][i], Jets[i]);
                 }
 
+                if (useLargeMVAs) {
+                    fcncTagger->addPhoton(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), 0., idmva1_);           
+                    fcncTagger->addPhoton(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), 0., idmva2_);           
+                }
 
                 std::vector<TLorentzVector> jets;
                 std::vector<double> btag_scores;
@@ -1214,6 +1235,7 @@ namespace flashgg {
                       int mult = thejet->userFloat("totalMult") ;
              
                       topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue, cvsl, cvsb, ptD, axis1, mult);           
+                      fcncTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue);           
                     }                
 
 
@@ -1276,9 +1298,14 @@ namespace flashgg {
                 }
 
                 vector<float> mvaEval; 
+                vector<float> mvaEval_tt; 
+                vector<float> mvaEval_st; 
                 if (useLargeMVAs) {
                     mvaEval = topTagger->EvalMVA();
+                    mvaEval_tt = fcncTagger->EvalMVA_tt();
+                    mvaEval_st = fcncTagger->EvalMVA_st();
                     topTagger->clear();
+                    fcncTagger->clear();
                 }
 
                 if( METs->size() != 1 ) { std::cout << "WARNING - #MET is not 1" << std::endl;}
@@ -1517,6 +1544,8 @@ namespace flashgg {
                   calculate_masses(JetVect, dipho, m_ggj_, m_jjj_); 
 
                   top_tag_score_ = mvaEval.size() > 0 ? (mvaEval[0] != - 99 ? mvaEval[0] : -1) : - 1;
+                  fcnc_tag_score_tt_ = mvaEval_tt.size() > 0 ? (mvaEval_tt[0] != - 99 ? mvaEval_tt[0] : -1) : - 1;
+                  fcnc_tag_score_st_ = mvaEval_st.size() > 0 ? (mvaEval_st[0] != - 99 ? mvaEval_st[0] : -1) : - 1;
                   dnn_score_0_ = dnn_score_dipho;
                   dnn_score_1_ = dnn_score_ttGG;
 
@@ -1564,6 +1593,8 @@ namespace flashgg {
                     cout << "dipho_pt_over_mass_: " << diPhoPtoM_ << endl;
                     cout << "helicity_angle_: " << helicity_angle_ << endl;
                     cout << "top_tag_score_: " << top_tag_score_ << endl;
+                    cout << "fcnc_tag_score_tt_: " << fcnc_tag_score_tt_ << endl;
+                    cout << "fcnc_tag_score_st_: " << fcnc_tag_score_st_ << endl;
 
                     //------------------------------//
                     cout << "chi2_tbw_mass_:" << chi2_tbw_mass_ << endl;
