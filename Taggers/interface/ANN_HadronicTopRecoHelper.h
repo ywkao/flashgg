@@ -247,7 +247,7 @@ std::vector<float> ANN_HadronicTopTagger::EvalMVA_tt(){
     }
   }
 
-  if (debug) std::cout << "njets " << njets << std::endl;
+  if (debug) std::cout << "Hadronic EvalScore_tt: njets = " << njets ;
 
   std::vector<float> output(16,-99);
   if (allcands.size()>0) {
@@ -255,7 +255,7 @@ std::vector<float> ANN_HadronicTopTagger::EvalMVA_tt(){
     auto top = *std::min_element(allcands.begin(),allcands.end(),[](const std::shared_ptr<ANN_Hadronic_top_pair> &a, const std::shared_ptr<ANN_Hadronic_top_pair> &b){return a->score > b->score;});
     output.at(0) = top->score; // mvaValue
   }
-  if (debug) std::cout << "returning " << output.at(0) << std::endl;
+  if (debug) std::cout << "MVA score: " << output.at(0) << std::endl;
   return output;
 
 };
@@ -282,7 +282,7 @@ std::vector<float> ANN_HadronicTopTagger::EvalMVA_st(){
     }
   }
 
-  if (debug) std::cout << "njets " << njets << std::endl;
+  if (debug) std::cout << "Hadronic EvalScore_st: njets = " << njets ;
 
   std::vector<float> output(16,-99);
   if (allcands.size()>0) {
@@ -290,7 +290,7 @@ std::vector<float> ANN_HadronicTopTagger::EvalMVA_st(){
     auto top = *std::min_element(allcands.begin(),allcands.end(),[](const std::shared_ptr<ANN_Hadronic_single_top> &a, const std::shared_ptr<ANN_Hadronic_single_top> &b){return a->score > b->score;});
     output.at(0) = top->score; // mvaValue
   }
-  if (debug) std::cout << "returning " << output.at(0) << std::endl;
+  if (debug) std::cout << "MVA score: " << output.at(0) << std::endl;
   return output;
 
 };
@@ -323,28 +323,28 @@ float ANN_HadronicTopTagger::EvalScore_tt(const std::shared_ptr<ANN_Hadronic_top
   float score = reader_tt->EvaluateMVA("TT_had_MVA");
 
   if (debug) {
-    std::cout << bJet_Pt << " " ;
-    std::cout << bJet_Eta << " " ;
-    std::cout << bJet_btag << " " ;
-    std::cout << WJet1_Pt << " " ;
-    std::cout << WJet1_Eta << " " ;
-    std::cout << WJet1_btag << " " ;
-    std::cout << WJet2_Pt << " " ;
-    std::cout << WJet2_Eta << " " ;
-    std::cout << WJet2_btag << " " ;
-    std::cout << M1Jet_Pt << " " ;
-    std::cout << M1Jet_Eta << " " ;
-    std::cout << M1Jet_btag << " " ;
-    std::cout << M1 << " " ;
-    std::cout << M2 << " " ;
-    std::cout << MW << " " ;
-    std::cout << dR_qH << " " ;
-    std::cout << dR_bW << " " ;
-    std::cout << dR_tt << " " ;
-    std::cout << dR_qq << " " ;
+    std::cout << "bJet_Pt = " << bJet_Pt << " " ;
+    std::cout << "bJet_Eta = " << bJet_Eta << " " ;
+    std::cout << "bJet_btag = " << bJet_btag << " " ;
+    std::cout << "WJet1_Pt = " << WJet1_Pt << " " ;
+    std::cout << "WJet1_Eta = " << WJet1_Eta << " " ;
+    std::cout << "WJet1_btag = " << WJet1_btag << " " ;
+    std::cout << "WJet2_Pt = " << WJet2_Pt << " " ;
+    std::cout << "WJet2_Eta = " << WJet2_Eta << " " ;
+    std::cout << "WJet2_btag = " << WJet2_btag << " " ;
+    std::cout << "M1Jet_Pt = " << M1Jet_Pt << " " ;
+    std::cout << "M1Jet_Eta = " << M1Jet_Eta << " " ;
+    std::cout << "M1Jet_btag = " << M1Jet_btag << " " ;
+    std::cout << "M1 = " << M1 << " " ;
+    std::cout << "M2 = " << M2 << " " ;
+    std::cout << "MW = " << MW << " " ;
+    std::cout << "dR_qH = " << dR_qH << " " ;
+    std::cout << "dR_bW = " << dR_bW << " " ;
+    std::cout << "dR_tt = " << dR_tt << " " ;
+    std::cout << "dR_qq = " << dR_qq << " " ;
 
     std::cout << object->top_tbw->mass() << " " << std::endl;
-    std::cout << score << std::endl;
+    std::cout << "score = " << score << std::endl;
   }
 
   return score;
@@ -372,23 +372,23 @@ float ANN_HadronicTopTagger::EvalScore_st(const std::shared_ptr<ANN_Hadronic_sin
   float score = reader_st->EvaluateMVA("ST_had_MVA");
 
   if (debug) {
-    std::cout << bJet_Pt << " " ;
-    std::cout << bJet_Eta << " " ;
-    std::cout << bJet_btag << " " ;
-    std::cout << WJet1_Pt << " " ;
-    std::cout << WJet1_Eta << " " ;
-    std::cout << WJet1_btag << " " ;
-    std::cout << WJet2_Pt << " " ;
-    std::cout << WJet2_Eta << " " ;
-    std::cout << WJet2_btag << " " ;
-    std::cout << M1 << " " ;
-    std::cout << MW << " " ;
-    std::cout << dR_bW << " " ;
-    std::cout << dR_tH << " " ;
-    std::cout << dR_qq << " " ;
+    std::cout << "bJet_Pt = " << bJet_Pt << " " ;
+    std::cout << "bJet_Eta = " << bJet_Eta << " " ;
+    std::cout << "bJet_btag = " << bJet_btag << " " ;
+    std::cout << "WJet1_Pt = " << WJet1_Pt << " " ;
+    std::cout << "WJet1_Eta = " << WJet1_Eta << " " ;
+    std::cout << "WJet1_btag = " << WJet1_btag << " " ;
+    std::cout << "WJet2_Pt = " << WJet2_Pt << " " ;
+    std::cout << "WJet2_Eta = " << WJet2_Eta << " " ;
+    std::cout << "WJet2_btag = " << WJet2_btag << " " ;
+    std::cout << "M1 = " << M1 << " " ;
+    std::cout << "MW = " << MW << " " ;
+    std::cout << "dR_bW = " << dR_bW << " " ;
+    std::cout << "dR_tH = " << dR_tH << " " ;
+    std::cout << "dR_qq = " << dR_qq << " " ;
     
     std::cout << object->top_tbw->mass() << " " << std::endl;
-    std::cout << score << std::endl;
+    std::cout << "score = " << score << std::endl;
   }
 
   return score;

@@ -82,6 +82,14 @@ public:
     leptons.push_back(std::make_shared<ANN_rTT_Lepton>(pt,eta,phi,mass,id));
   };
   
+  void addElectron(float pt,float eta, float phi, float mass, float id){
+    electrons.push_back(std::make_shared<ANN_rTT_Lepton>(pt,eta,phi,mass,id));
+  };
+  
+  void addMuon(float pt,float eta, float phi, float mass, float id){
+    muons.push_back(std::make_shared<ANN_rTT_Lepton>(pt,eta,phi,mass,id));
+  };
+  
   void clear();
   void Init_tt(std::string weight_file_name);
   void Init_st(std::string weight_file_name);
@@ -96,6 +104,8 @@ private:
   std::vector<std::shared_ptr<ANN_rTT_Jet>> jets;
   std::vector<std::shared_ptr<ANN_rTT_Photon>> photons;
   std::vector<std::shared_ptr<ANN_rTT_Lepton>> leptons;
+  std::vector<std::shared_ptr<ANN_rTT_Lepton>> electrons;
+  std::vector<std::shared_ptr<ANN_rTT_Lepton>> muons;
 
   float EvalScore_tt(const std::shared_ptr<ANN_Leptonic_top_pair>);
   float EvalScore_st(const std::shared_ptr<ANN_Leptonic_single_top>);
@@ -171,6 +181,8 @@ void ANN_LeptonicTopTagger::clear(){
   jets.clear();
   photons.clear();
   leptons.clear();
+  electrons.clear();
+  muons.clear();
 
   float bJet_Pt = -99;
   float bJet_Eta = -99;
@@ -211,8 +223,7 @@ std::vector<float> ANN_LeptonicTopTagger::EvalMVA_tt(){
     }
   }
 
-  if (debug) std::cout << "njets " << njets << std::endl;
-  if (debug) std::cout << "nleps " << nleps << std::endl;
+  if (debug) std::cout << "Leptonic EvalScore_tt: njets = " << njets << " nleps = " << nleps ;
 
   std::vector<float> output(16,-99);
   if (allcands.size()>0) {
@@ -220,7 +231,7 @@ std::vector<float> ANN_LeptonicTopTagger::EvalMVA_tt(){
     auto top = *std::min_element(allcands.begin(),allcands.end(),[](const std::shared_ptr<ANN_Leptonic_top_pair> &a, const std::shared_ptr<ANN_Leptonic_top_pair> &b){return a->score > b->score;});
     output.at(0) = top->score; // mvaValue
   }
-  if (debug) std::cout << "returning " << output.at(0) << std::endl;
+  if (debug) std::cout << "MVA score: " << output.at(0) << std::endl;
   return output;
 
 };
@@ -243,8 +254,7 @@ std::vector<float> ANN_LeptonicTopTagger::EvalMVA_st(){
     }
   }
 
-  if (debug) std::cout << "njets " << njets << std::endl;
-  if (debug) std::cout << "nleps " << nleps << std::endl;
+  if (debug) std::cout << "Leptonic EvalScore_st: njets = " << njets << " nleps = " << nleps ;
 
   std::vector<float> output(16,-99);
   if (allcands.size()>0) {
@@ -252,7 +262,7 @@ std::vector<float> ANN_LeptonicTopTagger::EvalMVA_st(){
     auto top = *std::min_element(allcands.begin(),allcands.end(),[](const std::shared_ptr<ANN_Leptonic_single_top> &a, const std::shared_ptr<ANN_Leptonic_single_top> &b){return a->score > b->score;});
     output.at(0) = top->score; // mvaValue
   }
-  if (debug) std::cout << "returning " << output.at(0) << std::endl;
+  if (debug) std::cout << "MVA score: " << output.at(0) << std::endl;
   return output;
 
 };
@@ -280,22 +290,22 @@ float ANN_LeptonicTopTagger::EvalScore_tt(const std::shared_ptr<ANN_Leptonic_top
   float score = reader_tt->EvaluateMVA("TT_lep_MVA");
 
   if (debug) {
-    std::cout << bJet_Pt << " " ;
-    std::cout << bJet_Eta << " " ;
-    std::cout << bJet_btag << " " ;
-    std::cout << M1Jet_Pt << " " ;
-    std::cout << M1Jet_Eta << " " ;
-    std::cout << M1Jet_btag << " " ;
-    std::cout << lep_ID << " " ;
-    std::cout << lep_Pt << " " ;
-    std::cout << lep_Eta << " " ;
-    std::cout << M1 << " " ;
-    std::cout << dR_qH << " " ;
-    std::cout << dR_lb << " " ;
-    std::cout << dR_lt << " " ;
+    std::cout << "bJet_Pt = " << bJet_Pt << " " ;
+    std::cout << "bJet_Eta = " << bJet_Eta << " " ;
+    std::cout << "bJet_btag = " << bJet_btag << " " ;
+    std::cout << "M1Jet_Pt = " << M1Jet_Pt << " " ;
+    std::cout << "M1Jet_Eta = " << M1Jet_Eta << " " ;
+    std::cout << "M1Jet_btag = " << M1Jet_btag << " " ;
+    std::cout << "lep_ID = " << lep_ID << " " ;
+    std::cout << "lep_Pt = " << lep_Pt << " " ;
+    std::cout << "lep_Eta = " << lep_Eta << " " ;
+    std::cout << "M1 = " << M1 << " " ;
+    std::cout << "dR_qH = " << dR_qH << " " ;
+    std::cout << "dR_lb = " << dR_lb << " " ;
+    std::cout << "dR_lt = " << dR_lt << " " ;
 
     std::cout << object->top_tqh->mass() << " " << std::endl;
-    std::cout << score << std::endl;
+    std::cout << "score = " << score << std::endl;
   }
 
   return score;
@@ -317,16 +327,16 @@ float ANN_LeptonicTopTagger::EvalScore_st(const std::shared_ptr<ANN_Leptonic_sin
   float score = reader_st->EvaluateMVA("ST_lep_MVA");
 
   if (debug) {
-    std::cout << bJet_Pt << " " ;
-    std::cout << bJet_Eta << " " ;
-    std::cout << bJet_btag << " " ;
-    std::cout << lep_ID << " " ;
-    std::cout << lep_Pt << " " ;
-    std::cout << lep_Eta << " " ;
-    std::cout << dR_lb << " " ;
-    std::cout << dR_lH << " " << std::endl;
+    std::cout << "bJet_Pt = " << bJet_Pt << " " ;
+    std::cout << "bJet_Eta = " << bJet_Eta << " " ;
+    std::cout << "bJet_btag = " << bJet_btag << " " ;
+    std::cout << "lep_ID = " << lep_ID << " " ;
+    std::cout << "lep_Pt = " << lep_Pt << " " ;
+    std::cout << "lep_Eta = " << lep_Eta << " " ;
+    std::cout << "dR_lb = " << dR_lb << " " ;
+    std::cout << "dR_lH = " << dR_lH << " " << std::endl;
     
-    std::cout << score << std::endl;
+    std::cout << "score = " << score << std::endl;
   }
 
   return score;

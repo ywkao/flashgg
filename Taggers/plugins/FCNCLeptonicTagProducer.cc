@@ -215,6 +215,8 @@ namespace flashgg {
         float ht_;
         float helicity_angle_;
         float top_tag_score_;
+        float fcnc_tag_score_tt_;
+        float fcnc_tag_score_st_;
 
         float lepton_nTight_;
 
@@ -690,6 +692,8 @@ namespace flashgg {
         FCNC_BDTNRB_RunII_->AddVariable("n_lep_tight_", &lepton_nTight_);
 
         FCNC_BDTNRB_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTNRB_RunII_->AddVariable("fcnc_tag_score_tt_", &fcnc_tag_score_tt_); // not yet
+        //FCNC_BDTNRB_RunII_->AddVariable("fcnc_tag_score_st_", &fcnc_tag_score_st_); // not yet
         FCNC_BDTNRB_RunII_->AddVariable("chi2_neutrino_pz_", &chi2_neutrino_pz_);
         FCNC_BDTNRB_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTNRB_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
@@ -745,6 +749,8 @@ namespace flashgg {
         FCNC_BDTSMH_RunII_->AddVariable("n_lep_tight_", &lepton_nTight_);
 
         FCNC_BDTSMH_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTSMH_RunII_->AddVariable("fcnc_tag_score_tt_", &fcnc_tag_score_tt_); // not yet
+        //FCNC_BDTSMH_RunII_->AddVariable("fcnc_tag_score_st_", &fcnc_tag_score_st_); // not yet
         FCNC_BDTSMH_RunII_->AddVariable("chi2_neutrino_pz_", &chi2_neutrino_pz_);
         FCNC_BDTSMH_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTSMH_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
@@ -776,6 +782,7 @@ namespace flashgg {
         if (useLargeMVAs) {
             topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
             fcncTagger = new ANN_LeptonicTopTagger(fcncTaggerXMLfile_tt_.fullPath(), fcncTaggerXMLfile_st_.fullPath());
+            //fcncTagger->setDebug(true);
             //dnn = new TTH_DNN_Helper(tthVsttGGDNNfile_.fullPath());
             //dnn->SetInputShapes(19, 9, 8);
         }
@@ -1111,6 +1118,11 @@ namespace flashgg {
                     index+=i;
                     std::pair<unsigned int, float>pairToSort = std::make_pair(index, pt);
                     sorter.push_back( pairToSort );
+
+                    float lepton_id = Muons[i]->charge() < 0 ? 13. : -13.;
+                    fcncTagger->addMuon(Muons[i]->pt(), Muons[i]->eta(), Muons[i]->phi(), Muons[i]->energy(), lepton_id);
+                    fcncTagger->addLepton(Muons[i]->pt(), Muons[i]->eta(), Muons[i]->phi(), Muons[i]->energy(), lepton_id);
+
                     if(debug_) cout<<" muon "<< i <<" pt="<<pt<< endl;
                 }
                 for(unsigned int i=0;i<Electrons.size();i++){
@@ -1119,6 +1131,11 @@ namespace flashgg {
                     index+=i;
                     std::pair<unsigned int, float>pairToSort = std::make_pair(index, pt);
                     sorter.push_back( pairToSort );
+
+                    float lepton_id = Electrons[i]->charge() < 0 ? 11. : -11.;
+                    fcncTagger->addElectron(Electrons[i]->pt(), Electrons[i]->eta(), Electrons[i]->phi(), Electrons[i]->energy(), lepton_id);
+                    fcncTagger->addLepton(Electrons[i]->pt(), Electrons[i]->eta(), Electrons[i]->phi(), Electrons[i]->energy(), lepton_id);
+
                     if(debug_) cout<<" elec "<< i <<" pt="<<pt<< endl;
                 }
                 // sort map by pt
@@ -1430,15 +1447,19 @@ namespace flashgg {
                 }
 
                 vector<float> mvaEval; 
+                vector<float> mvaEval_tt; 
+                vector<float> mvaEval_st; 
                 if (useLargeMVAs) {
                     mvaEval = topTagger->EvalMVA();
-                    //mvaEval_tt = fcncTagger->EvalMVA_tt();
-                    //mvaEval_st = fcncTagger->EvalMVA_st();
+                    mvaEval_tt = fcncTagger->EvalMVA_tt();
+                    mvaEval_st = fcncTagger->EvalMVA_st();
                     topTagger->clear();
-                    //fcncTagger->clear();
+                    fcncTagger->clear();
                 }
 
                 top_tag_score_ = mvaEval.size() > 0 ? (mvaEval[0] != - 99 ? mvaEval[0] : -1) : - 1;
+                fcnc_tag_score_tt_ = mvaEval_tt.size() > 0 ? (mvaEval_tt[0] != - 99 ? mvaEval_tt[0] : -1) : - 1;
+                fcnc_tag_score_st_ = mvaEval_st.size() > 0 ? (mvaEval_st[0] != - 99 ? mvaEval_st[0] : -1) : - 1;
                 TLorentzVector leading_electron;
                 TLorentzVector leading_muon;
                 TLorentzVector leading_lepton;
@@ -1570,6 +1591,9 @@ namespace flashgg {
                   cout << "met_: " << MetPt_ << endl;
                   cout << "dipho_pt_over_mass_: " << diPhoPtoM_ << endl;
                   cout << "helicity_angle_: " << helicity_angle_ << endl;
+                  cout << "top_tag_score_: " << top_tag_score_ << endl;
+                  cout << "fcnc_tag_score_tt_: " << fcnc_tag_score_tt_ << endl;
+                  cout << "fcnc_tag_score_st_: " << fcnc_tag_score_st_ << endl;
 
                   //------------------------------//
                   cout << "chi2_neutrino_pz_:" << chi2_neutrino_pz_ << endl;
