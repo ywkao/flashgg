@@ -83,6 +83,17 @@ float DiPhotonTagBase::getTheoryWeight(std::string key) const
     return theoryWeight;
 }
 
+// overrides default behaviour of returning 1 if weight doesn't exist to return central object weight instead
+float DiPhotonTagBase::getObjectWeight(std::string key) const
+{
+    if( this->hasWeight(key) ) {
+        return this->weight(key);
+    }
+    else {
+        return this->centralWeight();
+    }
+}
+
 string DiPhotonTagBase::stage1KinematicLabel() const { 
     switch(stage1recoTag_) {
     case stage1recoTag::LOGICERROR:
