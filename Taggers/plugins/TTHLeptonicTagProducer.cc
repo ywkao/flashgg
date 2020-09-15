@@ -1375,13 +1375,15 @@ namespace flashgg {
                         tagJets.push_back( thejet );
                         float bDiscriminatorValue = -2.;
                         if(bTag_ == "pfDeepCSV") bDiscriminatorValue = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+                        else if (bTag_ == "pfDeepJet") bDiscriminatorValue = thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") ;
                         else  bDiscriminatorValue = thejet->bDiscriminator( bTag_ );
-
-                        btag_scores.push_back(bDiscriminatorValue);
 
                         float bDiscriminatorValue_noBB = -2;
                         if(bTag_ == "pfDeepCSV") bDiscriminatorValue_noBB = thejet->bDiscriminator("pfDeepCSVJetTags:probb");
+                        else if (bTag_ == "pfDeepJet") bDiscriminatorValue_noBB = thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probb");
                         else  bDiscriminatorValue_noBB = thejet->bDiscriminator( bTag_ );
+
+                        btag_scores.push_back(bDiscriminatorValue_noBB);
 
                         bDiscriminatorValue >= 0. ? bTags.push_back(bDiscriminatorValue) : bTags.push_back(-1.);
                         bDiscriminatorValue_noBB >= 0. ? bTags_noBB.push_back(bDiscriminatorValue_noBB) : bTags_noBB.push_back(-1.);
@@ -1392,7 +1394,8 @@ namespace flashgg {
 
                         if( bDiscriminatorValue > bDiscriminator_[1] )
                             tagBJets.push_back( thejet );
-                    
+
+                        float bDisc_topTagger = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb");                    
                         if (useLargeMVAs) {
                           float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
                           float cvsb = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
@@ -1400,7 +1403,7 @@ namespace flashgg {
                           float axis1 = thejet->userFloat("axis1") ;
                           int mult = thejet->userFloat("totalMult") ;
 
-                          topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue, cvsl, cvsb, ptD, axis1, mult);
+                          topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDisc_topTagger, cvsl, cvsb, ptD, axis1, mult);
                         }
 
                     }
@@ -1418,8 +1421,10 @@ namespace flashgg {
                 // Set variables to compute MVA value
                 if(tagJets.size()>0){
                     if(bTag_ == "pfDeepCSV") btag_1_=tagJets[0]->bDiscriminator("pfDeepCSVJetTags:probb")+tagJets[0]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+                    else if (bTag_ == "pfDeepJet") btag_1_ = tagJets[0]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+tagJets[0]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") ;
                     else  btag_1_ = tagJets[0]->bDiscriminator( bTag_ );
                     if(bTag_ == "pfDeepCSV") btag_noBB_1_=tagJets[0]->bDiscriminator("pfDeepCSVJetTags:probb");
+                    else if (bTag_ == "pfDeepJet") btag_noBB_1_ = tagJets[0]->bDiscriminator("mini_pfDeepFlavourJetTags:probb");
                     else  btag_noBB_1_ = tagJets[0]->bDiscriminator( bTag_ );
                     jetPt_1_=tagJets[0]->pt();
                     jetEta_1_=tagJets[0]->eta();
@@ -1428,8 +1433,10 @@ namespace flashgg {
 
                 if(tagJets.size()>1){
                     if(bTag_ == "pfDeepCSV") btag_2_=tagJets[1]->bDiscriminator("pfDeepCSVJetTags:probb")+tagJets[1]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+                    else if (bTag_ == "pfDeepJet") btag_2_ = tagJets[1]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+tagJets[1]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") ;
                     else  btag_2_ = tagJets[1]->bDiscriminator( bTag_ );
                     if(bTag_ == "pfDeepCSV") btag_noBB_2_=tagJets[1]->bDiscriminator("pfDeepCSVJetTags:probb");
+                    else if (bTag_ == "pfDeepJet") btag_noBB_2_ = tagJets[1]->bDiscriminator("mini_pfDeepFlavourJetTags:probb");
                     else  btag_noBB_2_ = tagJets[1]->bDiscriminator( bTag_ );
                     jetPt_2_=tagJets[1]->pt();
                     jetEta_2_=tagJets[1]->eta();
@@ -1438,8 +1445,10 @@ namespace flashgg {
 
                 if(tagJets.size()>2){
                     if(bTag_ == "pfDeepCSV") btag_3_=tagJets[2]->bDiscriminator("pfDeepCSVJetTags:probb")+tagJets[2]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+                    else if (bTag_ == "pfDeepJet") btag_3_ = tagJets[2]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+tagJets[2]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") ;
                     else  btag_3_ = tagJets[2]->bDiscriminator( bTag_ );
                     if(bTag_ == "pfDeepCSV") btag_noBB_3_=tagJets[2]->bDiscriminator("pfDeepCSVJetTags:probb");
+                    else if (bTag_ == "pfDeepJet") btag_noBB_3_ = tagJets[2]->bDiscriminator("mini_pfDeepFlavourJetTags:probb");
                     else  btag_noBB_3_ = tagJets[2]->bDiscriminator( bTag_ );
                     jetPt_3_=tagJets[2]->pt();
                     jetEta_3_=tagJets[2]->eta();
