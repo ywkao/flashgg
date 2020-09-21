@@ -78,16 +78,21 @@ public:
     photons.push_back(std::make_shared<ANN_rTT_Photon>(pt,eta,phi,mass, IDMVA));
   };
   
-  void addLepton(float pt,float eta, float phi, float mass, float id){
+  void addLepton(float pt, float eta, float phi, float mass, float id){
     leptons.push_back(std::make_shared<ANN_rTT_Lepton>(pt,eta,phi,mass,id));
   };
   
-  void addElectron(float pt,float eta, float phi, float mass, float id){
+  void addElectron(float pt, float eta, float phi, float mass, float id){
     electrons.push_back(std::make_shared<ANN_rTT_Lepton>(pt,eta,phi,mass,id));
   };
   
-  void addMuon(float pt,float eta, float phi, float mass, float id){
+  void addMuon(float pt, float eta, float phi, float mass, float id){
     muons.push_back(std::make_shared<ANN_rTT_Lepton>(pt,eta,phi,mass,id));
+  };
+  
+  void addMet(float pt, float phi){
+    Met_Pt = pt;
+    Met_Phi = phi;
   };
   
   void clear();
@@ -127,6 +132,9 @@ private:
   float dR_lb = -99;
   float dR_lt = -99;
   float dR_lH = -99;
+  float dPhi_bMET = -99;
+  float Met_Phi = -99;
+  float Met_Pt = -99;
 
   bool debug = false;
 
@@ -152,6 +160,8 @@ void ANN_LeptonicTopTagger::Init_tt(std::string weight_file_name){
   reader_tt->AddVariable("dR_qH", &dR_qH);
   reader_tt->AddVariable("dR_lb", &dR_lb);
   reader_tt->AddVariable("dR_lt", &dR_lt);
+  reader_tt->AddVariable("dPhi_bMET", &dPhi_bMET);
+  reader_tt->AddVariable("Met_Pt", &Met_Pt);
 
   reader_tt->BookMVA("TT_lep_MVA", weight_file_name);
 };
@@ -170,6 +180,8 @@ void ANN_LeptonicTopTagger::Init_st(std::string weight_file_name){
   reader_st->AddVariable("lep_Eta", &lep_Eta);
   reader_st->AddVariable("dR_lb", &dR_lb);
   reader_st->AddVariable("dR_lH", &dR_lH);
+  reader_st->AddVariable("dPhi_bMET", &dPhi_bMET);
+  reader_st->AddVariable("Met_Pt", &Met_Pt);
   
   reader_st->BookMVA("ST_lep_MVA", weight_file_name);
 };
@@ -184,20 +196,23 @@ void ANN_LeptonicTopTagger::clear(){
   electrons.clear();
   muons.clear();
 
-  float bJet_Pt = -99;
-  float bJet_Eta = -99;
-  float bJet_btag = -99;
-  float M1Jet_Pt = -99;
-  float M1Jet_Eta = -99;
-  float M1Jet_btag = -99;
-  float lep_ID = -99;
-  float lep_Pt = -99;
-  float lep_Eta = -99;
-  float M1 = -99;
-  float dR_qH = -99;
-  float dR_lb = -99;
-  float dR_lt = -99;
-  float dR_lH = -99;
+  bJet_Pt = -99;
+  bJet_Eta = -99;
+  bJet_btag = -99;
+  M1Jet_Pt = -99;
+  M1Jet_Eta = -99;
+  M1Jet_btag = -99;
+  lep_ID = -99;
+  lep_Pt = -99;
+  lep_Eta = -99;
+  M1 = -99;
+  dR_qH = -99;
+  dR_lb = -99;
+  dR_lt = -99;
+  dR_lH = -99;
+  dPhi_bMET = -99;
+  Met_Phi = -99;
+  Met_Pt = -99;
 
 }
 //}}}
@@ -285,6 +300,9 @@ float ANN_LeptonicTopTagger::EvalScore_tt(const std::shared_ptr<ANN_Leptonic_top
   dR_qH      = deltaR(object->j2->eta(),object->j2->phi(),object->diphoton->eta(),object->diphoton->phi());
   dR_lb      = deltaR(object->l->eta(),object->l->phi(),object->b->eta(),object->b->phi());
   dR_lt      = deltaR(object->l->eta(),object->l->phi(),object->top_tqh->eta(),object->top_tqh->phi());
+  dPhi_bMET = fabs( object->b->phi() - Met_Phi );
+  if (dPhi_bMET > TMath::Pi()) dPhi_bMET = 2 * TMath::Pi() - dPhi_bMET;
+  Met_Pt     = Met_Pt;
 
 
   float score = reader_tt->EvaluateMVA("TT_lep_MVA");
@@ -303,6 +321,8 @@ float ANN_LeptonicTopTagger::EvalScore_tt(const std::shared_ptr<ANN_Leptonic_top
     std::cout << "dR_qH = " << dR_qH << " " ;
     std::cout << "dR_lb = " << dR_lb << " " ;
     std::cout << "dR_lt = " << dR_lt << " " ;
+    std::cout << "dPhi_bMET = " << dPhi_bMET << " " ;
+    std::cout << "Met_Pt = " << Met_Pt << " " ;
 
     std::cout << object->top_tqh->mass() << " " << std::endl;
     std::cout << "score = " << score << std::endl;
@@ -323,6 +343,9 @@ float ANN_LeptonicTopTagger::EvalScore_st(const std::shared_ptr<ANN_Leptonic_sin
   lep_Eta    = object->l->eta();
   dR_lb      = deltaR(object->l->eta(),object->l->phi(),object->b->eta(),object->b->phi());
   dR_lH      = deltaR(object->l->eta(),object->l->phi(),object->diphoton->eta(),object->diphoton->phi());
+  dPhi_bMET = fabs( object->b->phi() - Met_Phi );
+  if (dPhi_bMET > TMath::Pi()) dPhi_bMET = 2 * TMath::Pi() - dPhi_bMET;
+  Met_Pt     = Met_Pt;
 
   float score = reader_st->EvaluateMVA("ST_lep_MVA");
 
@@ -335,6 +358,8 @@ float ANN_LeptonicTopTagger::EvalScore_st(const std::shared_ptr<ANN_Leptonic_sin
     std::cout << "lep_Eta = " << lep_Eta << " " ;
     std::cout << "dR_lb = " << dR_lb << " " ;
     std::cout << "dR_lH = " << dR_lH << " " << std::endl;
+    std::cout << "dPhi_bMET = " << dPhi_bMET << " " ;
+    std::cout << "Met_Pt = " << Met_Pt << " " ;
     
     std::cout << "score = " << score << std::endl;
   }

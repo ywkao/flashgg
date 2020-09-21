@@ -9,6 +9,7 @@
 #include "TMVA/Reader.h"
 #include <iostream>
 #include <algorithm>
+#include <TMath.h>
 
 namespace flashgg {
 

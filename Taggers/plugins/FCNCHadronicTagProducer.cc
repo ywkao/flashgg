@@ -790,7 +790,7 @@ namespace flashgg {
         if (useLargeMVAs) {
             topTagger = new BDT_resolvedTopTagger(topTaggerXMLfile_.fullPath());
             fcncTagger = new ANN_HadronicTopTagger(fcncTaggerXMLfile_tt_.fullPath(), fcncTaggerXMLfile_st_.fullPath());
-            fcncTagger->setDebug(true);
+            //fcncTagger->setDebug(true);
 
             //dnn_dipho = new TTH_DNN_Helper(tthVsDiphoDNNfile_.fullPath());
             //dnn_ttGG  = new TTH_DNN_Helper(tthVsttGGDNNfile_.fullPath());

@@ -1119,9 +1119,11 @@ namespace flashgg {
                     std::pair<unsigned int, float>pairToSort = std::make_pair(index, pt);
                     sorter.push_back( pairToSort );
 
-                    float lepton_id = Muons[i]->charge() < 0 ? 13. : -13.;
-                    fcncTagger->addMuon(Muons[i]->pt(), Muons[i]->eta(), Muons[i]->phi(), Muons[i]->energy(), lepton_id);
-                    fcncTagger->addLepton(Muons[i]->pt(), Muons[i]->eta(), Muons[i]->phi(), Muons[i]->energy(), lepton_id);
+                    if (useLargeMVAs) {
+                        float lepton_id = Muons[i]->charge() < 0 ? 13. : -13.;
+                        fcncTagger->addMuon(Muons[i]->pt(), Muons[i]->eta(), Muons[i]->phi(), Muons[i]->energy(), lepton_id);
+                        fcncTagger->addLepton(Muons[i]->pt(), Muons[i]->eta(), Muons[i]->phi(), Muons[i]->energy(), lepton_id);
+                    }
 
                     if(debug_) cout<<" muon "<< i <<" pt="<<pt<< endl;
                 }
@@ -1132,9 +1134,11 @@ namespace flashgg {
                     std::pair<unsigned int, float>pairToSort = std::make_pair(index, pt);
                     sorter.push_back( pairToSort );
 
-                    float lepton_id = Electrons[i]->charge() < 0 ? 11. : -11.;
-                    fcncTagger->addElectron(Electrons[i]->pt(), Electrons[i]->eta(), Electrons[i]->phi(), Electrons[i]->energy(), lepton_id);
-                    fcncTagger->addLepton(Electrons[i]->pt(), Electrons[i]->eta(), Electrons[i]->phi(), Electrons[i]->energy(), lepton_id);
+                    if (useLargeMVAs) {
+                        float lepton_id = Electrons[i]->charge() < 0 ? 11. : -11.;
+                        fcncTagger->addElectron(Electrons[i]->pt(), Electrons[i]->eta(), Electrons[i]->phi(), Electrons[i]->energy(), lepton_id);
+                        fcncTagger->addLepton(Electrons[i]->pt(), Electrons[i]->eta(), Electrons[i]->phi(), Electrons[i]->energy(), lepton_id);
+                    }
 
                     if(debug_) cout<<" elec "<< i <<" pt="<<pt<< endl;
                 }
@@ -1410,6 +1414,10 @@ namespace flashgg {
                     std::cout << "WARNING number of MET is not equal to 1" << std::endl;
                 MetPt_ = theMet_->ptrAt( 0 ) -> getCorPt();
                 MetPhi_ = theMet_->ptrAt( 0 ) -> phi();
+
+                if (useLargeMVAs) {
+                    fcncTagger->addMet(MetPt_, MetPhi_);
+                }
 
                 TLorentzVector pho1, pho2;
                 pho1.SetPtEtaPhiE(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), dipho->leadingPhoton()->energy());
