@@ -274,6 +274,7 @@ if customize.tthTagsOnly:
     process.flashggTagSequence.remove(process.flashggTTHLeptonicTag)
     process.flashggTagSequence.remove(process.flashggTTHDiLeptonTag)
     process.flashggTagSequence.remove(process.flashggTHQLeptonicTag)
+    process.flashggTagSequence.remove(process.flashggTHQHadronicTag)
 
 else:
     if not customize.doSystematics: # allow memory-intensive ttH MVAs if we are not running systematics
@@ -293,6 +294,7 @@ if customize.doStageOne:
     systematicVariables = soc.systematicVariables()
 
 process.flashggTHQLeptonicTag.processId = cms.string(str(customize.processId))
+process.flashggTHQHadronicTag.processId = cms.string(str(customize.processId))
 
 print 'here we print the tag sequence after'
 print process.flashggTagSequence
@@ -514,6 +516,7 @@ else:
         ["TTHHadronicTag",4],
         ["TTHLeptonicTag",4],
         ["THQLeptonicTag",0],
+	["THQHadronicTag",0],
         ["TTHDiLeptonTag",0]
         ]
 
