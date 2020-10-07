@@ -75,7 +75,7 @@ namespace flashgg {
 
     float JetBTagReshapeWeight::makeWeight( const flashgg::Jet &obj, int syst_shift ) 
     {
-
+        //printf("[check] JetBTagReshapeWeight.cc :: makeWeight !\n");
         if( this->debug_ ) {
             std::cout<<"In JetBTagReshapeProducer and syst_shift="<<  syst_shift <<std::endl;
         }
@@ -135,6 +135,8 @@ namespace flashgg {
             if( JetBDiscriminator > 1.0 ) JetBDiscriminator = 1.0;
 
             //for the scale factor up / down variation : have to take each source one ata a time
+            //
+            //printf("[check] JetBTagReshapeWeight.cc :: bTagReshapeSystOption_ = %d\n", bTagReshapeSystOption_);
             
             if(JetFlav == 5){// b jets
                 jet_scalefactor = readerShapeB.eval_auto_bounds("central", BTagEntry::FLAV_B, JetEta, JetPt, JetBDiscriminator);  

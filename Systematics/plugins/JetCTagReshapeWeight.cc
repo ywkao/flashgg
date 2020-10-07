@@ -54,7 +54,7 @@ namespace flashgg {
 
     float JetCTagReshapeWeight::makeWeight( const flashgg::Jet &obj, int syst_shift ) 
     {
-        printf("[check] JetCTagReshapeWeight.cc :: makeWeight !\n");
+        //printf("[check] JetCTagReshapeWeight.cc :: makeWeight !\n");
 
         if( this->debug_ ) {
             std::cout<<"In JetCTagReshapeProducer and syst_shift="<<  syst_shift <<std::endl;
@@ -109,12 +109,12 @@ namespace flashgg {
                 type_flavour = "l";
             }
 
-            printf("[check] JetCTagReshapeWeight.cc :: cTagReshapeSystOption_ = %d\n", cTagReshapeSystOption_);
+            //printf("[check] JetCTagReshapeWeight.cc :: cTagReshapeSystOption_ = %d\n", cTagReshapeSystOption_);
             TString string_scale_factor     = "SF" + type_flavour + "_" + "hist";
             TString string_scale_factor_sys = "SF" + type_flavour + "_" + "hist" + "_" + type_uncertainty[cTagReshapeSystOption_];
 
             retrieve_scale_factor sf_retriever(cTagReshapeFile_);
-            sf_retriever.debug_mode();
+            //sf_retriever.debug_mode();
 
             jet_scalefactor = sf_retriever.get_scale_factor(string_scale_factor, cvsl, cvsb);
             jet_scalefactor_up = sf_retriever.get_scale_factor(string_scale_factor_sys + "Up", cvsl, cvsb); 
