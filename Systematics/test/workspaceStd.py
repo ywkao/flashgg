@@ -132,7 +132,6 @@ customize.options.register('doMuFilter',
                            VarParsing.VarParsing.varType.bool,
                            'doMuFilter'
                            )
-                           )
 customize.options.register('acceptance',
                            'NONE',
                            VarParsing.VarParsing.multiplicity.singleton,
@@ -460,7 +459,7 @@ if customize.processId == "tHq":
 
 tag_only_variables = {}
 
-elif customize.tthTagsOnly:
+if customize.tthTagsOnly:
     tagList=[
         ["TTHHadronicTag",4],
         ["TTHLeptonicTag",4]
