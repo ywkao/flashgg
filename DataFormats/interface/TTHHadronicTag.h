@@ -53,6 +53,9 @@ namespace flashgg {
         double dnn_score_ttH_vs_dipho() const { return dnn_score_ttH_vs_dipho_; }
         double dnn_score_ttH_vs_ttgg() const { return dnn_score_ttH_vs_ttgg_; }
 
+        double dnn_score_fcnc_tt() const { return dnn_score_fcnc_tt_; }
+        double dnn_score_fcnc_st() const { return dnn_score_fcnc_st_; }
+
         double fcnc_bdt_nrb_hut_score() const { return fcnc_bdt_nrb_hut_score_; }
         double fcnc_bdt_smh_hut_score() const { return fcnc_bdt_smh_hut_score_; }
         double fcnc_bdt_nrb_hct_score() const { return fcnc_bdt_nrb_hct_score_; }
@@ -119,6 +122,9 @@ namespace flashgg {
         void setRand(double rand) { rand_ = rand; }
         void setDNNScorettHVsDipho(double dnn_score_ttH_vs_dipho) { dnn_score_ttH_vs_dipho_ = dnn_score_ttH_vs_dipho; }
         void setDNNScorettHVsTtgg(double dnn_score_ttH_vs_ttgg) { dnn_score_ttH_vs_ttgg_ = dnn_score_ttH_vs_ttgg; }
+
+        void setDNNScoreFCNCTT(double dnn_score_fcnc_tt) { dnn_score_fcnc_tt_ = dnn_score_fcnc_tt; }
+        void setDNNScoreFCNCST(double dnn_score_fcnc_st) { dnn_score_fcnc_st_ = dnn_score_fcnc_st; }
 
         void set_fcnc_bdt_nrb_hut_score(double fcnc_bdt_nrb_hut_score) { fcnc_bdt_nrb_hut_score_ = fcnc_bdt_nrb_hut_score; }
         void set_fcnc_bdt_smh_hut_score(double fcnc_bdt_smh_hut_score) { fcnc_bdt_smh_hut_score_ = fcnc_bdt_smh_hut_score; }
@@ -228,6 +234,9 @@ namespace flashgg {
 
         double dnn_score_ttH_vs_dipho_;
         double dnn_score_ttH_vs_ttgg_;
+
+        double dnn_score_fcnc_tt_;
+        double dnn_score_fcnc_st_;
 
         double fcnc_bdt_nrb_hut_score_;
         double fcnc_bdt_smh_hut_score_;

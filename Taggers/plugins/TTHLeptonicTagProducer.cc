@@ -1904,6 +1904,9 @@ namespace flashgg {
                     tthltags_obj.set_fcnc_bdt_smh_hut_score(fcncMvaVal_SMH_Hut_);
                     tthltags_obj.set_fcnc_bdt_smh_hct_score(fcncMvaVal_SMH_Hct_);
 
+                    tthltags_obj.setDNNScoreFCNCTT(fcnc_tag_score_tt_);
+                    tthltags_obj.setDNNScoreFCNCST(fcnc_tag_score_st_);
+
                     tthltags_obj.setLeadPrompt(-999);
                     tthltags_obj.setLeadMad(-999);
                     tthltags_obj.setLeadPythia(-999);

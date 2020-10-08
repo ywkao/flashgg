@@ -2025,6 +2025,9 @@ namespace flashgg {
                     tthhtags_obj.set_fcnc_bdt_smh_hut_score(fcncMvaVal_SMH_Hut_);
                     tthhtags_obj.set_fcnc_bdt_smh_hct_score(fcncMvaVal_SMH_Hct_);
 
+                    tthhtags_obj.setDNNScoreFCNCTT(fcnc_tag_score_tt_);
+                    tthhtags_obj.setDNNScoreFCNCST(fcnc_tag_score_st_);
+
                     tthhtags_obj.setRand(myRandHadronic->Rndm());
                     tthhtags_obj.setMetPt((float)theMET->pt());
                     tthhtags_obj.setMetPhi((float)theMET->phi());
