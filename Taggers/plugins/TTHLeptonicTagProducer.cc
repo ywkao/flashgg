@@ -1874,6 +1874,7 @@ namespace flashgg {
                     for( unsigned int i = 0; i < tagJets.size(); ++i )
                     {
                         tthltags_obj.includeWeightsByLabel( *tagJets[i] , "JetBTagReshapeWeight", false);
+                        tthltags_obj.includeWeightsByLabel( *tagJets[i] , "JetCTagReshapeWeight", false);
                     }
 
 
