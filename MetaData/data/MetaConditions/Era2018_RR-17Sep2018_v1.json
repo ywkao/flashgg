@@ -144,8 +144,9 @@
 
     "cTagSystematics" :
     {
-        "cTagger" : "pfDeepCSV",
-	    "cTagCalibrationFile_Reshape_pfDeepCSV" : "flashgg/Systematics/rootfiles/DeepCSV_ctagSF_MiniAOD94X_2017_pTincl.root",
+        "cTagger" : "pfDeepJet",
+	    "cTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/sfs_rootfiles/DeepJet_ctagSF_MiniAOD102X_2018_pTincl.root",
+        "isApply" : true,
 
         "eta" : 2.5
     },
@@ -164,6 +165,7 @@
 	"bDiscriminatorValue_pfDeepJet" : 0.2770,
 	"bTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/DeepJet_102XSF_V1.csv",
 	"bTagCalibrationFile_WPCut_pfDeepJet" : "flashgg/Systematics/data/DeepJet_102XSF_V1.csv",
+    "isApply" : false,
 
 	"eta" : 2.5
     },

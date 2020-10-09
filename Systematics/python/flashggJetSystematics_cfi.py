@@ -166,6 +166,7 @@ class jetSystematicsCustomize:
       cTagger = self.metaConditions['cTagSystematics']['cTagger']
       bTagger = self.metaConditions['bTagSystematics']['bTagger']
       eta = self.metaConditions['bTagSystematics']['eta'] 
+
       setattr(self.process, newName,
               cms.EDProducer('FlashggJetSystematicProducer',
                              src = jetInputTag,
@@ -180,7 +181,7 @@ class jetSystematicsCustomize:
                                                                JetCorrectorTag = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
                                                             ),
                                                      cms.PSet( MethodName = cms.string("FlashggJetSmear"),
-                                                            Label = cms.string("JER"),
+                                                               Label = cms.string("JER"),
                                                                NSigmas = cms.vint32(-1,1),
                                                                OverallRange = cms.string("abs(eta)<5.0"),
                                                                RandomLabel = cms.string("rnd_g_JER"), # for no-match case
@@ -213,22 +214,24 @@ class jetSystematicsCustomize:
                                                                cTagCalibrationFile = cms.FileInPath(str(self.metaConditions['cTagSystematics']['cTagCalibrationFile_Reshape_'+ str(cTagger)])),
                                                                cTagReshapeSystOption = cms.int32(1),#For changing the source of uncertainty
                                                                Debug = cms.untracked.bool(False),
-                                                               ApplyCentralValue = cms.bool(True)
+                                                               isApply = cms.bool(self.metaConditions['cTagSystematics']['isApply']),
+                                                               ApplyCentralValue = cms.bool(self.metaConditions['cTagSystematics']['isApply'])
                                                             ),
-#                                                     cms.PSet( MethodName = cms.string("FlashggJetBTagReshapeWeight"),
-#                                                               Label = cms.string("JetBTagReshapeWeight"),
-#                                                               NSigmas = cms.vint32(-1,1),
-#                                                               OverallRange = cms.string("pt>25.0&&abs(eta)<" + str(eta)),
-#                                                               BinList = getattr(self, self.metaConditions['bTagSystematics']['bTagEffBins']),
-#                                                               #                                                          bTag = cms.string(flashggBTag),
-#                                                               bTag = cms.string(str(bTagger)), 
-#                                                               bTagCalibrationFile = cms.FileInPath(str(self.metaConditions['bTagSystematics']['bTagCalibrationFile_Reshape_'+ str(bTagger)])),
-#                                                               bTagReshapeSystOption = cms.int32(1),#For changing the source of uncertainty
-#                                                               Debug = cms.untracked.bool(False),
-#                                                               ApplyCentralValue = cms.bool(True)
-#                                                            ),
+                                                     cms.PSet( MethodName = cms.string("FlashggJetBTagReshapeWeight"),
+                                                               Label = cms.string("JetBTagReshapeWeight"),
+                                                               NSigmas = cms.vint32(-1,1),
+                                                               OverallRange = cms.string("pt>25.0&&abs(eta)<" + str(eta)),
+                                                               BinList = getattr(self, self.metaConditions['bTagSystematics']['bTagEffBins']),
+                                                               #                                                          bTag = cms.string(flashggBTag),
+                                                               bTag = cms.string(str(bTagger)), 
+                                                               bTagCalibrationFile = cms.FileInPath(str(self.metaConditions['bTagSystematics']['bTagCalibrationFile_Reshape_'+ str(bTagger)])),
+                                                               bTagReshapeSystOption = cms.int32(1),#For changing the source of uncertainty
+                                                               Debug = cms.untracked.bool(False),
+                                                               isApply = cms.bool(self.metaConditions['bTagSystematics']['isApply']),
+                                                               ApplyCentralValue = cms.bool(self.metaConditions['bTagSystematics']['isApply'])
+                                                            ),
                                                      cms.PSet( MethodName = cms.string("FlashggJetPUJIDShift"),
-                                                            Label = cms.string("PUJIDShift"),
+                                                               Label = cms.string("PUJIDShift"),
                                                                NSigmas = cms.vint32(-1,1),
                                                                OverallRange = cms.string("abs(eta)<5.0&&pt>20.0"),
                                                                BinList = self.PUJIDShiftBins,
