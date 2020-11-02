@@ -870,6 +870,8 @@ namespace flashgg {
 
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_3x3_tqh_deltaR_tbw_", &chi2_3x3_tqh_deltaR_tbw_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_3x3_tqh_deltaR_dipho_", &chi2_3x3_tqh_deltaR_dipho_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("dnn_score_fcnc_st_", &fcnc_tag_score_st_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("dnn_score_fcnc_tt_", &fcnc_tag_score_tt_);
 
         // NRB Hct
         FCNC_BDTNRB_Hct_RunII_->AddVariable("helicity_angle_", &helicity_angle_);
@@ -940,6 +942,8 @@ namespace flashgg {
 
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_3x3_tqh_deltaR_tbw_", &chi2_3x3_tqh_deltaR_tbw_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_3x3_tqh_deltaR_dipho_", &chi2_3x3_tqh_deltaR_dipho_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("dnn_score_fcnc_st_", &fcnc_tag_score_st_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("dnn_score_fcnc_tt_", &fcnc_tag_score_tt_); 
 
         // SMH Hut
         FCNC_BDTSMH_Hut_RunII_->AddVariable("helicity_angle_", &helicity_angle_);
@@ -1010,6 +1014,8 @@ namespace flashgg {
 
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_3x3_tqh_deltaR_tbw_", &chi2_3x3_tqh_deltaR_tbw_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_3x3_tqh_deltaR_dipho_", &chi2_3x3_tqh_deltaR_dipho_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("dnn_score_fcnc_st_", &fcnc_tag_score_st_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("dnn_score_fcnc_tt_", &fcnc_tag_score_tt_);
 
         // SMH Hct
         FCNC_BDTSMH_Hct_RunII_->AddVariable("helicity_angle_", &helicity_angle_);
@@ -1080,6 +1086,8 @@ namespace flashgg {
 
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_3x3_tqh_deltaR_tbw_", &chi2_3x3_tqh_deltaR_tbw_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_3x3_tqh_deltaR_dipho_", &chi2_3x3_tqh_deltaR_dipho_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("dnn_score_fcnc_st_", &fcnc_tag_score_st_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("dnn_score_fcnc_tt_", &fcnc_tag_score_tt_);
 
         // Book weight files
         FCNC_BDTNRB_Hut_RunII_->BookMVA(_MVAMethod.c_str(), fcncHutBDTNRBWeightFile_.fullPath());
@@ -2263,7 +2271,8 @@ namespace flashgg {
 
                     int chosenTag = computeStage1Kinematics( tthhtags_obj );
                     tthhtags_obj.setStage1recoTag( chosenTag );
-
+    
+                    /*
                     if(!useTTHHadronicMVA_){
                         for( unsigned num = 0; num < JetVect.size(); num++ ) {
                             tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagCutWeight");
@@ -2274,7 +2283,11 @@ namespace flashgg {
                             tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight", false);
                         }                    
                     }
+                    */
                     tthhtags_obj.includeWeights( *dipho );
+                    for( unsigned num = 0; num < JetVect.size(); num++ ) {
+                        tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight", false);
+                    }
                     tthhtags->push_back( tthhtags_obj );
                 }
             }

@@ -743,6 +743,8 @@ namespace flashgg {
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_tqh_eta_", &chi2_tqh_eta_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_tqh_deltaR_tbw_", &chi2_tqh_deltaR_tbw_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_tqh_deltaR_dipho_", &chi2_tqh_deltaR_dipho_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("dnn_score_fcnc_st_", &fcnc_tag_score_st_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("dnn_score_fcnc_tt_", &fcnc_tag_score_tt_);
 
         // NRB Hct
         FCNC_BDTNRB_Hct_RunII_->AddVariable("helicity_angle_", &helicity_angle_);
@@ -798,6 +800,8 @@ namespace flashgg {
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_tqh_eta_", &chi2_tqh_eta_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_tqh_deltaR_tbw_", &chi2_tqh_deltaR_tbw_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_tqh_deltaR_dipho_", &chi2_tqh_deltaR_dipho_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("dnn_score_fcnc_st_", &fcnc_tag_score_st_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("dnn_score_fcnc_tt_", &fcnc_tag_score_tt_);
 
         // SMH Hut
         FCNC_BDTSMH_Hut_RunII_->AddVariable("helicity_angle_", &helicity_angle_);
@@ -853,6 +857,8 @@ namespace flashgg {
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_tqh_eta_", &chi2_tqh_eta_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_tqh_deltaR_tbw_", &chi2_tqh_deltaR_tbw_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_tqh_deltaR_dipho_", &chi2_tqh_deltaR_dipho_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("dnn_score_fcnc_st_", &fcnc_tag_score_st_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("dnn_score_fcnc_tt_", &fcnc_tag_score_tt_);
 
         // SMH Hct
         FCNC_BDTSMH_Hct_RunII_->AddVariable("helicity_angle_", &helicity_angle_);
@@ -908,6 +914,8 @@ namespace flashgg {
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_tqh_eta_", &chi2_tqh_eta_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_tqh_deltaR_tbw_", &chi2_tqh_deltaR_tbw_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_tqh_deltaR_dipho_", &chi2_tqh_deltaR_dipho_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("dnn_score_fcnc_st_", &fcnc_tag_score_st_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("dnn_score_fcnc_tt_", &fcnc_tag_score_tt_);
 
         // book fcnc mvas
         FCNC_BDTNRB_Hut_RunII_->BookMVA( "BDT" , fcncHutBDTNRBWeightFile_.fullPath());
@@ -1871,12 +1879,6 @@ namespace flashgg {
                     int chosenTag = computeStage1Kinematics( tthltags_obj );
                     tthltags_obj.setStage1recoTag( chosenTag );
 
-                    for( unsigned int i = 0; i < tagJets.size(); ++i )
-                    {
-                        tthltags_obj.includeWeightsByLabel( *tagJets[i] , "JetBTagReshapeWeight", false);
-                    }
-
-
                     for( unsigned int i = 0; i < Muons.size(); ++i )
                         tthltags_obj.includeWeights( *Muons.at(i));
 
@@ -1885,6 +1887,10 @@ namespace flashgg {
 
 
                     tthltags_obj.includeWeights( *dipho );
+                    for( unsigned int i = 0; i < tagJets.size(); ++i )
+                        tthltags_obj.includeWeightsByLabel( *tagJets[i] , "JetBTagReshapeWeight", false);
+
+
                     tthltags_obj.setJets( tagJets );
                     tthltags_obj.setMuons( Muons );
                     tthltags_obj.setElectrons( Electrons );
