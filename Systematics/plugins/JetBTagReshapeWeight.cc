@@ -40,6 +40,7 @@ namespace flashgg {
         selector_type overall_range_;
         bool debug_;
         std::string bTag_;
+        bool isApply_;
         bool btagSFreshape_;
         int bTagReshapeSystOption_;
         BTagCalibration calibReshape_;
@@ -50,6 +51,7 @@ namespace flashgg {
         overall_range_( conf.getParameter<std::string>( "OverallRange" ) ),        
         debug_( conf.getUntrackedParameter<bool>( "Debug", false ) ),
         bTag_( conf.getParameter<std::string>("bTag") ),
+        isApply_( conf.getParameter<bool>("isApply") ),
 
         btagSFreshape_ ( conf.getUntrackedParameter<bool>( "btagSFreshape", false ) )
     {
