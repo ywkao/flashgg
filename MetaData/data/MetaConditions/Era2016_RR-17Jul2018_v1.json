@@ -146,8 +146,8 @@
     "cTagSystematics" :
     {
         "cTagger" : "pfDeepJet",
-	    "cTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/sfs_rootfiles/DeepJet_ctagSF_MiniAOD94X_2017_pTincl-PUIDLoose-PRELIMINARY.root",
-        "isApply" : false,
+	    "cTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/sfs_rootfiles/DeepJet_ctagSF_MiniAOD94X_2016_pTincl_01Nov20.root",
+        "isApply" : true,
 
         "eta" : 2.5
     },
@@ -166,7 +166,7 @@
 	"bDiscriminatorValue_pfDeepJet" : 0.3093,
 	"bTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/DeepJet_2016LegacySF_V1.csv",
 	"bTagCalibrationFile_WPCut_pfDeepJet" : "flashgg/Systematics/data/DeepJet_2016LegacySF_WP_V1.csv",
-    "isApply" : true,
+    "isApply" : false,
 
 	"eta" : 2.4
     },

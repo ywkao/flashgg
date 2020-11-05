@@ -157,7 +157,7 @@
     "cTagSystematics" :
     {
         "cTagger" : "pfDeepJet",
-	    "cTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/sfs_rootfiles/DeepJet_ctagSF_MiniAOD94X_2017_pTincl-PUIDLoose-PRELIMINARY.root",
+	    "cTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/sfs_rootfiles/DeepJet_ctagSF_MiniAOD94X_2017_pTincl_v2.root",
         "isApply" : true,
 
         "eta" : 2.5
