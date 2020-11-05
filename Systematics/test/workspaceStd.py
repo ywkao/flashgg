@@ -601,9 +601,9 @@ for tag in tagList:
                            dumpPdfWeights=dumpPdfWeights,
                            nPdfWeights=nPdfWeights,
                            nAlphaSWeights=nAlphaSWeights,
-                           nScaleWeights=nScaleWeights,
-                           splitPdfByStage0Cat=customize.doHTXS,
-                           splitPdfByStage1Cat=customize.doStageOne
+                           nScaleWeights=nScaleWeights
+                           #splitPdfByStage0Cat=customize.doHTXS,
+                           #splitPdfByStage1Cat=customize.doStageOne
                            )
 
 # Require standard diphoton trigger

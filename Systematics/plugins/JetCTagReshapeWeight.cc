@@ -113,7 +113,7 @@ namespace flashgg {
                 TString string_scale_factor_sys = "SF" + type_flavour + "_" + "hist" + "_" + type_uncertainty[cTagReshapeSystOption_];
 
                 retrieve_scale_factor sf_retriever(cTagReshapeFile_);
-                sf_retriever.debug_mode();
+                //sf_retriever.debug_mode();
 
                 jet_scalefactor = sf_retriever.get_scale_factor(string_scale_factor, cvsl, cvsb);
                 jet_scalefactor_up = sf_retriever.get_scale_factor(string_scale_factor_sys + "Up", cvsl, cvsb); 
