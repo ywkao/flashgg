@@ -113,6 +113,7 @@ namespace flashgg {
         double bjetsLooseNumberTTHHMVAThreshold_;
         double secondMaxBTagTTHHMVAThreshold_;
         string bTag_;
+        string cTag_;
 
         //leptons
 
@@ -270,6 +271,14 @@ namespace flashgg {
         float chi2_3x3_tqh_eta_;
         float chi2_3x3_tqh_deltaR_tbw_;
         float chi2_3x3_tqh_deltaR_dipho_;
+        float chi2_bjet_CvsL_;
+        float chi2_wjet1_CvsL_;
+        float chi2_wjet2_CvsL_;
+        float chi2_qjet_CvsL_;
+        float chi2_bjet_CvsB_;
+        float chi2_wjet1_CvsB_;
+        float chi2_wjet2_CvsB_;
+        float chi2_qjet_CvsB_;
         //------------------------------//
 
 
@@ -568,6 +577,7 @@ namespace flashgg {
         jetsNumberThreshold_ = iConfig.getParameter<int>( "jetsNumberThreshold");
         bjetsNumberThreshold_ = iConfig.getParameter<int>( "bjetsNumberThreshold");
         bTag_ = iConfig.getParameter<string> ( "bTag");
+        cTag_ = iConfig.getParameter<string> ( "cTag");
         MuonEtaCut_ = iConfig.getParameter<double>( "MuonEtaCut");
         MuonPtCut_ = iConfig.getParameter<double>( "MuonPtCut");
         MuonIsoCut_ = iConfig.getParameter<double>( "MuonIsoCut");
@@ -709,6 +719,14 @@ namespace flashgg {
         chi2_3x3_tqh_eta_ = -999.;
         chi2_3x3_tqh_deltaR_tbw_ = -999.;
         chi2_3x3_tqh_deltaR_dipho_ = -999.;
+        chi2_bjet_CvsL_  = -999.;
+        chi2_wjet1_CvsL_ = -999.;
+        chi2_wjet2_CvsL_ = -999.;
+        chi2_qjet_CvsL_  = -999.;
+        chi2_bjet_CvsB_  = -999.;
+        chi2_wjet1_CvsB_ = -999.;
+        chi2_wjet2_CvsB_ = -999.;
+        chi2_qjet_CvsB_  = -999.;
         //------------------------------//
 
 
@@ -1490,6 +1508,14 @@ namespace flashgg {
                 chi2_3x3_tqh_eta_ = -999.;
                 chi2_3x3_tqh_deltaR_tbw_ = -999.;
                 chi2_3x3_tqh_deltaR_dipho_ = -999.;
+                chi2_bjet_CvsL_  = -999.;
+                chi2_wjet1_CvsL_ = -999.;
+                chi2_wjet2_CvsL_ = -999.;
+                chi2_qjet_CvsL_  = -999.;
+                chi2_bjet_CvsB_  = -999.;
+                chi2_wjet1_CvsB_ = -999.;
+                chi2_wjet2_CvsB_ = -999.;
+                chi2_qjet_CvsB_  = -999.;
                 //------------------------------//
 
 
@@ -1549,6 +1575,8 @@ namespace flashgg {
                 }
                 std::vector<TLorentzVector> jets;
                 std::vector<double> btag_scores;
+                std::vector<double> cvsl_scores;
+                std::vector<double> cvsb_scores;
                 for( unsigned int jetIndex = 0; jetIndex < Jets[jetCollectionIndex]->size() ; jetIndex++ ) {
                     edm::Ptr<flashgg::Jet> thejet = Jets[jetCollectionIndex]->ptrAt( jetIndex );
                     if( fabs( thejet->eta() ) > jetEtaThreshold_ ) { continue; }
@@ -1583,6 +1611,18 @@ namespace flashgg {
                     float bDisc_topTagger = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb");
 
                     btag_scores.push_back(bDiscriminatorValue_noBB);
+
+                    float cvsl_value = -2;
+                    if(cTag_ == "pfDeepCSV") cvsl_value = calculate_CvsL(thejet->bDiscriminator("pfDeepCSVJetTags:probc"), thejet->bDiscriminator("pfDeepCSVJetTags:probudsg"));
+                    else if (cTag_ == "pfDeepJet") cvsl_value = calculate_CvsL(thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probc"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probuds") + thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probg"));
+                    else  cvsl_value = thejet->bDiscriminator( cTag_ );
+                    cvsl_scores.push_back(cvsl_value);
+
+                    float cvsb_value = -2;
+                    if(cTag_ == "pfDeepCSV") cvsb_value = calculate_CvsB(thejet->bDiscriminator("pfDeepCSVJetTags:probc"), thejet->bDiscriminator("pfDeepCSVJetTags:probb"), thejet->bDiscriminator("pfDeepCSVJetTags:probbb"));
+                    else if (cTag_ == "pfDeepJet") cvsb_value = calculate_CvsB(thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probc"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probb"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb"));
+                    else  cvsb_value = thejet->bDiscriminator( cTag_ );
+                    cvsb_scores.push_back(cvsb_value);
 
                     if (useLargeMVAs) {
                       float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
@@ -1906,6 +1946,16 @@ namespace flashgg {
                   chi2_3x3_tqh_eta_             = is_moreThanThreeJets_and_atLeastOneBjet ? chi2_3x3_tqh.Eta()                              : -999;
                   chi2_3x3_tqh_deltaR_tbw_      = is_moreThanThreeJets_and_atLeastOneBjet ? chi2_3x3_tqh.DeltaR(chi2_3x3_tbw)               : -999;
                   chi2_3x3_tqh_deltaR_dipho_    = is_moreThanThreeJets_and_atLeastOneBjet ? chi2_3x3_tqh.DeltaR(diphoton)                   : -999;
+
+                  chi2_bjet_CvsL_  = is_moreThanTwoJets_and_atLeastOneBjet   ? cvsl_scores[index_jet_chi2_modified[0]] : -999;
+                  chi2_wjet1_CvsL_ = is_moreThanTwoJets_and_atLeastOneBjet   ? cvsl_scores[index_jet_chi2_modified[1]] : -999;
+                  chi2_wjet2_CvsL_ = is_moreThanTwoJets_and_atLeastOneBjet   ? cvsl_scores[index_jet_chi2_modified[2]] : -999;
+                  chi2_qjet_CvsL_  = is_moreThanThreeJets_and_atLeastOneBjet ? cvsl_scores[index_jet_chi2_modified[3]] : -999;
+
+                  chi2_bjet_CvsB_  = is_moreThanTwoJets_and_atLeastOneBjet   ? cvsb_scores[index_jet_chi2_modified[0]] : -999;
+                  chi2_wjet1_CvsB_ = is_moreThanTwoJets_and_atLeastOneBjet   ? cvsb_scores[index_jet_chi2_modified[1]] : -999;
+                  chi2_wjet2_CvsB_ = is_moreThanTwoJets_and_atLeastOneBjet   ? cvsb_scores[index_jet_chi2_modified[2]] : -999;
+                  chi2_qjet_CvsB_  = is_moreThanThreeJets_and_atLeastOneBjet ? cvsb_scores[index_jet_chi2_modified[3]] : -999;
                   //------------------------------//
 
                   calculate_masses(JetVect, dipho, m_ggj_, m_jjj_);

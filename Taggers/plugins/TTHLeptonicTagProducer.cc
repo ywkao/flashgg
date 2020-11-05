@@ -167,6 +167,7 @@ namespace flashgg {
         double leadingJetPtThreshold_;
         vector<double> bDiscriminator_;
         string bTag_;
+        string cTag_;
         double PhoMVAThreshold_;
         double tthVstHThreshold_;
 
@@ -266,6 +267,10 @@ namespace flashgg {
         float chi2_tqh_eta_;
         float chi2_tqh_deltaR_tbw_;
         float chi2_tqh_deltaR_dipho_;
+        float chi2_bjet_CvsL_;
+        float chi2_qjet_CvsL_;
+        float chi2_bjet_CvsB_;
+        float chi2_qjet_CvsB_;
         //------------------------------//
 
 
@@ -584,6 +589,7 @@ namespace flashgg {
 
         bDiscriminator_ = iConfig.getParameter<vector<double > >( "bDiscriminator");
         bTag_ = iConfig.getParameter<string>( "bTag");
+        cTag_ = iConfig.getParameter<string>( "cTag");
 
         UseCutBasedDiphoId_ = iConfig.getParameter<bool>( "UseCutBasedDiphoId" );
         debug_ = iConfig.getParameter<bool>( "debug" );
@@ -1370,6 +1376,8 @@ namespace flashgg {
 
                 std::vector<TLorentzVector> jets;
                 std::vector<double> btag_scores;
+                std::vector<double> cvsl_scores;
+                std::vector<double> cvsb_scores;
                 for( unsigned int jetIndex = 0; jetIndex < Jets[jetCollectionIndex]->size() ; jetIndex++ )
                 {
                     edm::Ptr<flashgg::Jet> thejet = Jets[jetCollectionIndex]->ptrAt( jetIndex );
@@ -1436,6 +1444,18 @@ namespace flashgg {
                         if( bDiscriminatorValue > bDiscriminator_[1] )
                             tagBJets.push_back( thejet );
 
+                        float cvsl_value = -2;
+                        if(cTag_ == "pfDeepCSV") cvsl_value = calculate_CvsL(thejet->bDiscriminator("pfDeepCSVJetTags:probc"), thejet->bDiscriminator("pfDeepCSVJetTags:probudsg"));
+                        else if (cTag_ == "pfDeepJet") cvsl_value = calculate_CvsL(thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probc"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probuds") + thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probg"));
+                        else  cvsl_value = thejet->bDiscriminator( cTag_ );
+                        cvsl_scores.push_back(cvsl_value);
+    
+                        float cvsb_value = -2;
+                        if(cTag_ == "pfDeepCSV") cvsb_value = calculate_CvsB(thejet->bDiscriminator("pfDeepCSVJetTags:probc"), thejet->bDiscriminator("pfDeepCSVJetTags:probb"), thejet->bDiscriminator("pfDeepCSVJetTags:probbb"));
+                        else if (cTag_ == "pfDeepJet") cvsb_value = calculate_CvsB(thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probc"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probb"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb"));
+                        else  cvsb_value = thejet->bDiscriminator( cTag_ );
+                        cvsb_scores.push_back(cvsb_value);
+    
                         float bDisc_topTagger = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb");                    
                         if (useLargeMVAs) {
                           float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
@@ -1735,18 +1755,22 @@ namespace flashgg {
                 TLorentzVector chi2_tqh  = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet + diphoton           : _nothing_;
                 // variables
                 chi2_neutrino_pz_        = neutrino_pz;
-                chi2_tbw_mass_           = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.M()                       : -999.;
-                chi2_tbw_pt_             = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.Pt()                      : -999.;
-                chi2_tbw_eta_            = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.Eta()                     : -999.;
-                chi2_tbw_deltaR_dipho_   = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.DeltaR(diphoton)          : -999.;
-                chi2_qjet_pt_            = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet.Pt()                 : -999.;
-                chi2_qjet_eta_           = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet.Eta()                : -999.;
-                chi2_qjet_btag_          = is_moreThanTwoJets_and_atLeastOneBjet ? btag_scores[index_q]               : -999.;
-                chi2_qjet_deltaR_dipho_  = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet.DeltaR(diphoton)     : -999.;
+                chi2_tbw_mass_           = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.M()               : -999.;
+                chi2_tbw_pt_             = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.Pt()              : -999.;
+                chi2_tbw_eta_            = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.Eta()             : -999.;
+                chi2_tbw_deltaR_dipho_   = is_moreThanOneJets_and_atLeastOneBjet ? reco_tbw.DeltaR(diphoton)  : -999.;
+                chi2_qjet_pt_            = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet.Pt()             : -999.;
+                chi2_qjet_eta_           = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet.Eta()            : -999.;
+                chi2_qjet_btag_          = is_moreThanTwoJets_and_atLeastOneBjet ? btag_scores[index_q]       : -999.;
+                chi2_qjet_deltaR_dipho_  = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_qjet.DeltaR(diphoton) : -999.;
                 chi2_tqh_ptOverM_        = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.Pt()/chi2_tqh.M() : -999.;
-                chi2_tqh_eta_            = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.Eta()                 : -999.;
-                chi2_tqh_deltaR_tbw_     = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.DeltaR(reco_tbw)      : -999.;
-                chi2_tqh_deltaR_dipho_   = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.DeltaR(diphoton)      : -999.;
+                chi2_tqh_eta_            = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.Eta()             : -999.;
+                chi2_tqh_deltaR_tbw_     = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.DeltaR(reco_tbw)  : -999.;
+                chi2_tqh_deltaR_dipho_   = is_moreThanTwoJets_and_atLeastOneBjet ? chi2_tqh.DeltaR(diphoton)  : -999.;
+                chi2_bjet_CvsL_   = is_moreThanTwoJets_and_atLeastOneBjet ? cvsl_scores[index_bjet]           : -999.;
+                chi2_qjet_CvsL_   = is_moreThanTwoJets_and_atLeastOneBjet ? cvsl_scores[index_q]              : -999.;
+                chi2_bjet_CvsB_   = is_moreThanTwoJets_and_atLeastOneBjet ? cvsb_scores[index_bjet]           : -999.;
+                chi2_qjet_CvsB_   = is_moreThanTwoJets_and_atLeastOneBjet ? cvsb_scores[index_q]              : -999.;
                 //------------------------------//
 
 

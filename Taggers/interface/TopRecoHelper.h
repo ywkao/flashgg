@@ -246,5 +246,16 @@ inline vector<int> get_bjjq_indices_min_chi2(std::vector<TLorentzVector> Jets, s
     indices.push_back(index_q);
     return indices;
 }
+inline double calculate_CvsL(double c_disciminant, double udsg_discriminant)
+{
+    double CvsL = c_disciminant / (c_disciminant + udsg_discriminant);
+    return CvsL;
+}
+
+inline double calculate_CvsB(double c_disciminant, double b_discriminant, double bb_discriminant)
+{
+    double CvsB = c_disciminant / (c_disciminant + b_discriminant + bb_discriminant);
+    return CvsB;
+}
 
 #endif
