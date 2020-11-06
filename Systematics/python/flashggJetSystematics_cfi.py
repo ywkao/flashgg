@@ -219,8 +219,8 @@ class jetSystematicsCustomize:
                                         NSigmas = cms.vint32(-1,1),
                                         OverallRange = cms.string("pt>25.0&&abs(eta)<" + str(eta)),
                                         BinList = getattr(self, self.metaConditions['bTagSystematics']['bTagEffBins']),
-                                        cTag = cms.string(str(cTagger)), 
-                                        cTagCalibrationFile = cms.FileInPath(str(self.metaConditions['cTagSystematics']['cTagCalibrationFile_Reshape_'+ str(cTagger)])),
+                                        cTag = cms.string(str(self.metaConditions['cTagSystematics']['cTagger'])), 
+                                        cTagCalibrationFile = cms.FileInPath(str(self.metaConditions['cTagSystematics']['cTagCalibrationFile_Reshape_'+ str(self.metaConditions['cTagSystematics']['cTagger'])])),
                                         cTagReshapeSystOption = cms.int32(1),#For changing the source of uncertainty
                                         Debug = cms.untracked.bool(False),
                                         isApply = cms.bool(self.metaConditions['cTagSystematics']['isApply']),
