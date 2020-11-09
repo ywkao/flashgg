@@ -12,9 +12,10 @@
 
 class retrieve_scale_factor{
     public:
-        retrieve_scale_factor(std::string);
+        retrieve_scale_factor();
         ~retrieve_scale_factor();
 
+        void set_ctag_reshape_file(std::string path);
         void set_type_sys_uncertainty(TString);
         void set_cvsl_cvsb(double, double);
         void find_bin();

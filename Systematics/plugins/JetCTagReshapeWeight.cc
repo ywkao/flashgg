@@ -27,6 +27,7 @@ namespace flashgg {
         bool isApply_;
         int cTagReshapeSystOption_;
         std::string cTagReshapeFile_;
+        retrieve_scale_factor sf_retriever;
     };
 
     JetCTagReshapeWeight::JetCTagReshapeWeight( const edm::ParameterSet &conf, edm::ConsumesCollector && iC, const GlobalVariablesComputer * gv ) : 
@@ -39,6 +40,7 @@ namespace flashgg {
         this->setMakesWeight( true );
         cTagReshapeSystOption_ = conf.getParameter<int>( "cTagReshapeSystOption"); 
         cTagReshapeFile_ = conf.getParameter<edm::FileInPath>("cTagCalibrationFile").fullPath();
+        sf_retriever.set_ctag_reshape_file(cTagReshapeFile_);
     }
 
     std::string JetCTagReshapeWeight::shiftLabel( int syst_value ) const
@@ -111,9 +113,6 @@ namespace flashgg {
 
                 TString string_scale_factor     = "SF" + type_flavour + "_" + "hist";
                 TString string_scale_factor_sys = "SF" + type_flavour + "_" + "hist" + "_" + type_uncertainty[cTagReshapeSystOption_];
-
-                retrieve_scale_factor sf_retriever(cTagReshapeFile_);
-                //sf_retriever.debug_mode();
 
                 jet_scalefactor = sf_retriever.get_scale_factor(string_scale_factor, cvsl, cvsb);
                 jet_scalefactor_up = sf_retriever.get_scale_factor(string_scale_factor_sys + "Up", cvsl, cvsb); 

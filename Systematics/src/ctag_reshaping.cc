@@ -1,16 +1,22 @@
 #include "flashgg/Systematics/interface/ctag_reshaping.h"
 
-retrieve_scale_factor::retrieve_scale_factor(std::string path)
+retrieve_scale_factor::retrieve_scale_factor()
 {
     debug_ = false;
-    file = TFile::Open(path.c_str());
-    //printf("[check] retrieve_scale_factor::retrieve_scale_factor\n");
+    if(debug_) std::cout << "This is the end of constructor" << std::endl;
 }
 
 retrieve_scale_factor::~retrieve_scale_factor()
 {
+    delete h;
     file->Close();
     if(debug_) std::cout << "This is the end of destructor" << std::endl;
+}
+
+void retrieve_scale_factor::set_ctag_reshape_file(std::string path)
+{
+    file = TFile::Open(path.c_str());
+    printf("[check] sf file: %s\n", path.c_str());
 }
 
 void retrieve_scale_factor::set_type_sys_uncertainty(TString input)
