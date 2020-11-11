@@ -16,23 +16,18 @@ class retrieve_scale_factor{
         ~retrieve_scale_factor();
 
         void set_ctag_reshape_file(std::string path);
-        void set_type_sys_uncertainty(TString);
-        void set_cvsl_cvsb(double, double);
-        void find_bin();
+        void register_hists();
+        int get_token(TString);
         double get_scale_factor(TString, double, double);
         void debug_mode();
 
     private:
 
         TFile *file;
-        TH2D *h;
+        TH2D *h_register[87]; // (1 central + 14 sys. sources * 2 up/donw) *3 flavors = 87
         int bin_cvsl;
         int bin_cvsb;
         double scale_factor;
-
-        TString type_sys_uncertainty;
-        double cvsl;
-        double cvsb;
 
         bool debug_;
 };
