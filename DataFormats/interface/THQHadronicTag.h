@@ -32,10 +32,13 @@ namespace flashgg {
 
         const std::vector<edm::Ptr<reco::Vertex> > vertices() const { return vertices_;}
         const std::vector<edm::Ptr<Muon> > muons() const { return Muons_;}
-        const std::vector<edm::Ptr<flashgg::Electron> > electrons() const {return Electrons_;}
+        const std::vector<edm::Ptr<flashgg::Electron> > electrons() const { return Electrons_;}
         const std::vector<edm::Ptr<Jet> > jets() const { return Jets_;}
         const std::vector<edm::Ptr<Jet> > Jets_EtaSorted() const { return Jets_EtaSorted_;}
         const std::vector<edm::Ptr<Jet> > bJets() const { return BJets_;}
+        const std::vector<int > getMatchedPdgId() const { return jets_matched_pdgId_;}
+        const std::vector<int > getMatchedIndex() const { return jets_matched_index_;}
+        const std::vector<double > getMatchedDeltaR() const { return jets_matched_deltaR_;}
         const std::vector<edm::Ptr<Jet> > centralJet() const { return CentralJet_ ;}
         const std::vector<edm::Ptr<Jet> > forwardJet() const { return ForwardJet_ ;}
 
@@ -354,6 +357,10 @@ namespace flashgg {
             Jets_EtaSorted_ = Jets_Eta;
         }
         void setBJets( std::vector<edm::Ptr<Jet> > BJets )  { BJets_ = BJets;}
+        void setMatchedPdgId( std::vector<int > jets_matched_pdgId ) { jets_matched_pdgId_ = jets_matched_pdgId;}
+        void setMatchedIndex( std::vector<int > jets_matched_index ) { jets_matched_index_ = jets_matched_index;}
+        void setMatchedDeltaR( std::vector<double > jets_matched_deltaR ) { jets_matched_deltaR_ = jets_matched_deltaR;}
+
 //----------------------------------------------------------------------------
         void setcentraljet( std::vector<edm::Ptr<Jet> > CentralJet ) { CentralJet_ = CentralJet ;}
         void setforwardjet( std::vector<edm::Ptr<Jet> > ForwardJet ) { ForwardJet_ = ForwardJet ;}
@@ -552,6 +559,9 @@ namespace flashgg {
         std::vector<edm::Ptr<Jet> > Jets_;
         std::vector<edm::Ptr<Jet> > Jets_EtaSorted_;
         std::vector<edm::Ptr<Jet> > BJets_;
+        std::vector<int > jets_matched_pdgId_;
+        std::vector<int > jets_matched_index_;
+        std::vector<double > jets_matched_deltaR_;
         std::vector<edm::Ptr<Jet> > CentralJet_;
         std::vector<edm::Ptr<Jet> > ForwardJet_;
         edm::Ptr<flashgg::Met> MET_;

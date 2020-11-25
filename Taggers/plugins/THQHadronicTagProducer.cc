@@ -68,6 +68,8 @@ private:
 //    int  chooseCategory( float, float);
     int  chooseCategory( float );
     void produce( Event &, const EventSetup & ) override;
+    static bool sortByValue(const std::pair<int, double> &, const std::pair<int, double> &);
+    std::vector<std::pair<int, double>> sortVector(const std::vector<double>);
 
     std::vector<edm::EDGetTokenT<View<flashgg::Jet> > > tokenJets_;
     EDGetTokenT<View<DiPhotonCandidate> > diPhotonToken_;
@@ -127,7 +129,8 @@ private:
     bool use_tthVstHBDT_;
 
     TLorentzVector G1, G2;  //temp solution: make met, bjet & jprime global TLorentzVectors
-//Variables for TMVA and Likelihood
+
+    //Variables for TMVA and Likelihood
     edm::Ptr<flashgg::Jet> fwdJet1;
     edm::Ptr<flashgg::Jet> bJet1;
     float lepton_ch_;
@@ -295,7 +298,6 @@ int THQHadronicTagProducer::chooseCategory( float mvavalue )
     }
     return -1;
 }
-
 /*int THQHadronicTagProducer::chooseCategory( float mvavalue1, float mvavalue2 )
     {
     int n;
@@ -306,10 +308,22 @@ int THQHadronicTagProducer::chooseCategory( float mvavalue )
      }
 */
 
+bool THQHadronicTagProducer::sortByValue(const std::pair<int, double> &pair1, const std::pair<int, double> &pair2)
+{
+    return fabs(pair1.second) < fabs(pair2.second);
+}
+
+std::vector<std::pair<int, double>> THQHadronicTagProducer::sortVector(const std::vector<double> v)
+{
+    std::vector<std::pair<int, double>> v2;
+    for(unsigned int i=0; i<v.size(); ++i)
+        v2.push_back( std::pair<int, double>(i, v[i]) );
+    std::sort(v2.begin(), v2.end(), sortByValue);
+    return v2;
+}
+
 void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 {
-    printf("[check] entering THQHadronicTagProducer::produce\n");
-
     JetCollectionVector Jets( inputTagJets_.size() );
     for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
         evt.getByToken( tokenJets_[j], Jets[j] );
@@ -563,6 +577,7 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             SelJetVect.push_back( thejet );
             SelJetVect_EtaSorted.push_back( thejet );
             SelJetVect_PtSorted.push_back( thejet );
+            bDiscr_jets.push_back( thejet->bDiscriminator("pfDeepCSVJetTags:probb") + thejet->bDiscriminator("pfDeepCSVJetTags:probbb") );
         }//end of jets loop
 
         //Calculate scalar sum of jets
@@ -583,7 +598,7 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 	    std::sort(bDiscr_bjets.begin(), bDiscr_bjets.end(), std::greater<float>());
 
         if(SelJetVect.size() < jetsNumberThreshold_ || BJetVect.size() < bjetsNumberThreshold_) continue;	
-        
+
         float bjet1_discr_=-999;
         float bjet2_discr_=-999;
         float bjet3_discr_=-999;
@@ -672,10 +687,10 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             fwdJet1_eta_ = SelJetVect_EtaSorted[0]->eta();
             fwdJet1_discr_= SelJetVect_EtaSorted[0]->bDiscriminator("pfDeepCSVJetTags:probb") + SelJetVect_EtaSorted[0]->bDiscriminator("pfDeepCSVJetTags:probbb");
         }
-        bDiscr_jets.push_back(jet1_discr_);
-        bDiscr_jets.push_back(jet2_discr_);
-        bDiscr_jets.push_back(jet3_discr_);
-        bDiscr_jets.push_back(jet4_discr_);
+        //bDiscr_jets.push_back(jet1_discr_);
+        //bDiscr_jets.push_back(jet2_discr_);
+        //bDiscr_jets.push_back(jet3_discr_);
+        //bDiscr_jets.push_back(jet4_discr_);
         bDiscr_fwdjets.push_back(fwdJet1_discr_ );
 
         dRbjetfwdjet_ = deltaR( b1.Eta() , b1.Phi() , fwdJet1->eta() , fwdJet1->phi() );
@@ -798,8 +813,64 @@ catnum = chooseCategory( idmva1, idmva2 );
                     thqhtags_obj.setMETPtEtaPhiE( "allNus", allnus_LorentzVector.Pt(), allnus_LorentzVector.Eta(), allnus_LorentzVector.Phi(), allnus_LorentzVector.Energy() );
                     thqhtags_obj.setMETPtEtaPhiE( "genMetTrue", theMET->genMET()->pt(), theMET->genMET()->eta(), theMET->genMET()->phi(), theMET->genMET()->energy() );
                     thqhtags_obj.setStage1recoTag( DiPhotonTagBase::stage1recoTag::RECO_THQ_LEP );
-                    thqhtags->push_back( thqhtags_obj );
+
+                    // MC truth matching
+                    std::vector<int> vec_pdgId_register;
+                    std::vector<int> vec_index_register;
+                    std::vector<double> vec_deltaR_register;
+                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+                        edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
+                        //printf("[check] ");
+                        //printf("status = %5d, ", part->status());
+                        //printf("pdgId = %5d, ", part->pdgId());
+                        //printf("pt = %7.3f, ", part->pt());
+                        //printf("eta = %7.3f, ", part->eta());
+                        //printf("\n");
+                        bool fid_cut = (abs(part->eta())<jetEtaThreshold_ && part->status()==23) ? 1 : 0; //23: outgoing particles
+                        bool isParton = (abs(part->pdgId()) < 6) ? 1 : 0;
+                        if (!fid_cut || !isParton) continue;
+
+                        std::vector<double> vec_deltaR;
+	                    for(unsigned int index = 0 ; index < SelJetVect_PtSorted.size(); index++){
+                            edm::Ptr<reco::Jet> jet = SelJetVect_PtSorted[index];
+                            double deltaR = sqrt( (jet->eta()-part->eta())*(jet->eta()-part->eta()) + (jet->phi()-part->phi())*(jet->phi()-part->phi()) );
+                            vec_deltaR.push_back(deltaR);
+                            //printf("(%d) deltaR = %f\n", index, deltaR);
+                        }
+                        std::vector<std::pair<int, double>> vec_deltaR_sorted = sortVector(vec_deltaR);
+                        if(vec_deltaR_sorted[0].second > 0.4) continue;
+                        vec_pdgId_register.push_back(part->pdgId());
+                        vec_index_register.push_back(vec_deltaR_sorted[0].first);
+                        vec_deltaR_register.push_back(vec_deltaR_sorted[0].second);
+                        //printf("part->pdgId() = %d\n", part->pdgId());
+                        //printf("vec_deltaR_sorted[0].first = %d\n", vec_deltaR_sorted[0].first);
+                        //printf("vec_deltaR_sorted[0].second = %.2f\n", vec_deltaR_sorted[0].second);
+                    }
+                    unsigned int register_size = vec_deltaR_register.size();
+                    int pdgId_jet0 = register_size > 0 ? vec_pdgId_register[0] : -1;
+                    int pdgId_jet1 = register_size > 1 ? vec_pdgId_register[1] : -1;
+                    int pdgId_jet2 = register_size > 2 ? vec_pdgId_register[2] : -1;
+                    int index_jet0 = register_size > 0 ? vec_index_register[0] : -1;
+                    int index_jet1 = register_size > 1 ? vec_index_register[1] : -1;
+                    int index_jet2 = register_size > 2 ? vec_index_register[2] : -1;
+                    double deltaR_jet0 = register_size > 0 ? vec_deltaR_register[0] : -1.;
+                    double deltaR_jet1 = register_size > 1 ? vec_deltaR_register[1] : -1.;
+                    double deltaR_jet2 = register_size > 2 ? vec_deltaR_register[2] : -1.;
+
+                    //printf("[check] vec_deltaR_register size = %lu\n", vec_deltaR_register.size());
+                    //printf("(jet0, jet1, jet2) = (%d, %d, %d)\n", index_jet0, index_jet1, index_jet2);
+                    //printf("(jet0, jet1, jet2) = (%d, %d, %d)\n", pdgId_jet0, pdgId_jet1, pdgId_jet2);
+                    //printf("(jet0, jet1, jet2) = (%.2f, %.2f, %.2f)\n", deltaR_jet0, deltaR_jet1, deltaR_jet2);
+                    //printf("\n");
+                    std::vector<int > jets_matched_pdgId = { pdgId_jet0, pdgId_jet1, pdgId_jet2 };
+                    std::vector<int > jets_matched_index = { index_jet0, index_jet1, index_jet2 };
+                    std::vector<double > jets_matched_deltaR = { deltaR_jet0, deltaR_jet1, deltaR_jet2 };
+                    thqhtags_obj.setMatchedPdgId( jets_matched_pdgId );
+                    thqhtags_obj.setMatchedIndex( jets_matched_index );
+                    thqhtags_obj.setMatchedDeltaR( jets_matched_deltaR );
                 }
+
+                thqhtags->push_back( thqhtags_obj );
 
                 if (evt.isRealData()) {
                     thqhtags_obj.setStage1recoTag( DiPhotonTagBase::stage1recoTag::RECO_THQ_LEP );
