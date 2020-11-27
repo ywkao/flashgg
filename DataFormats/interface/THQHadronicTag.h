@@ -39,6 +39,12 @@ namespace flashgg {
         const std::vector<int > getMatchedPdgId() const { return jets_matched_pdgId_;}
         const std::vector<int > getMatchedIndex() const { return jets_matched_index_;}
         const std::vector<double > getMatchedDeltaR() const { return jets_matched_deltaR_;}
+        const std::vector<int > get_gen_pdgId() const { return gen_pdgId_;}
+        const std::vector<int > get_gen_status() const { return gen_status_;}
+        const std::vector<double > get_gen_pt() const { return gen_pt_;}
+        const std::vector<double > get_gen_eta() const { return gen_eta_;}
+        const std::vector<double > get_gen_phi() const { return gen_phi_;}
+        const std::vector<double > get_gen_mass() const { return gen_mass_;}
         const std::vector<edm::Ptr<Jet> > centralJet() const { return CentralJet_ ;}
         const std::vector<edm::Ptr<Jet> > forwardJet() const { return ForwardJet_ ;}
 
@@ -360,6 +366,12 @@ namespace flashgg {
         void setMatchedPdgId( std::vector<int > jets_matched_pdgId ) { jets_matched_pdgId_ = jets_matched_pdgId;}
         void setMatchedIndex( std::vector<int > jets_matched_index ) { jets_matched_index_ = jets_matched_index;}
         void setMatchedDeltaR( std::vector<double > jets_matched_deltaR ) { jets_matched_deltaR_ = jets_matched_deltaR;}
+        void setGenPdgId( std::vector<int > gen_pdgId ) { gen_pdgId_ = gen_pdgId;}
+        void setGenStatus( std::vector<int > gen_status ) { gen_status_ = gen_status;}
+        void setGenPt( std::vector<double > gen_pt ) { gen_pt_ = gen_pt;}
+        void setGenEta( std::vector<double > gen_eta ) { gen_eta_ = gen_eta;}
+        void setGenPhi( std::vector<double > gen_phi ) { gen_phi_ = gen_phi;}
+        void setGenMass( std::vector<double > gen_mass ) { gen_mass_ = gen_mass;}
 
 //----------------------------------------------------------------------------
         void setcentraljet( std::vector<edm::Ptr<Jet> > CentralJet ) { CentralJet_ = CentralJet ;}
@@ -562,6 +574,12 @@ namespace flashgg {
         std::vector<int > jets_matched_pdgId_;
         std::vector<int > jets_matched_index_;
         std::vector<double > jets_matched_deltaR_;
+        std::vector<int > gen_pdgId_;
+        std::vector<int > gen_status_;
+        std::vector<double > gen_pt_;
+        std::vector<double > gen_eta_;
+        std::vector<double > gen_phi_;
+        std::vector<double > gen_mass_;
         std::vector<edm::Ptr<Jet> > CentralJet_;
         std::vector<edm::Ptr<Jet> > ForwardJet_;
         edm::Ptr<flashgg::Met> MET_;

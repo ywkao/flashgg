@@ -818,6 +818,12 @@ catnum = chooseCategory( idmva1, idmva2 );
                     std::vector<int> vec_pdgId_register;
                     std::vector<int> vec_index_register;
                     std::vector<double> vec_deltaR_register;
+                    std::vector<int> gens_pdgId;
+                    std::vector<int> gens_status;
+                    std::vector<double> gens_pt;
+                    std::vector<double> gens_eta;
+                    std::vector<double> gens_phi;
+                    std::vector<double> gens_mass;
                     for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
                         edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
                         //printf("[check] ");
@@ -830,12 +836,20 @@ catnum = chooseCategory( idmva1, idmva2 );
                         bool isParton = (abs(part->pdgId()) < 6) ? 1 : 0;
                         if (!fid_cut || !isParton) continue;
 
+                        // store gen parton kinematic info
+                        gens_pdgId.push_back(part->pdgId());
+                        gens_status.push_back(part->status());
+                        gens_pt.push_back(part->pt());
+                        gens_eta.push_back(part->eta());
+                        gens_phi.push_back(part->phi());
+                        gens_mass.push_back(part->mass());
+
+                        // gen matching
                         std::vector<double> vec_deltaR;
 	                    for(unsigned int index = 0 ; index < SelJetVect_PtSorted.size(); index++){
                             edm::Ptr<reco::Jet> jet = SelJetVect_PtSorted[index];
                             double deltaR = sqrt( (jet->eta()-part->eta())*(jet->eta()-part->eta()) + (jet->phi()-part->phi())*(jet->phi()-part->phi()) );
                             vec_deltaR.push_back(deltaR);
-                            //printf("(%d) deltaR = %f\n", index, deltaR);
                         }
                         std::vector<std::pair<int, double>> vec_deltaR_sorted = sortVector(vec_deltaR);
                         if(vec_deltaR_sorted[0].second > 0.4) continue;
@@ -868,6 +882,12 @@ catnum = chooseCategory( idmva1, idmva2 );
                     thqhtags_obj.setMatchedPdgId( jets_matched_pdgId );
                     thqhtags_obj.setMatchedIndex( jets_matched_index );
                     thqhtags_obj.setMatchedDeltaR( jets_matched_deltaR );
+                    thqhtags_obj.setGenPdgId( gens_pdgId );
+                    thqhtags_obj.setGenStatus( gens_status );
+                    thqhtags_obj.setGenPt( gens_pt );
+                    thqhtags_obj.setGenEta( gens_eta );
+                    thqhtags_obj.setGenPhi( gens_phi );
+                    thqhtags_obj.setGenMass( gens_mass );
                 }
 
                 thqhtags->push_back( thqhtags_obj );
