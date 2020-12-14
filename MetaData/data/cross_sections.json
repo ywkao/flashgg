@@ -333,6 +333,19 @@
     "ZZ_TuneCUETP8M1_13TeV-pythia8"                                        : { "xs" : 10.16  },
     "WW_TuneCP5_13TeV-pythia8"                                             : { "xs" : 75.8   },
     "WZ_TuneCP5_13TeV-pythia8"                                             : { "xs" : 27.6   },
-    "ZZ_TuneCP5_13TeV-pythia8"                                             : { "xs" : 12.14  }
+    "ZZ_TuneCP5_13TeV-pythia8"                                             : { "xs" : 12.14  },
 
+    "TprimeBToTH_M-700_LH_TuneCP5_13TeV-madgraph-pythia8"                  : { "xs" : 1.0 },
+    "TprimeBToTH_M-700_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"        : { "xs" : 1.0 },
+    "TprimeBToTH_M-700_LH_TuneCUETP8M1_13TeV-madgraph-pythia8"             : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-600_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-625_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-650_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-675_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-700_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-800_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-900_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-1000_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"   : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-1100_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"   : { "xs" : 1.0 },
+    "TprimeBToTH_Hgg_M-1200_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"   : { "xs" : 1.0 }
 }

@@ -43,7 +43,7 @@ customize.options.register('doubleHTagsOnly',
                            'doubleHTagsOnly'
                            )
 customize.options.register('addVBFDoubleHTag',
-                           True,
+                           False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'addVBFDoubleHTag'
@@ -133,7 +133,7 @@ customize.options.register('acceptance',
                            'acceptance'
                            )
 customize.options.register('doSystematics',
-                           True,
+                           False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'doSystematics'
@@ -145,7 +145,7 @@ customize.options.register('doGranularJEC',
                            'doGranularJEC'
                            )
 customize.options.register('doPdfWeights',
-                           True,
+                           False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'doPdfWeights'
@@ -157,13 +157,13 @@ customize.options.register('ignoreNegR9',
                            'ignoreNegR9'
                            )
 customize.options.register('dumpTrees',
-                           False,
+                           True,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'dumpTrees'
                            )
 customize.options.register('dumpWorkspace',
-                           True,
+                           False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'dumpWorkspace'
@@ -187,7 +187,7 @@ customize.options.register('analysisType',
                            'analysisType'
                            )
 customize.options.register('applyNNLOPSweight',
-                           True,
+                           False,
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.bool,
                            'applyNNLOPSweight'
@@ -251,6 +251,7 @@ if customize.tthTagsOnly:
     process.flashggTagSequence.remove(process.flashggTTHLeptonicTag)
     process.flashggTagSequence.remove(process.flashggTTHDiLeptonTag)
     process.flashggTagSequence.remove(process.flashggTHQLeptonicTag)
+    process.flashggTagSequence.remove(process.flashggTHQHadronicTag)
 
 else:
     if not customize.doSystematics: # allow memory-intensive ttH MVAs if we are not running systematics
@@ -270,6 +271,7 @@ if customize.doStageOne:
     systematicVariables = soc.systematicVariables()
 
 process.flashggTHQLeptonicTag.processId = cms.string(str(customize.processId))
+process.flashggTHQHadronicTag.processId = cms.string(str(customize.processId))
 
 print 'here we print the tag sequence after'
 print process.flashggTagSequence
@@ -421,7 +423,8 @@ process.source = cms.Source ("PoolSource",
                                  #"/store/user/spigazzi/flashgg/Era2016_RR-17Jul2018_v2/legacyRun2FullV1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/Era2016_RR-17Jul2018_v2-legacyRun2FullV1-v0-RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/190708_140500/0000/myMicroAODOutputFile_12.root"
                                  #"/store/user/spigazzi/flashgg/Era2017_RR-31Mar2018_v2/legacyRun2FullV1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/Era2017_RR-31Mar2018_v2-legacyRun2FullV1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190703_101705/0000/myMicroAODOutputFile_45.root"
                                  #"/store/user/spigazzi/flashgg/Era2018_RR-17Sep2018_v2/legacyRun2FullV2/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/Era2018_RR-17Sep2018_v2-legacyRun2FullV2-v0-RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190710_093150/0000/myMicroAODOutputFile_41.root"
-                                 "/store/user/spigazzi/flashgg/Era2018_RR-17Sep2018_v2/legacyRun2FullV2/EGamma/Era2018_RR-17Sep2018_v2-legacyRun2FullV2-v0-Run2018A-17Sep2018-v2/190610_103420/0001/myMicroAODOutputFile_1125.root"
+                                 #"/store/user/spigazzi/flashgg/Era2018_RR-17Sep2018_v2/legacyRun2FullV2/EGamma/Era2018_RR-17Sep2018_v2-legacyRun2FullV2-v0-Run2018A-17Sep2018-v2/190610_103420/0001/myMicroAODOutputFile_1125.root"
+                                 "/store/user/lata/Era2016_RR-17Jul2018/v2_p12/TprimeBToTH_Hgg_M-650_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8/Era2016_RR-17Jul2018-v2_p12-v0-RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/201104_194030/0000/myMicroAODOutputFile_9.root"
                              ))
 
 process.TFileService = cms.Service("TFileService",
@@ -433,8 +436,8 @@ from flashgg.Taggers.TagsDumperCustomize import customizeTagsDumper
 customizeTagsDumper(process, customize) ## move all the default tags dumper configuration to this function
 
 if customize.processId == "tHq":
-    import flashgg.Taggers.THQLeptonicTagVariables as var
-    variablesToUse = minimalVariables + var.vtx_variables + var.dipho_variables
+    import flashgg.Taggers.THQHadronicTagVariables as var
+    variablesToUse = minimalVariables + var.vtx_variables + var.dipho_variables + var.photon_variables + var.lepton_variables + var.jet_variables + var.truth_variables
 
 #tagList=[
 #["UntaggedTag",4],
@@ -464,17 +467,18 @@ elif customize.doStageOne:
     tagList = soc.tagList
 else:
     tagList=[
-        ["NoTag",0],
-        ["UntaggedTag",4],
-        ["VBFTag",3],
-        ["ZHLeptonicTag",2],
-        ["WHLeptonicTag",6],
-        ["VHMetTag",2],
-        ["VHHadronicTag",0],
-        ["TTHHadronicTag",4],
-        ["TTHLeptonicTag",4],
-        ["THQLeptonicTag",0],
-        ["TTHDiLeptonTag",0]
+        #["NoTag",0],
+        #["UntaggedTag",4],
+        #["VBFTag",3],
+        #["ZHLeptonicTag",2],
+        #["WHLeptonicTag",6],
+        #["VHMetTag",2],
+        #["VHHadronicTag",0],
+        #["TTHHadronicTag",4],
+        #["TTHLeptonicTag",4],
+        #["THQLeptonicTag",0],
+	    ["THQHadronicTag",0]
+        #["TTHDiLeptonTag",0]
         ]
 
 definedSysts=set()
