@@ -213,7 +213,7 @@ if not ISDATA:
             #variablesToUse.append("JetCTagReshapeWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetCTagReshapeWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("genTopPtReweight%s01sigma[1,-999999.,999999.] := weight(\"genTopPtReweight%s01sigma\")" % (direction,direction))
             if applyL1Prefiring:
-                variablesToUse.append("prefireProbability := weight(\"prefireProbability\")")
+                variablesToUse.append("prefireWeight%s01sigma[1,-999999.,999999.] := weight(\"prefireWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("weight_JetBTagWeight:=getObjectWeight(\"JetBTagReshapeWeightCentral\")")
             #variablesToUse.append("weight_JetCTagWeight:=getObjectWeight(\"JetCTagReshapeWeightCentral\")")
             for r9 in ["HighR9","LowR9"]:

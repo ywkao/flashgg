@@ -61,13 +61,13 @@ namespace flashgg {
 
         isRelevant_ = iConfig.getParameter<bool>("isRelevant"); // used to skip all this for 2018
 
-        if (isRelevant_) { 
+        if (isRelevant_) {
             applyToCentral_ = iConfig.getParameter<bool>("applyToCentral");
 
             photonFileName_ = iConfig.getParameter<edm::FileInPath>( "photonFileName" );
             TFile* photonFile = TFile::Open(photonFileName_.fullPath().c_str());
             photonHistName_ = iConfig.getUntrackedParameter<std::string>("photonHistName");
-            photonHist_ = (TH2F*)((TH2F*) photonFile->Get(photonHistName_.c_str()))->Clone(); 
+            photonHist_ = (TH2F*)((TH2F*) photonFile->Get(photonHistName_.c_str()))->Clone();
             photonFile->Close();
             delete photonFile;
 
@@ -149,14 +149,22 @@ namespace flashgg {
             double prefireProbabilityUnc = std::max(0.2 * prefireProbability, prefireProdUnc);
 
             flashgg::DiPhotonCandidate *updatedDipho = dipho->clone();
-            updatedDipho->setWeight("prefireProbability", prefireProbability);
+            //updatedDipho->setWeight("prefireProbability", prefireProbability);
+            WeightedObject prefireObject;
             if (applyToCentral_) {
-                double newCentralWeight = updatedDipho->centralWeight() * (1. - prefireProbability);
-                updatedDipho->setCentralWeight( newCentralWeight );
+                prefireObject.setCentralWeight( (1. - prefireProbability) );
+                prefireObject.setWeight("prefireWeightUp01sigma",   std::min(1.,  1. - prefireProbability + prefireProbabilityUnc));
+                prefireObject.setWeight("prefireWeightDown01sigma", std::max(0.,  1. - prefireProbability - prefireProbabilityUnc));
+                updatedDipho->includeWeights(prefireObject);                 
+
+            }
+            else {
+                prefireObject.setWeight("prefireWeight", (1. - prefireProbability) );
+                prefireObject.setWeight("prefireWeightUp01sigma",   std::min(1.,  1. - prefireProbability + prefireProbabilityUnc));
+                prefireObject.setWeight("prefireWeightDown01sigma", std::max(0.,  1. - prefireProbability - prefireProbabilityUnc));
+                updatedDipho->includeWeights(prefireObject);
             }
 
-            updatedDipho->setWeight("prefireProbabilityUp01sigma", prefireProbability + prefireProbabilityUnc);
-            updatedDipho->setWeight("prefireProbabilityDown01sigma", std::max(0., prefireProbability - prefireProbabilityUnc));
 
             updatedDiphotons->push_back(*updatedDipho);
             delete updatedDipho;
