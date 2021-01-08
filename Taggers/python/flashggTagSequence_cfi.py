@@ -4,6 +4,7 @@ from flashgg.Taggers.flashggDiPhotonMVA_cfi import flashggDiPhotonMVA
 from flashgg.Taggers.flashggVBFMVA_cff import flashggVBFMVA,flashggVBFDiPhoDiJetMVA
 from flashgg.Taggers.flashggVHhadMVA_cff import flashggVHhadMVA
 from flashgg.Taggers.flashggPrefireDiPhotons_cff import flashggPrefireDiPhotons
+from flashgg.Taggers.flashggGenTopPtReweightDiPhotons_cff import flashggGenTopPtReweightDiPhotons
 from flashgg.Taggers.flashggTags_cff import *
 from flashgg.Taggers.flashggPreselectedDiPhotons_cfi import flashggPreselectedDiPhotons
 from flashgg.Taggers.flashggTagSorter_cfi import flashggTagSorter
@@ -29,6 +30,7 @@ def flashggPrepareTagSequence(process, options):
     flashggTHQLeptonicTag.MVAThreshold_thq = cms.double(options['THQLeptonicTag']['MVAThreshold_VsttH'])
 
     flashggTagSequence = cms.Sequence(flashggDifferentialPhoIdInputsCorrection
+                                      * flashggGenTopPtReweightDiPhotons
                                       * flashggPrefireDiPhotons
                                       * flashggPreselectedDiPhotons
                                       * flashggDiPhotonMVA

@@ -110,6 +110,15 @@ customize.processId = processId
 customize.doSystematics = doSystematics
 customize.doGranularJEC = False
 
+def applyGenTopPtReweight(filenames):
+    if "TT_FCNC" in filenames[0] or "TT_T2HJ_HAD" in filenames[0] or "TT_aT2HJ_HAD" in filenames[0]:
+        return [True, True] # LO -> NLO, NLO -> NNLO
+    elif "TTGG" in filenames[0] or "TTGJets" in filenames[0] or "TTJets" in filenames[0]:
+        return [False, True] # LO -> NLO, NLO -> NNLO
+    else:
+        return [False, False]
+
+customize.doGenTopPtReweighting = applyGenTopPtReweight(file_names)
 
 jetSystematicsInputTags = createStandardSystematicsProducers(process , customize)
 modifyTagSequenceForSystematics(process,jetSystematicsInputTags)
@@ -119,6 +128,7 @@ process.load("flashgg/MicroAOD/flashggDiPhotons_cfi")
 process.flashggDiPhotons.whichVertex = cms.uint32(0)
 process.flashggDiPhotons.useZerothVertexFromMicro = cms.bool(True)
 
+applyGenTopPtReweight = customizeForGenTopPtReweight(process, customize.doGenTopPtReweighting)
 applyL1Prefiring = customizeForL1Prefiring(process, customize.metaConditions, customize.processId)
 
 # Remove unneeded tags
@@ -201,6 +211,7 @@ if not ISDATA:
             variablesToUse.append("JetBTagCutWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetBTagCutWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("JetBTagReshapeWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetBTagReshapeWeight%s01sigma\")" % (direction,direction))
             #variablesToUse.append("JetCTagReshapeWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetCTagReshapeWeight%s01sigma\")" % (direction,direction))
+            variablesToUse.append("genTopPtReweight%s01sigma[1,-999999.,999999.] := weight(\"genTopPtReweight%s01sigma\")" % (direction,direction))
             if applyL1Prefiring:
                 variablesToUse.append("prefireProbability := weight(\"prefireProbability\")")
             variablesToUse.append("weight_JetBTagWeight:=getObjectWeight(\"JetBTagReshapeWeightCentral\")")
