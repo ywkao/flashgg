@@ -203,10 +203,25 @@
     "cTagSystematics" :
     {
         "cTagger" : "pfDeepJet",
-	    "cTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/sfs_rootfiles/DeepJet_ctagSF_MiniAOD94X_2017_pTincl-PUIDLoose-PRELIMINARY.root",
-        "isApply" : false,
-
-        "eta" : 2.5
+	    "cTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/sfs_rootfiles/DeepJet_ctagSF_MiniAOD94X_2017_pTincl_v2.root",
+        "isApply" : true,
+        "eta" : 2.5,
+        "listOfSources" : [
+                            "Stat",
+                            "EleIDSF",
+                            "LHEScaleWeight_muF",
+                            "LHEScaleWeight_muR",
+                            "MuIDSF",
+                            "PSWeightFSR",
+                            "PSWeightISR",
+                            "PUWeight",
+                            "XSec_DYJets",
+                            "XSec_ST",
+                            "XSec_WJets",
+                            "XSec_ttbar",
+                            "jer",
+                            "jesTotal"
+                          ]
     },
 
     "bTagSystematics" :
@@ -223,7 +238,7 @@
 	"bDiscriminatorValue_pfDeepJet" : 0.3033,
 	"bTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/DeepFlavour_94XSF_V2_B_F.csv",
 	"bTagCalibrationFile_WPCut_pfDeepJet" : "flashgg/Systematics/data/DeepFlavour_94XSF_WP_V2_B_F.csv",
-    "isApply" : true,
+    "isApply" : false,
 
 	"eta" : 2.5
     },

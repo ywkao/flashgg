@@ -15,7 +15,7 @@ retrieve_scale_factor::~retrieve_scale_factor()
 void retrieve_scale_factor::set_ctag_reshape_file(std::string path)
 {
     file = TFile::Open(path.c_str());
-    printf("[check] sf file: %s\n", path.c_str());
+    if(debug_) printf("[check] sf file: %s\n", path.c_str());
 
     register_hists();
 }
@@ -32,7 +32,7 @@ double retrieve_scale_factor::get_scale_factor(TString input, double cvsl, doubl
         if(debug_) printf("[check] cvsl = %.3f, cvsb = %.3f, sf = %.2f (%s)\n", cvsl, cvsb, scale_factor, input.Data());
         return scale_factor;
     } else {
-        printf("[WARNING] the input string does not match the registed SFs! return 1. (from retrieve_scale_factor::get_scale_factor) ");
+        printf("[WARNING] the input string, %s, does not match the registed SFs! return 1. (from retrieve_scale_factor::get_scale_factor)\n", input.Data());
         return 1.;
     }
 }
@@ -167,6 +167,20 @@ int retrieve_scale_factor::get_token(TString input_name)
     else if ( input_name == "SFl_hist_XSec_ttbarDown" ) return 84;
     else if ( input_name == "SFl_hist_jerDown" ) return 85;
     else if ( input_name == "SFl_hist_jesTotalDown" ) return 86;
+
+    // skip the minor sources of systematic uncertainties
+    //else if ( input_name == "SFb_hist_bFragUp" ) return 87;
+    //else if ( input_name == "SFb_hist_bFragDown" ) return 88;
+    //else if ( input_name == "SFc_hist_bFragUp" ) return 89;
+    //else if ( input_name == "SFc_hist_bFragDown" ) return 90;
+    //else if ( input_name == "SFl_hist_bFragUp" ) return 91;
+    //else if ( input_name == "SFl_hist_bFragDown" ) return 92;
+    //else if ( input_name == "SFb_hist_XSec_VVUp" ) return 93;
+    //else if ( input_name == "SFb_hist_XSec_VVDown" ) return 94;
+    //else if ( input_name == "SFc_hist_XSec_VVUp" ) return 95;
+    //else if ( input_name == "SFc_hist_XSec_VVDown" ) return 96;
+    //else if ( input_name == "SFl_hist_XSec_VVUp" ) return 97;
+    //else if ( input_name == "SFl_hist_XSec_VVDown" ) return 98;
 
     else return -1;
 }

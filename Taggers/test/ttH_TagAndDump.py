@@ -208,9 +208,11 @@ if not ISDATA:
             #variablesToUse.append("FracRVWeight%s01sigma[1,-999999.,999999.] := weight(\"FracRVWeight%s01sigma\")" % (direction,direction))
             #variablesToUse.append("FracRVNvtxWeight%s01sigma[1,-999999.,999999.] := weight(\"FracRVNvtxWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("ElectronWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"ElectronWeight%s01sigma\")" % (direction,direction))
-            variablesToUse.append("JetBTagCutWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetBTagCutWeight%s01sigma\")" % (direction,direction))
+            #variablesToUse.append("JetBTagCutWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetBTagCutWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("JetBTagReshapeWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetBTagReshapeWeight%s01sigma\")" % (direction,direction))
             #variablesToUse.append("JetCTagReshapeWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetCTagReshapeWeight%s01sigma\")" % (direction,direction))
+            for sourceName in customize.metaConditions['cTagSystematics']['listOfSources']:
+                variablesToUse.append("JetCTagReshapeWeight%s%s01sigma[1,-999999.,999999.] := weight(\"JetCTagReshapeWeight%s%s01sigma\")" % (str(sourceName),direction,str(sourceName),direction))
             variablesToUse.append("genTopPtReweight%s01sigma[1,-999999.,999999.] := weight(\"genTopPtReweight%s01sigma\")" % (direction,direction))
             if applyL1Prefiring:
                 variablesToUse.append("prefireWeight%s01sigma[1,-999999.,999999.] := weight(\"prefireWeight%s01sigma\")" % (direction,direction))
