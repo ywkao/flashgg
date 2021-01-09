@@ -147,8 +147,23 @@
         "cTagger" : "pfDeepJet",
 	    "cTagCalibrationFile_Reshape_pfDeepJet" : "flashgg/Systematics/data/sfs_rootfiles/DeepJet_ctagSF_MiniAOD102X_2018_pTincl.root",
         "isApply" : true,
-
-        "eta" : 2.5
+        "eta" : 2.5,
+        "listOfSources" : [
+                            "Stat",
+                            "EleIDSF",
+                            "LHEScaleWeight_muF",
+                            "LHEScaleWeight_muR",
+                            "MuIDSF",
+                            "PSWeightFSR",
+                            "PSWeightISR",
+                            "PUWeight",
+                            "XSec_DYJets",
+                            "XSec_ST",
+                            "XSec_WJets",
+                            "XSec_ttbar",
+                            "jer",
+                            "jesTotal"
+                          ]
     },
 
     "bTagSystematics" :

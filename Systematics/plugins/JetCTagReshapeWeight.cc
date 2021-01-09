@@ -25,7 +25,7 @@ namespace flashgg {
         bool debug_;
         std::string cTag_;
         bool isApply_;
-        int cTagReshapeSystOption_;
+        std::string cTagReshapeSystOption_;
         std::string cTagReshapeFile_;
         retrieve_scale_factor sf_retriever;
     };
@@ -38,7 +38,7 @@ namespace flashgg {
         isApply_( conf.getParameter<bool>("isApply") )
     {
         this->setMakesWeight( true );
-        cTagReshapeSystOption_ = conf.getParameter<int>( "cTagReshapeSystOption"); 
+        cTagReshapeSystOption_ = conf.getParameter<std::string>( "cTagReshapeSystOption"); 
         cTagReshapeFile_ = conf.getParameter<edm::FileInPath>("cTagCalibrationFile").fullPath();
         sf_retriever.set_ctag_reshape_file(cTagReshapeFile_);
     }
@@ -59,6 +59,7 @@ namespace flashgg {
     float JetCTagReshapeWeight::makeWeight( const flashgg::Jet &obj, int syst_shift ) 
     {
         if( this->debug_ ) {
+            sf_retriever.debug_mode();
             std::cout<<"In JetCTagReshapeProducer and syst_shift="<<  syst_shift <<std::endl;
         }
 
@@ -98,10 +99,6 @@ namespace flashgg {
                 if( cvsb < 0.0 ) cvsb = -0.05;
                 if( cvsb > 1.0 ) cvsb = 1.0;
 
-                //for the scale factor up / down variation : have to take each source one at a time
-                TString type_uncertainty[14] = {"Stat", "EleIDSF", "LHEScaleWeight_muF", "LHEScaleWeight_muR", "MuIDSF", "PSWeightFSR", "PSWeightISR",
-                                                "PUWeight", "XSec_DYJets", "XSec_ST", "XSec_WJets", "XSec_ttbar", "jer", "jesTotal"};
-
                 TString type_flavour;
                 if(JetFlav == 5){ // b jets
                     type_flavour = "b";
@@ -112,12 +109,12 @@ namespace flashgg {
                 }
 
                 TString string_scale_factor     = "SF" + type_flavour + "_" + "hist";
-                TString string_scale_factor_sys = "SF" + type_flavour + "_" + "hist" + "_" + type_uncertainty[cTagReshapeSystOption_];
+                TString string_scale_factor_sys = "SF" + type_flavour + "_" + "hist" + "_" + cTagReshapeSystOption_.c_str();
 
                 jet_scalefactor = sf_retriever.get_scale_factor(string_scale_factor, cvsl, cvsb);
                 jet_scalefactor_up = sf_retriever.get_scale_factor(string_scale_factor_sys + "Up", cvsl, cvsb); 
                 jet_scalefactor_do = sf_retriever.get_scale_factor(string_scale_factor_sys + "Down", cvsl, cvsb); 
-                if( this->debug_ )  { std::cout << " In JetCTagReshapeWeight Systematics : "<< type_uncertainty[cTagReshapeSystOption_] << " : "
+                if( this->debug_ )  { std::cout << " In JetCTagReshapeWeight Systematics : "<< cTagReshapeSystOption_ << " : "
                                                 << jet_scalefactor << " " << jet_scalefactor_up << " " << jet_scalefactor_do <<std::endl; }
                 
                 

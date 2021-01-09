@@ -414,6 +414,8 @@ if is_signal:
             variablesToUse.append("MuonIsoWeight%s01sigma[1,-999999.,999999.] := weight(\"Muon%sISOWeight%s01sigma\")" % (direction,str(customize.metaConditions['MUON_ISO']),direction))
             variablesToUse.append("JetBTagCutWeight%s01sigma[1,-999999.,999999.] := weight(\"JetBTagCutWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("JetBTagReshapeWeight%s01sigma[1,-999999.,999999.] := weight(\"JetBTagReshapeWeight%s01sigma\")" % (direction,direction))
+            for sourceName in customize.metaConditions['cTagSystematics']['listOfSources']:
+                variablesToUse.append("JetCTagReshapeWeight%s%s01sigma[1,-999999.,999999.] := weight(\"JetCTagReshapeWeight%s%s01sigma\")" % (str(sourceName),direction,str(sourceName),direction))
             if applyL1Prefiring:
                 variablesToUse.append("prefireProbability%s01sigma[1,-999999.,999999.] := weight(\"prefireProbability%s01sigma\")" % (direction,direction))
             variablesToUse.append("THU_ggH_Mu%s01sigma[1,-999999.,999999.] := getTheoryWeight(\"THU_ggH_Mu%s01sigma\")" % (direction,direction))
