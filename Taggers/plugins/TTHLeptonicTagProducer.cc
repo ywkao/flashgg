@@ -1458,13 +1458,13 @@ namespace flashgg {
     
                         float bDisc_topTagger = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb");                    
                         if (useLargeMVAs) {
-                          float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
-                          float cvsb = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
+                          //float cvsl = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probudsg") ;
+                          //float cvsb = thejet->bDiscriminator("pfDeepCSVJetTags:probc") + thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
                           float ptD = thejet->userFloat("ptD") ;
                           float axis1 = thejet->userFloat("axis1") ;
                           int mult = thejet->userFloat("totalMult") ;
 
-                          topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDisc_topTagger, cvsl, cvsb, ptD, axis1, mult);
+                          topTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue, cvsl_value, cvsb_value, ptD, axis1, mult);
                           fcncTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue);           
                         }
 
