@@ -176,7 +176,7 @@ class jetSystematicsCustomize:
                                           UseTextFile= cms.bool(False),
                                           TextFileName = cms.FileInPath(str(self.metaConditions['flashggJetSystematics']['textFileName'])),
                                           SourceName = cms.string("notused"),
-                                          JetCorrectorTag = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+                                         JetCorrectorTag = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
                                        ),
                                 cms.PSet( MethodName = cms.string("FlashggJetSmear"),
                                           Label = cms.string("JER"),
