@@ -80,7 +80,7 @@ namespace flashgg {
                 //float cvsl = obj.bDiscriminator("pfDeepCSVJetTags:probc") / (obj.bDiscriminator("pfDeepCSVJetTags:probc") + obj.bDiscriminator("pfDeepCSVJetTags:probudsg")) ;
                 //float cvsb = obj.bDiscriminator("pfDeepCSVJetTags:probc") / (obj.bDiscriminator("pfDeepCSVJetTags:probc") + obj.bDiscriminator("pfDeepCSVJetTags:probb") + obj.bDiscriminator("pfDeepCSVJetTags:probbb")) ;
                 float cvsl = obj.bDiscriminator("mini_pfDeepFlavourJetTags:probc") / (obj.bDiscriminator("mini_pfDeepFlavourJetTags:probc") + obj.bDiscriminator("mini_pfDeepFlavourJetTags:probuds") + obj.bDiscriminator("mini_pfDeepFlavourJetTags:probg")) ;
-                float cvsb = obj.bDiscriminator("mini_pfDeepFlavourJetTags:probc") / (obj.bDiscriminator("mini_pfDeepFlavourJetTags:probc") + obj.bDiscriminator("mini_pfDeepFlavourJetTags:probb") + obj.bDiscriminator("mini_pfDeepFlavourJetTags:probbb")) ;
+                float cvsb = obj.bDiscriminator("mini_pfDeepFlavourJetTags:probc") / (obj.bDiscriminator("mini_pfDeepFlavourJetTags:probc") + obj.bDiscriminator("mini_pfDeepFlavourJetTags:probb") + obj.bDiscriminator("mini_pfDeepFlavourJetTags:probbb") + obj.bDiscriminator("mini_pfDeepFlavourJetTags:problepb")) ;
 
                 if( this->debug_ ) {
                     std::cout << " In JetCTagReshapeWeight before calib reader: " << shiftLabel( syst_shift ) << ": Object has pt= " << obj.pt() << " eta=" << obj.eta() << " flavour=" << obj.hadronFlavour()

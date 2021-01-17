@@ -1600,7 +1600,7 @@ namespace flashgg {
                     
                     float bDiscriminatorValue = -2.;
                     if(bTag_ == "pfDeepCSV") bDiscriminatorValue = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                    else if (bTag_ == "pfDeepJet") bDiscriminatorValue = thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") ;
+                    else if (bTag_ == "pfDeepJet") bDiscriminatorValue = thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") + thejet->bDiscriminator("mini_pfDeepFlavourJetTags:problepb");
                     else  bDiscriminatorValue = thejet->bDiscriminator( bTag_ );
 
                     float bDiscriminatorValue_noBB = -2;
@@ -1620,7 +1620,7 @@ namespace flashgg {
 
                     float cvsb_value = -2;
                     if(cTag_ == "pfDeepCSV") cvsb_value = calculate_CvsB(thejet->bDiscriminator("pfDeepCSVJetTags:probc"), thejet->bDiscriminator("pfDeepCSVJetTags:probb"), thejet->bDiscriminator("pfDeepCSVJetTags:probbb"));
-                    else if (cTag_ == "pfDeepJet") cvsb_value = calculate_CvsB(thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probc"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probb"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb"));
+                    else if (cTag_ == "pfDeepJet") cvsb_value = calculate_CvsB(thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probc"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probb"), thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") + thejet->bDiscriminator("mini_pfDeepFlavourJetTags:problepb"));
                     else  cvsb_value = thejet->bDiscriminator( cTag_ );
                     cvsb_scores.push_back(cvsb_value);
 
@@ -1750,7 +1750,7 @@ namespace flashgg {
 
                     if(JetVect.size()>0){
                         if(bTag_ == "pfDeepCSV") btag_1_=JetVect[0]->bDiscriminator("pfDeepCSVJetTags:probb")+JetVect[0]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                        else if (bTag_ == "pfDeepJet") btag_1_ = JetVect[0]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+JetVect[0]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") ;
+                        else if (bTag_ == "pfDeepJet") btag_1_ = JetVect[0]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+JetVect[0]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") + JetVect[0]->bDiscriminator("mini_pfDeepFlavourJetTags:problepb");
                         else  btag_1_ = JetVect[0]->bDiscriminator( bTag_ );
                         if(bTag_ == "pfDeepCSV") btag_noBB_1_=JetVect[0]->bDiscriminator("pfDeepCSVJetTags:probb");
                         else if (bTag_ == "pfDeepJet") btag_noBB_1_ = JetVect[0]->bDiscriminator("mini_pfDeepFlavourJetTags:probb");
@@ -1762,7 +1762,7 @@ namespace flashgg {
 
                     if(JetVect.size()>1){
                         if(bTag_ == "pfDeepCSV") btag_2_=JetVect[1]->bDiscriminator("pfDeepCSVJetTags:probb")+JetVect[1]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                        else if (bTag_ == "pfDeepJet") btag_2_ = JetVect[1]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+JetVect[1]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") ;
+                        else if (bTag_ == "pfDeepJet") btag_2_ = JetVect[1]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+JetVect[1]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") + JetVect[1]->bDiscriminator("mini_pfDeepFlavourJetTags:problepb");
                         else  btag_2_ = JetVect[1]->bDiscriminator( bTag_ );
                         if(bTag_ == "pfDeepCSV") btag_noBB_2_=JetVect[1]->bDiscriminator("pfDeepCSVJetTags:probb");
                         else if (bTag_ == "pfDeepJet") btag_noBB_2_ = JetVect[1]->bDiscriminator("mini_pfDeepFlavourJetTags:probb");
@@ -1774,7 +1774,7 @@ namespace flashgg {
 
                     if(JetVect.size()>2){
                         if(bTag_ == "pfDeepCSV") btag_3_=JetVect[2]->bDiscriminator("pfDeepCSVJetTags:probb")+JetVect[2]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                        else if (bTag_ == "pfDeepJet") btag_3_ = JetVect[2]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+JetVect[2]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") ;
+                        else if (bTag_ == "pfDeepJet") btag_3_ = JetVect[2]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+JetVect[2]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") + JetVect[2]->bDiscriminator("mini_pfDeepFlavourJetTags:problepb");
                         else  btag_3_ = JetVect[2]->bDiscriminator( bTag_ );
                         if(bTag_ == "pfDeepCSV") btag_noBB_3_=JetVect[2]->bDiscriminator("pfDeepCSVJetTags:probb");
                         else if (bTag_ == "pfDeepJet") btag_noBB_3_ = JetVect[2]->bDiscriminator("mini_pfDeepFlavourJetTags:probb");
@@ -1785,7 +1785,7 @@ namespace flashgg {
                     }
                     if(JetVect.size()>3){
                         if(bTag_ == "pfDeepCSV") btag_4_=JetVect[3]->bDiscriminator("pfDeepCSVJetTags:probb")+JetVect[3]->bDiscriminator("pfDeepCSVJetTags:probbb") ;
-                        else if (bTag_ == "pfDeepJet") btag_4_ = JetVect[3]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+JetVect[3]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") ;
+                        else if (bTag_ == "pfDeepJet") btag_4_ = JetVect[3]->bDiscriminator("mini_pfDeepFlavourJetTags:probb")+JetVect[3]->bDiscriminator("mini_pfDeepFlavourJetTags:probbb") + JetVect[3]->bDiscriminator("mini_pfDeepFlavourJetTags:problepb");
                         else  btag_4_ = JetVect[3]->bDiscriminator( bTag_ );
                         if(bTag_ == "pfDeepCSV") btag_noBB_4_=JetVect[3]->bDiscriminator("pfDeepCSVJetTags:probb");
                         else if (bTag_ == "pfDeepJet") btag_noBB_4_ = JetVect[3]->bDiscriminator("mini_pfDeepFlavourJetTags:probb");
@@ -2322,24 +2322,16 @@ namespace flashgg {
                     int chosenTag = computeStage1Kinematics( tthhtags_obj );
                     tthhtags_obj.setStage1recoTag( chosenTag );
     
-                    /*
-                    if(!useTTHHadronicMVA_){
-                        for( unsigned num = 0; num < JetVect.size(); num++ ) {
-                            tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagCutWeight");
-                            //tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight");
-                        }
-                    } else {
-                        for( unsigned num = 0; num < JetVect.size(); num++ ) {
-                            tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight", false);
-                        }                    
-                    }
-                    */
                     tthhtags_obj.includeWeights( *dipho );
-                    //for( unsigned num = 0; num < JetVect.size(); num++ ) {
-                    //    tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight", false);
-                    //}
                     for( unsigned num = 0; num < JetVect.size(); num++ ) {
                         tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetCTagReshapeWeight", false); // include c-tag weights after dipho weights so that we can compare normalization with/without application of c-tag weights
+                        // setting "false" for the 3rd argument above makes it so that the original JetCTagReshapeWeight can be obtained
+                        // i.e. suppose central event weight is initially 2.0 and then 2.2 after applying JetCTagReshape weight of 1.1
+                        // now suppose the uncertainty on the weight is 0.05: up/down JetCTagReshape weights would be 1.15/1.05
+                        // if we set "true" the up/down weights will be saved in ntuple as 2.3/2.1
+                        // if we set "false" the up/down weights will be saved in ntuple as 1.15/1.05
+                        // so by setting "false" we can isolate the actual c-tag weight for the event
+                        // toggling true/false affects only the storing of c-tag weights, does NOT affect central weight
                     }
                     tthhtags->push_back( tthhtags_obj );
                 }
