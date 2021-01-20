@@ -1913,9 +1913,14 @@ namespace flashgg {
 
                     tthltags_obj.includeWeights( *dipho );
                     for( unsigned int i = 0; i < tagJets.size(); ++i ) {
+                        tthltags_obj.includeWeightsByLabel( *tagJets[i] , "JetBTagReshapeWeight", false); // include c-tag weights after dipho so that we can compare normalization with/without c-tag weights
+
+                    }
+                    /* 
+                    for( unsigned int i = 0; i < tagJets.size(); ++i ) {
                         tthltags_obj.includeWeightsByLabel( *tagJets[i] , "JetCTagReshapeWeight", false); // include c-tag weights after dipho so that we can compare normalization with/without c-tag weights
                         
-                    }
+                    } */
 
                     tthltags_obj.setJets( tagJets );
                     tthltags_obj.setMuons( Muons );

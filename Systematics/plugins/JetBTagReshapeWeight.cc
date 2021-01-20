@@ -100,6 +100,13 @@ namespace flashgg {
 
         float theWeight = 1.;
 
+        if (!isApply_) {
+            if (this->debug_) {
+                std::cout << "In JetBTagReshapeProducer: not applying central SF, returning weight of 1" << std::endl;
+            }
+            return theWeight;
+        }
+
         if( overall_range_( obj ) ) {
             
             if( this->debug_ ) {

@@ -18,7 +18,7 @@ if len(sys.argv) >= 5:
   print "Setting max number of events to %d" % (n_events)
 
 
-doSystematics = False
+doSystematics = True
 
 import FWCore.ParameterSet.Config as cms
 import FWCore.Utilities.FileUtils as FileUtils
@@ -210,13 +210,14 @@ if not ISDATA:
             variablesToUse.append("ElectronWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"ElectronWeight%s01sigma\")" % (direction,direction))
             #variablesToUse.append("JetBTagCutWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetBTagCutWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("JetBTagReshapeWeight%s01sigma[1,-999999.,999999.] := getObjectWeight(\"JetBTagReshapeWeight%s01sigma\")" % (direction,direction))
-            for sourceName in customize.metaConditions['cTagSystematics']['listOfSources']:
-                variablesToUse.append("JetCTagReshapeWeight%s%s01sigma[1,-999999.,999999.] := weight(\"JetCTagReshapeWeight%s%s01sigma\")" % (str(sourceName),direction,str(sourceName),direction))
+            if customize.metaConditions['cTagSystematics']['isApply']:
+                for sourceName in customize.metaConditions['cTagSystematics']['listOfSources']:
+                    variablesToUse.append("JetCTagReshapeWeight%s%s01sigma[1,-999999.,999999.] := weight(\"JetCTagReshapeWeight%s%s01sigma\")" % (str(sourceName),direction,str(sourceName),direction))
+                variablesToUse.append("weight_JetCTagWeight:=getObjectWeight(\"JetCTagReshapeWeightStatCentral\")")
             variablesToUse.append("genTopPtReweight%s01sigma[1,-999999.,999999.] := weight(\"genTopPtReweight%s01sigma\")" % (direction,direction))
             if applyL1Prefiring:
                 variablesToUse.append("prefireWeight%s01sigma[1,-999999.,999999.] := weight(\"prefireWeight%s01sigma\")" % (direction,direction))
             variablesToUse.append("weight_JetBTagWeight:=getObjectWeight(\"JetBTagReshapeWeightCentral\")")
-            variablesToUse.append("weight_JetCTagWeight:=getObjectWeight(\"JetCTagReshapeWeightCentral\")")
             for r9 in ["HighR9","LowR9"]:
                 for region in ["EB","EE"]:
                     phosystlabels.append("ShowerShape%s%s%s01sigma"%(r9,region,direction))

@@ -2324,6 +2324,10 @@ namespace flashgg {
     
                     tthhtags_obj.includeWeights( *dipho );
                     for( unsigned num = 0; num < JetVect.size(); num++ ) {
+                        tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetBTagReshapeWeight", false);
+                    }
+                    /*
+                    for( unsigned num = 0; num < JetVect.size(); num++ ) {
                         tthhtags_obj.includeWeightsByLabel( *JetVect[num] , "JetCTagReshapeWeight", false); // include c-tag weights after dipho weights so that we can compare normalization with/without application of c-tag weights
                         // setting "false" for the 3rd argument above makes it so that the original JetCTagReshapeWeight can be obtained
                         // i.e. suppose central event weight is initially 2.0 and then 2.2 after applying JetCTagReshape weight of 1.1
@@ -2332,7 +2336,7 @@ namespace flashgg {
                         // if we set "false" the up/down weights will be saved in ntuple as 1.15/1.05
                         // so by setting "false" we can isolate the actual c-tag weight for the event
                         // toggling true/false affects only the storing of c-tag weights, does NOT affect central weight
-                    }
+                    } */
                     tthhtags->push_back( tthhtags_obj );
                 }
             }

@@ -236,6 +236,17 @@ class jetSystematicsCustomize:
 
       # c-tag reshaping sys uncertainties
       for sourceName in self.metaConditions['cTagSystematics']['listOfSources']:
+          if not self.metaConditions['cTagSystematics']['isApply']:
+              continue
+          if sourceName == "Stat" and self.metaConditions['cTagSystematics']['isApply']:
+              applyCentralValue = True
+          else:
+              applyCentralValue = False
+          print "Jet C-tag Systematics: \n Source: %s" % sourceName
+          if applyCentralValue:
+              print "Applying central value correction"
+          else:
+              print "Not applying central value correction"
           allJetUncerts += cms.VPSet( cms.PSet( MethodName = cms.string("FlashggJetCTagReshapeWeight"),
                                                 Label = cms.string("JetCTagReshapeWeight%s" % str(sourceName)),
                                                 NSigmas = cms.vint32(-1,1),
@@ -246,7 +257,7 @@ class jetSystematicsCustomize:
                                                 cTagReshapeSystOption = cms.string(str(sourceName)),#For changing the source of uncertainty
                                                 Debug = cms.untracked.bool(False),
                                                 isApply = cms.bool(self.metaConditions['cTagSystematics']['isApply']),
-                                                ApplyCentralValue = cms.bool(self.metaConditions['cTagSystematics']['isApply'])
+                                                ApplyCentralValue = cms.bool(applyCentralValue) 
                                               )
                                      )
 
