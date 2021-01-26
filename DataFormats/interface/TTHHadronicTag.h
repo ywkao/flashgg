@@ -89,7 +89,9 @@ namespace flashgg {
         int subleadMomMomID() const { return sublead_motherMotherID_; }
         int subleadPassFrix() const { return sublead_passFrix_; }
         double subleadSmallestDr() const { return sublead_smallestDr_; }
- 
+
+        double imputeWeight() const { return imputeWeight_; }
+
         void setNjet( int nb ) { Njet_ = nb; }
         void setNBLoose( int nb ) { Nbtagloose_ = nb; }
         void setNBMedium( int nb ) { Nbtagmedium_ = nb; }
@@ -159,7 +161,8 @@ namespace flashgg {
         void setSubleadMomMomID(int sublead_motherMotherID) { sublead_motherMotherID_ = sublead_motherMotherID; }
         void setSubleadPassFrix(int sublead_passFrix) { sublead_passFrix_ = sublead_passFrix; }
         void setSubleadSmallestDr(double sublead_smallestDr) { sublead_smallestDr_ = sublead_smallestDr; }
-
+        
+        void setImputeWeight(double imputeWeight) { imputeWeight_ = imputeWeight; }
 
 
         DiPhotonTagBase::tag_t tagEnum() const override {return DiPhotonTagBase::kTTHHadronic; }
@@ -243,6 +246,7 @@ namespace flashgg {
         double fcnc_bdt_nrb_hct_score_;
         double fcnc_bdt_smh_hct_score_;
 
+        double imputeWeight_;
     };
 }
 

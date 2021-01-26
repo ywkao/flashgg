@@ -712,6 +712,7 @@ hadronic_variables = [  "n_bjets  := nBMedium",
                         "bjet2_csv:= secondMaxBTagVal",
                         "tthMVA := tthMvaRes",
                         "tthMVA_RunII := tthMva_RunII_Res",
+                        "imputeWeight := imputeWeight",
                         "dnn_score_dipho := dnn_score_ttH_vs_dipho",
 ]
 

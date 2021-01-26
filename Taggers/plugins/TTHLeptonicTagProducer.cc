@@ -1432,7 +1432,7 @@ namespace flashgg {
                         else if (bTag_ == "pfDeepJet") bDiscriminatorValue_noBB = thejet->bDiscriminator("mini_pfDeepFlavourJetTags:probb");
                         else  bDiscriminatorValue_noBB = thejet->bDiscriminator( bTag_ );
 
-                        btag_scores.push_back(bDiscriminatorValue_noBB);
+                        btag_scores.push_back(bDiscriminatorValue);
 
                         bDiscriminatorValue >= 0. ? bTags.push_back(bDiscriminatorValue) : bTags.push_back(-1.);
                         bDiscriminatorValue_noBB >= 0. ? bTags_noBB.push_back(bDiscriminatorValue_noBB) : bTags_noBB.push_back(-1.);

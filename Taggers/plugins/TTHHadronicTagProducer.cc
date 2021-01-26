@@ -37,6 +37,7 @@
 #include "TMath.h"
 #include "TMVA/Reader.h"
 #include "TRandom.h"
+#include "TF1.h"
 
 TRandom* myRandHadronic = new TRandom();
 
@@ -157,6 +158,9 @@ namespace flashgg {
         unique_ptr<TMVA::Reader> FCNC_BDTSMH_Hct_RunII_;
         FileInPath fcncHutBDTSMHWeightFile_;
         FileInPath fcncHctBDTSMHWeightFile_; 
+
+        TF1* f_IDMVA;
+        double impute_weight;
 
         int jetcount_;
         float nJets_;
@@ -814,6 +818,18 @@ namespace flashgg {
         
         }       
 
+        // Imputing
+        f_IDMVA = new TF1("f_IDMVA", "[0] + [1]*x + [2]*x^2 + [3]*x^3 + [4]*x^4 + [5]*x^5 + [6]*x^6 + [7]*x^7", -1.0, 1.0);
+        f_IDMVA->SetParameter(0, 8818.17);
+        f_IDMVA->SetParameter(1, -12755.5);
+        f_IDMVA->SetParameter(2, 26130);
+        f_IDMVA->SetParameter(3, -26664.9);
+        f_IDMVA->SetParameter(4, -54741.1);
+        f_IDMVA->SetParameter(5, 76558);
+        f_IDMVA->SetParameter(6, 112245);
+        f_IDMVA->SetParameter(7, -123913);
+
+
         FCNC_BDTNRB_Hut_RunII_.reset( new TMVA::Reader( "!Color:Silent" ) );
         FCNC_BDTNRB_Hct_RunII_.reset( new TMVA::Reader( "!Color:Silent" ) );
         FCNC_BDTSMH_Hut_RunII_.reset( new TMVA::Reader( "!Color:Silent" ) );
@@ -828,14 +844,14 @@ namespace flashgg {
 
         FCNC_BDTNRB_Hut_RunII_->AddVariable("subleadPSV_", &pho2_hasPixelSeed_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("leadPSV_", &pho1_hasPixelSeed_);
-        FCNC_BDTNRB_Hut_RunII_->AddVariable("jet3_btag_", &btag_noBB_3_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("jet3_btag_", &btag_3_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("jet3_eta_", &jetEta_3_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("jet3_pt_", &jetPt_3_);
 
-        FCNC_BDTNRB_Hut_RunII_->AddVariable("jet2_btag_", &btag_noBB_2_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("jet2_btag_", &btag_2_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("jet2_eta_", &jetEta_2_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("jet2_pt_", &jetPt_2_);
-        FCNC_BDTNRB_Hut_RunII_->AddVariable("jet1_btag_", &btag_noBB_1_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("jet1_btag_", &btag_1_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("jet1_eta_", &jetEta_1_);
 
         FCNC_BDTNRB_Hut_RunII_->AddVariable("jet1_pt_", &jetPt_1_);
@@ -847,18 +863,18 @@ namespace flashgg {
         FCNC_BDTNRB_Hut_RunII_->AddVariable("ht_", &ht_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("njets_", &nJets_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("dipho_delta_R", &diPhoDeltaR_);
-        FCNC_BDTNRB_Hut_RunII_->AddVariable("max1_btag_", &maxBTagVal_noBB_);
-        FCNC_BDTNRB_Hut_RunII_->AddVariable("max2_btag_", &secondMaxBTagVal_noBB_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("max1_btag_", &maxBTagVal_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("max2_btag_", &secondMaxBTagVal_);
 
         FCNC_BDTNRB_Hut_RunII_->AddVariable("minIDMVA_", &minPhoID_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("maxIDMVA_", &maxPhoID_);
-        FCNC_BDTNRB_Hut_RunII_->AddVariable("jet4_btag_", &btag_noBB_4_);
+        FCNC_BDTNRB_Hut_RunII_->AddVariable("jet4_btag_", &btag_4_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("jet4_eta_", &jetEta_4_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("jet4_pt_", &jetPt_4_);
 
         FCNC_BDTNRB_Hut_RunII_->AddVariable("m_ggj_", &m_ggj_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("m_jjj_", &m_jjj_);
-        FCNC_BDTNRB_Hut_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTNRB_Hut_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
 
@@ -900,14 +916,14 @@ namespace flashgg {
 
         FCNC_BDTNRB_Hct_RunII_->AddVariable("subleadPSV_", &pho2_hasPixelSeed_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("leadPSV_", &pho1_hasPixelSeed_);
-        FCNC_BDTNRB_Hct_RunII_->AddVariable("jet3_btag_", &btag_noBB_3_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("jet3_btag_", &btag_3_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("jet3_eta_", &jetEta_3_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("jet3_pt_", &jetPt_3_);
 
-        FCNC_BDTNRB_Hct_RunII_->AddVariable("jet2_btag_", &btag_noBB_2_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("jet2_btag_", &btag_2_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("jet2_eta_", &jetEta_2_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("jet2_pt_", &jetPt_2_);
-        FCNC_BDTNRB_Hct_RunII_->AddVariable("jet1_btag_", &btag_noBB_1_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("jet1_btag_", &btag_1_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("jet1_eta_", &jetEta_1_);
 
         FCNC_BDTNRB_Hct_RunII_->AddVariable("jet1_pt_", &jetPt_1_);
@@ -919,18 +935,18 @@ namespace flashgg {
         FCNC_BDTNRB_Hct_RunII_->AddVariable("ht_", &ht_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("njets_", &nJets_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("dipho_delta_R", &diPhoDeltaR_);
-        FCNC_BDTNRB_Hct_RunII_->AddVariable("max1_btag_", &maxBTagVal_noBB_);
-        FCNC_BDTNRB_Hct_RunII_->AddVariable("max2_btag_", &secondMaxBTagVal_noBB_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("max1_btag_", &maxBTagVal_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("max2_btag_", &secondMaxBTagVal_);
 
         FCNC_BDTNRB_Hct_RunII_->AddVariable("minIDMVA_", &minPhoID_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("maxIDMVA_", &maxPhoID_);
-        FCNC_BDTNRB_Hct_RunII_->AddVariable("jet4_btag_", &btag_noBB_4_);
+        FCNC_BDTNRB_Hct_RunII_->AddVariable("jet4_btag_", &btag_4_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("jet4_eta_", &jetEta_4_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("jet4_pt_", &jetPt_4_);
 
         FCNC_BDTNRB_Hct_RunII_->AddVariable("m_ggj_", &m_ggj_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("m_jjj_", &m_jjj_);
-        FCNC_BDTNRB_Hct_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTNRB_Hct_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
 
@@ -972,14 +988,14 @@ namespace flashgg {
 
         FCNC_BDTSMH_Hut_RunII_->AddVariable("subleadPSV_", &pho2_hasPixelSeed_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("leadPSV_", &pho1_hasPixelSeed_);
-        FCNC_BDTSMH_Hut_RunII_->AddVariable("jet3_btag_", &btag_noBB_3_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("jet3_btag_", &btag_3_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("jet3_eta_", &jetEta_3_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("jet3_pt_", &jetPt_3_);
 
-        FCNC_BDTSMH_Hut_RunII_->AddVariable("jet2_btag_", &btag_noBB_2_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("jet2_btag_", &btag_2_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("jet2_eta_", &jetEta_2_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("jet2_pt_", &jetPt_2_);
-        FCNC_BDTSMH_Hut_RunII_->AddVariable("jet1_btag_", &btag_noBB_1_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("jet1_btag_", &btag_1_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("jet1_eta_", &jetEta_1_);
 
         FCNC_BDTSMH_Hut_RunII_->AddVariable("jet1_pt_", &jetPt_1_);
@@ -991,18 +1007,18 @@ namespace flashgg {
         FCNC_BDTSMH_Hut_RunII_->AddVariable("ht_", &ht_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("njets_", &nJets_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("dipho_delta_R", &diPhoDeltaR_);
-        FCNC_BDTSMH_Hut_RunII_->AddVariable("max1_btag_", &maxBTagVal_noBB_);
-        FCNC_BDTSMH_Hut_RunII_->AddVariable("max2_btag_", &secondMaxBTagVal_noBB_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("max1_btag_", &maxBTagVal_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("max2_btag_", &secondMaxBTagVal_);
 
         FCNC_BDTSMH_Hut_RunII_->AddVariable("minIDMVA_", &minPhoID_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("maxIDMVA_", &maxPhoID_);
-        FCNC_BDTSMH_Hut_RunII_->AddVariable("jet4_btag_", &btag_noBB_4_);
+        FCNC_BDTSMH_Hut_RunII_->AddVariable("jet4_btag_", &btag_4_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("jet4_eta_", &jetEta_4_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("jet4_pt_", &jetPt_4_);
 
         FCNC_BDTSMH_Hut_RunII_->AddVariable("m_ggj_", &m_ggj_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("m_jjj_", &m_jjj_);
-        FCNC_BDTSMH_Hut_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTSMH_Hut_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
 
@@ -1044,14 +1060,14 @@ namespace flashgg {
 
         FCNC_BDTSMH_Hct_RunII_->AddVariable("subleadPSV_", &pho2_hasPixelSeed_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("leadPSV_", &pho1_hasPixelSeed_);
-        FCNC_BDTSMH_Hct_RunII_->AddVariable("jet3_btag_", &btag_noBB_3_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("jet3_btag_", &btag_3_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("jet3_eta_", &jetEta_3_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("jet3_pt_", &jetPt_3_);
 
-        FCNC_BDTSMH_Hct_RunII_->AddVariable("jet2_btag_", &btag_noBB_2_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("jet2_btag_", &btag_2_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("jet2_eta_", &jetEta_2_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("jet2_pt_", &jetPt_2_);
-        FCNC_BDTSMH_Hct_RunII_->AddVariable("jet1_btag_", &btag_noBB_1_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("jet1_btag_", &btag_1_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("jet1_eta_", &jetEta_1_);
 
         FCNC_BDTSMH_Hct_RunII_->AddVariable("jet1_pt_", &jetPt_1_);
@@ -1063,18 +1079,18 @@ namespace flashgg {
         FCNC_BDTSMH_Hct_RunII_->AddVariable("ht_", &ht_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("njets_", &nJets_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("dipho_delta_R", &diPhoDeltaR_);
-        FCNC_BDTSMH_Hct_RunII_->AddVariable("max1_btag_", &maxBTagVal_noBB_);
-        FCNC_BDTSMH_Hct_RunII_->AddVariable("max2_btag_", &secondMaxBTagVal_noBB_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("max1_btag_", &maxBTagVal_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("max2_btag_", &secondMaxBTagVal_);
 
         FCNC_BDTSMH_Hct_RunII_->AddVariable("minIDMVA_", &minPhoID_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("maxIDMVA_", &maxPhoID_);
-        FCNC_BDTSMH_Hct_RunII_->AddVariable("jet4_btag_", &btag_noBB_4_);
+        FCNC_BDTSMH_Hct_RunII_->AddVariable("jet4_btag_", &btag_4_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("jet4_eta_", &jetEta_4_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("jet4_pt_", &jetPt_4_);
 
         FCNC_BDTSMH_Hct_RunII_->AddVariable("m_ggj_", &m_ggj_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("m_jjj_", &m_jjj_);
-        FCNC_BDTSMH_Hct_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTSMH_Hct_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
 
@@ -1610,7 +1626,7 @@ namespace flashgg {
 
                     float bDisc_topTagger = thejet->bDiscriminator("pfDeepCSVJetTags:probb")+thejet->bDiscriminator("pfDeepCSVJetTags:probbb");
 
-                    btag_scores.push_back(bDiscriminatorValue_noBB);
+                    btag_scores.push_back(bDiscriminatorValue);
 
                     float cvsl_value = -2;
                     if(cTag_ == "pfDeepCSV") cvsl_value = calculate_CvsL(thejet->bDiscriminator("pfDeepCSVJetTags:probc"), thejet->bDiscriminator("pfDeepCSVJetTags:probudsg"));
@@ -1719,6 +1735,14 @@ namespace flashgg {
                                                                     deltaR( dipho->leadingPhoton()->eta(),dipho->leadingPhoton()->phi(), JetVect[1]->eta(),JetVect[1]->phi()));
 
                     minPhoID_=TMath::Min( idmva1_, idmva2_);
+
+                    // Imputing
+                    impute_weight = 1.;
+                    if (minPhoID_ < -0.7 && minPhoID_ > -0.9) {
+                        minPhoID_ = f_IDMVA->GetRandom(-0.7, maxPhoID_);
+                        impute_weight *= f_IDMVA->Integral(-0.7, maxPhoID_) / f_IDMVA->Integral(-0.9, -0.7);
+                    }
+
                     maxPhoID_=TMath::Max( idmva1_, idmva2_);
                     pho1_ptoM_= dipho->leadingPhoton()->pt()/dipho->mass();
                     pho2_ptoM_= dipho->subLeadingPhoton()->pt()/dipho->mass();
@@ -1978,8 +2002,8 @@ namespace flashgg {
                     cout << "--------------------------------------------------------" << endl;
                     cout << "maxIDMVA_: " << maxPhoID_ << endl;
                     cout << "minIDMVA_: " << minPhoID_ << endl;
-                    cout << "max1_btag_: " << maxBTagVal_noBB_ << endl;
-                    cout << "max2_btag_: " << secondMaxBTagVal_noBB_ << endl;
+                    cout << "max1_btag_: " << maxBTagVal_ << endl;
+                    cout << "max2_btag_: " << secondMaxBTagVal_ << endl;
                     cout << "dipho_delta_R_: " << diPhoDeltaR_ << endl;
 
                     cout << "njets_: " << nJets_ << endl;
@@ -1991,16 +2015,16 @@ namespace flashgg {
 
                     cout << "jet1_pt_: " << jetPt_1_ << endl;
                     cout << "jet1_eta_: " << jetEta_1_ << endl;
-                    cout << "jet1_btag_: " << btag_noBB_1_ << endl;
+                    cout << "jet1_btag_: " << btag_1_ << endl;
                     cout << "jet2_pt_: " << jetPt_2_ << endl;
                     cout << "jet2_eta_: " << jetEta_2_ << endl;
-                    cout << "jet2_btag_: " << btag_noBB_2_ << endl;
+                    cout << "jet2_btag_: " << btag_2_ << endl;
                     cout << "jet3_pt_: " << jetPt_3_ << endl;
                     cout << "jet3_eta_: " << jetEta_3_ << endl;
-                    cout << "jet3_btag_: " << btag_noBB_3_ << endl;
+                    cout << "jet3_btag_: " << btag_3_ << endl;
                     cout << "jet4_pt_: " << jetPt_4_ << endl;
                     cout << "jet4_eta_: " << jetEta_4_ << endl;
-                    cout << "jet4_btag_: " << btag_noBB_4_ << endl;
+                    cout << "jet4_btag_: " << btag_4_ << endl;
 
                     cout << "leadPSV_: " << pho1_hasPixelSeed_ << endl;
                     cout << "subleadPSV_: " << pho2_hasPixelSeed_ << endl;
@@ -2089,6 +2113,8 @@ namespace flashgg {
                     tthhtags_obj.setRand(myRandHadronic->Rndm());
                     tthhtags_obj.setMetPt((float)theMET->pt());
                     tthhtags_obj.setMetPhi((float)theMET->phi());
+
+                    tthhtags_obj.setImputeWeight(impute_weight);
 
                     if (mvaEval.size() > 0) {
                       tthhtags_obj.setTopTagScore(mvaEval[0] != -99 ? mvaEval[0] : -1);

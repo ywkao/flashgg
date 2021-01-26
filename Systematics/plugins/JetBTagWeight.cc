@@ -141,7 +141,6 @@ namespace flashgg {
 
             if(JetBDiscriminator > bDiscriminator_ ) JetBTagStatus = true;
 
-
             if( this->debug_ ) {
                 std::cout << " In JetBTagWeight before calib reader: " << shiftLabel( syst_shift ) << ": Object has pt= " << obj.pt() << " eta=" << obj.eta() << " flavour=" << obj.hadronFlavour()
                           << " efficiency of " << eff_central << " values for scale factors : "<< JetPt <<" "<< JetEta <<" "<<JetFlav 
