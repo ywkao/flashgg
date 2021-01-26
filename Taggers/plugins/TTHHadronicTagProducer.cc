@@ -818,6 +818,7 @@ namespace flashgg {
         
         }       
 
+        /*
         // Imputing
         f_IDMVA = new TF1("f_IDMVA", "[0] + [1]*x + [2]*x^2 + [3]*x^3 + [4]*x^4 + [5]*x^5 + [6]*x^6 + [7]*x^7", -1.0, 1.0);
         f_IDMVA->SetParameter(0, 8818.17);
@@ -828,6 +829,7 @@ namespace flashgg {
         f_IDMVA->SetParameter(5, 76558);
         f_IDMVA->SetParameter(6, 112245);
         f_IDMVA->SetParameter(7, -123913);
+        */
 
 
         FCNC_BDTNRB_Hut_RunII_.reset( new TMVA::Reader( "!Color:Silent" ) );
@@ -1736,12 +1738,17 @@ namespace flashgg {
 
                     minPhoID_=TMath::Min( idmva1_, idmva2_);
 
+                    /*
                     // Imputing
                     impute_weight = 1.;
                     if (minPhoID_ < -0.7 && minPhoID_ > -0.9) {
+                        std::cout << "entering impute" << std::endl;
                         minPhoID_ = f_IDMVA->GetRandom(-0.7, maxPhoID_);
+                        std::cout << "New minIDMVA_" << std::endl;
                         impute_weight *= f_IDMVA->Integral(-0.7, maxPhoID_) / f_IDMVA->Integral(-0.9, -0.7);
+                        std::cout << "weight factor: " << impute_weight << std::endl;
                     }
+                    */
 
                     maxPhoID_=TMath::Max( idmva1_, idmva2_);
                     pho1_ptoM_= dipho->leadingPhoton()->pt()/dipho->mass();
