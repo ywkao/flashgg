@@ -733,7 +733,7 @@ namespace flashgg {
         FCNC_BDTNRB_Hut_RunII_->AddVariable("n_lep_tight_", &lepton_nTight_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("lep1_charge_", &lep1_charge_);
 
-        FCNC_BDTNRB_Hut_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTNRB_Hut_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_neutrino_pz_", &chi2_neutrino_pz_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTNRB_Hut_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
@@ -790,7 +790,7 @@ namespace flashgg {
         FCNC_BDTNRB_Hct_RunII_->AddVariable("n_lep_tight_", &lepton_nTight_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("lep1_charge_", &lep1_charge_);
 
-        FCNC_BDTNRB_Hct_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTNRB_Hct_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_neutrino_pz_", &chi2_neutrino_pz_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTNRB_Hct_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
@@ -847,7 +847,7 @@ namespace flashgg {
         FCNC_BDTSMH_Hut_RunII_->AddVariable("n_lep_tight_", &lepton_nTight_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("lep1_charge_", &lep1_charge_);
 
-        FCNC_BDTSMH_Hut_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTSMH_Hut_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_neutrino_pz_", &chi2_neutrino_pz_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTSMH_Hut_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
@@ -904,7 +904,7 @@ namespace flashgg {
         FCNC_BDTSMH_Hct_RunII_->AddVariable("n_lep_tight_", &lepton_nTight_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("lep1_charge_", &lep1_charge_);
 
-        FCNC_BDTSMH_Hct_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
+        //FCNC_BDTSMH_Hct_RunII_->AddVariable("top_tag_score_", &top_tag_score_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_neutrino_pz_", &chi2_neutrino_pz_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_tbw_mass_", &chi2_tbw_mass_);
         FCNC_BDTSMH_Hct_RunII_->AddVariable("chi2_tbw_pt_", &chi2_tbw_pt_);
