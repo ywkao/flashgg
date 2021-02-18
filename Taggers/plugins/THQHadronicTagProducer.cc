@@ -803,6 +803,7 @@ catnum = chooseCategory( idmva1, idmva2 );
                 thqhtags_obj.nLoose_bJets = LooseBJetVect_PtSorted.size();
                 thqhtags_obj.nTight_bJets = TightBJetVect_PtSorted.size();
 
+                /*
                 if ( ! evt.isRealData() ) {
                     evt.getByToken( genParticleToken_, genParticles );
                     evt.getByToken( genJetToken_, genJets );
@@ -944,6 +945,7 @@ catnum = chooseCategory( idmva1, idmva2 );
                     thqhtags_obj.setMomPhi        ( moms_phi            );
                     thqhtags_obj.setMomMass       ( moms_mass           );
                 }
+                */
 
                 thqhtags->push_back( thqhtags_obj );
 
