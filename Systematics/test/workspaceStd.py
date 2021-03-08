@@ -19,7 +19,7 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 1000 )
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 10 )
 
 
 systlabels = [""]
@@ -83,6 +83,12 @@ customize.options.register('doubleHReweight',
                            VarParsing.VarParsing.multiplicity.singleton,
                            VarParsing.VarParsing.varType.int,
                            'doubleHReweight'
+                           )
+customize.options.register('doTHQHadronicTag',
+                           True,
+                           VarParsing.VarParsing.multiplicity.singleton,
+                           VarParsing.VarParsing.varType.bool,
+                           'doTHQHadronicTag'
                            )
 customize.options.register('doDoubleHTag',
                            False,
@@ -198,7 +204,7 @@ print "Printing defaults"
 print 'acceptance '+str(customize.acceptance)
 print 'tthTagsOnly '+str(customize.tthTagsOnly)
 # import flashgg customization to check if we have signal or background
-from flashgg.MetaData.JobConfig import customize
+#from flashgg.MetaData.JobConfig import customize
 # set default options if needed
 customize.setDefault("maxEvents",-1)
 customize.setDefault("targetLumi",1.00e+3)
@@ -378,7 +384,9 @@ if is_signal:
     customizeSystematicsForSignal(process)
 elif customize.processId == "Data":
     print "Data, so turn off all shifts and systematics, with some exceptions"
-    variablesToUse = minimalNonSignalVariables
+    #variablesToUse = minimalNonSignalVariables
+    import flashgg.Taggers.THQHadronicTagVariables as var
+    variablesToUse = minimalNonSignalVariables + minimalVariables + var.vtx_variables + var.dipho_variables + var.photon_variables + var.lepton_variables + var.jet_variables
     customizeSystematicsForData(process)
 else:
     print "Background MC, so store mgg and central only"
@@ -424,7 +432,10 @@ process.source = cms.Source ("PoolSource",
                                  #"/store/user/spigazzi/flashgg/Era2017_RR-31Mar2018_v2/legacyRun2FullV1/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/Era2017_RR-31Mar2018_v2-legacyRun2FullV1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190703_101705/0000/myMicroAODOutputFile_45.root"
                                  #"/store/user/spigazzi/flashgg/Era2018_RR-17Sep2018_v2/legacyRun2FullV2/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/Era2018_RR-17Sep2018_v2-legacyRun2FullV2-v0-RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190710_093150/0000/myMicroAODOutputFile_41.root"
                                  #"/store/user/spigazzi/flashgg/Era2018_RR-17Sep2018_v2/legacyRun2FullV2/EGamma/Era2018_RR-17Sep2018_v2-legacyRun2FullV2-v0-Run2018A-17Sep2018-v2/190610_103420/0001/myMicroAODOutputFile_1125.root"
-                                 "/store/user/lata/Era2016_RR-17Jul2018/v2_p12/TprimeBToTH_Hgg_M-650_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8/Era2016_RR-17Jul2018-v2_p12-v0-RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/201104_194030/0000/myMicroAODOutputFile_9.root"
+                                 #"/store/user/lata/Era2016_RR-17Jul2018/v2_p12/TprimeBToTH_Hgg_M-650_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8/Era2016_RR-17Jul2018-v2_p12-v0-RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/201104_194030/0000/myMicroAODOutputFile_9.root"
+                                 "/store/user/lata/Era2018_RR-17Sep2018_v2/v2_p12/TprimeBToTH_Hgg_M-1000_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8/Era2018_RR-17Sep2018_v2-v2_p12-v0-RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/201116_185500/0000/myMicroAODOutputFile_6.root"
+                                 #"/store/user/lata/Era2018_RR-17Sep2018_v2/v2_p12/TprimeBToTH_Hgg_M-650_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8/Era2018_RR-17Sep2018_v2-v2_p12-v0-RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/201116_190928/0000/myMicroAODOutputFile_17.root"
+                                 #"/store/user/spigazzi/flashgg/Era2017_RR-31Mar2018_v2/legacyRun2FullV1/DiPhotonJets_MGG-80toInf_13TeV_amcatnloFXFX_pythia8/Era2017_RR-31Mar2018_v2-legacyRun2FullV1-v0-RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190716_170557/0000/myMicroAODOutputFile_156.root"
                              ))
 
 process.TFileService = cms.Service("TFileService",
@@ -437,7 +448,7 @@ customizeTagsDumper(process, customize) ## move all the default tags dumper conf
 
 if customize.processId == "tHq":
     import flashgg.Taggers.THQHadronicTagVariables as var
-    variablesToUse = minimalVariables + var.vtx_variables + var.dipho_variables + var.photon_variables + var.lepton_variables + var.jet_variables + var.truth_variables
+    variablesToUse = minimalVariables + var.vtx_variables + var.dipho_variables + var.photon_variables + var.lepton_variables + var.jet_variables #+ var.truth_variables
 
 #tagList=[
 #["UntaggedTag",4],
@@ -552,7 +563,7 @@ process.options = cms.untracked.PSet( wantSummary = cms.untracked.bool(True) )
 
 process.dataRequirements = cms.Sequence()
 if customize.processId == "Data":
-        process.dataRequirements += process.hltHighLevel
+    process.dataRequirements += process.hltHighLevel
 
 # Split WH and ZH
 process.genFilter = cms.Sequence()
@@ -674,6 +685,8 @@ if customize.doDoubleHTag:
     process.p.remove(process.flashggMetFilters)
     hhc.doubleHTagRunSequence(systlabels,jetsystlabels,phosystlabels)
   
+if customize.doTHQHadronicTag:
+    process.p.remove(process.flashggMetFilters)
 
 
 if( not hasattr(process,"options") ): process.options = cms.untracked.PSet()

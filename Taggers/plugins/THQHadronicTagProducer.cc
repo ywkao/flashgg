@@ -185,7 +185,9 @@ private:
     float secondMaxBTagVal_;
     float MVAscore_tHqVsttHDNN;
 
-    bool debug_=false;
+    int counter = 0; //mytool
+    bool debug  = true; //mytool
+    bool debug_ = false;
     struct GreaterByPt
     {
     public:
@@ -339,47 +341,33 @@ const reco::GenParticle* THQHadronicTagProducer::getMother( const reco::GenParti
 
 void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 {
+    if(debug) {printf("[check] inside THQHadronicTagProducer::produce, processId = %s, counter = %d\n", processId_.c_str(), counter); counter += 1;}
+
     JetCollectionVector Jets( inputTagJets_.size() );
-    for( size_t j = 0; j < inputTagJets_.size(); ++j ) {
-        evt.getByToken( tokenJets_[j], Jets[j] );
-    }
+    for( size_t j = 0; j < inputTagJets_.size(); ++j ) evt.getByToken( tokenJets_[j], Jets[j] );
 
-    edm::Handle<double>  rho;
-    evt.getByToken(rhoTag_,rho);
-    float rho_    = *rho;
-
-    Handle<View<flashgg::DiPhotonCandidate> > diPhotons;
-    evt.getByToken( diPhotonToken_, diPhotons );
-
-    Handle<View<flashgg::Muon> > theMuons;
-    evt.getByToken( muonToken_, theMuons );
-
-    Handle<View<flashgg::Electron> > theElectrons;
-    evt.getByToken( electronToken_, theElectrons );
-
-    Handle<View<flashgg::DiPhotonMVAResult> > mvaResults;
-    evt.getByToken( mvaResultToken_, mvaResults );
-
-    std::unique_ptr<vector<THQHadronicTag> > thqhtags( new vector<THQHadronicTag> );
-
-    Handle<View<reco::Vertex> > vertices;
-    evt.getByToken( vertexToken_, vertices );
-
-    Handle<View<flashgg::Met> > METs;
-    evt.getByToken( METToken_, METs );
-
-    Handle<View<reco::GenParticle> > genParticles;
-    Handle<View<reco::GenJet> > genJets;
+    std::unique_ptr<vector<THQHadronicTag> >  thqhtags( new vector<THQHadronicTag> );
+    edm::Handle<double>                       rho          ; evt.getByToken( rhoTag_         , rho          );
+    Handle<View<flashgg::DiPhotonCandidate> > diPhotons    ; evt.getByToken( diPhotonToken_  , diPhotons    );
+    Handle<View<flashgg::Muon> >              theMuons     ; evt.getByToken( muonToken_      , theMuons     );
+    Handle<View<flashgg::Electron> >          theElectrons ; evt.getByToken( electronToken_  , theElectrons );
+    Handle<View<flashgg::DiPhotonMVAResult> > mvaResults   ; evt.getByToken( mvaResultToken_ , mvaResults   );
+    Handle<View<reco::Vertex> >               vertices     ; evt.getByToken( vertexToken_    , vertices     );
+    Handle<View<flashgg::Met> >               METs         ; evt.getByToken( METToken_       , METs         );
+    Handle<View<reco::GenParticle> >          genParticles;
+    Handle<View<reco::GenJet> >               genJets;
 
     assert( diPhotons->size() == mvaResults->size() );
 
+    float rho_ = *rho;
     bool photonSelection = false;
     double idmva1 = 0.;
     double idmva2 = 0.;
     for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ ) {
+        if(debug) printf("[check] diphoIndex = %d/%d\n", diphoIndex, diPhotons->size());
 
-        hasGoodElec = false;
-        hasVetoElec = false;
+        hasGoodElec  = false;
+        hasVetoElec  = false;
         hasGoodMuons = false;
 
         unsigned int jetCollectionIndex = diPhotons->ptrAt( diphoIndex )->jetCollectionIndex();
@@ -387,28 +375,19 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         edm::Ptr<flashgg::DiPhotonCandidate> dipho = diPhotons->ptrAt( diphoIndex );
         edm::Ptr<flashgg::DiPhotonMVAResult> mvares = mvaResults->ptrAt( diphoIndex );
 
-
         flashgg::THQHadronicTag thqhtags_obj( dipho, mvares );
 
-        if( dipho->leadingPhoton()->pt() < ( dipho->mass() )*leadPhoOverMassThreshold_ ) {
-            continue;
-        }
-
-        if( dipho->subLeadingPhoton()->pt() < ( dipho->mass() )*subleadPhoOverMassThreshold_ ) {
-            continue;
-        }
+        if( dipho->leadingPhoton()->pt() < ( dipho->mass() )*leadPhoOverMassThreshold_ ) continue;
+        if( dipho->subLeadingPhoton()->pt() < ( dipho->mass() )*subleadPhoOverMassThreshold_ ) continue;
         idmva1 = dipho->leadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
         idmva2 = dipho->subLeadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
-        if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) {
-            continue;
-        }
+        if(debug) printf("[check] idmva1 = %.3f, idmva2 = %.3f\n", idmva1, idmva2);
+        if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
+        if(debug) printf("[check] survive idmva cuts!\n");
 
-        //if( mvares->result < MVAThreshold_ ) {            //DiPho_MVA
-        //    continue;
-        //}
+        //if( mvares->result < MVAThreshold_ ) continue;            //DiPho_MVA
 
         photonSelection = true;
-
 
         G1.SetPtEtaPhiM( diPhotons->ptrAt( diphoIndex )->leadingPhoton()->pt(),
                          diPhotons->ptrAt( diphoIndex )->leadingPhoton()->eta(),
@@ -420,52 +399,27 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
                          diPhotons->ptrAt( diphoIndex )->subLeadingPhoton()->phi(),
                          0 );
 
-        if( METs->size() != 1 ) {
-            std::cout << "WARNING - #MET is not 1" << std::endl;
-        }
+        if( METs->size() != 1 ) std::cout << "WARNING - #MET is not 1" << std::endl;
         Ptr<flashgg::Met> theMET = METs->ptrAt( 0 );
         thqhtags_obj.setRECOMET(theMET);
 
-        std::vector<edm::Ptr<flashgg::Muon> > LooseMu15 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_ , muonPtThreshold_,
-                0.15 , deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
-        std::vector<edm::Ptr<flashgg::Muon> > LooseMu25 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_ , muonPtThreshold_,
-                0.25 , deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
-
-        std::vector<edm::Ptr<flashgg::Muon> > LooseMu200 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_ , muonPtThreshold_,
-                2. , deltaRLepPhoThreshold_, deltaRLepPhoThreshold_);
-
-
-        std::vector<edm::Ptr<flashgg::Muon> > MediumMu15 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_ , muonPtThreshold_,
-                0.15 , deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
-        std::vector<edm::Ptr<flashgg::Muon> > MediumMu25 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_ , muonPtThreshold_,
-                0.25 , deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
-
-        std::vector<edm::Ptr<flashgg::Muon> > TightMuo15 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_ , muonPtThreshold_,
-                0.15 , deltaRLepPhoThreshold_, deltaRLepPhoThreshold_);
-        std::vector<edm::Ptr<flashgg::Muon> > TightMuo25 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_ , muonPtThreshold_,
-                0.25 , deltaRLepPhoThreshold_, deltaRLepPhoThreshold_);
-
-        std::vector<edm::Ptr<flashgg::Muon> > goodMuons = muPFIsoSumRelThreshold_== 0.15 ? TightMuo15 : TightMuo25 ;
-
+        std::vector<edm::Ptr<flashgg::Muon> > LooseMu15  = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_, muonPtThreshold_, 0.15, deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
+        std::vector<edm::Ptr<flashgg::Muon> > LooseMu25  = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_, muonPtThreshold_, 0.25, deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
+        std::vector<edm::Ptr<flashgg::Muon> > LooseMu200 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_, muonPtThreshold_, 2.  , deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
+        std::vector<edm::Ptr<flashgg::Muon> > MediumMu15 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_, muonPtThreshold_, 0.15, deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
+        std::vector<edm::Ptr<flashgg::Muon> > MediumMu25 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_, muonPtThreshold_, 0.25, deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
+        std::vector<edm::Ptr<flashgg::Muon> > TightMuo15 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_, muonPtThreshold_, 0.15, deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
+        std::vector<edm::Ptr<flashgg::Muon> > TightMuo25 = selectMuons( theMuons->ptrs(), dipho, vertices->ptrs(), muonEtaThreshold_, muonPtThreshold_, 0.25, deltaRLepPhoThreshold_, deltaRLepPhoThreshold_ );
+        std::vector<edm::Ptr<flashgg::Muon> > goodMuons  = muPFIsoSumRelThreshold_== 0.15 ? TightMuo15 : TightMuo25 ;
 
         std::vector<int> looseMus_PassTight;
-        for(auto mu: LooseMu200)
-            looseMus_PassTight.push_back( std::find( goodMuons.begin() , goodMuons.end() , mu ) != goodMuons.end() );
+        for(auto mu: LooseMu200) looseMus_PassTight.push_back( std::find( goodMuons.begin() , goodMuons.end() , mu ) != goodMuons.end() );
 
-        std::vector<edm::Ptr<Electron> > vetoNonIsoElectrons = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_,  electronEtaThresholds_ ,
-                0, 4, deltaRPhoElectronThreshold_,DeltaRTrkElec_,deltaMassElectronZThreshold_ , rho_, true ); //evt.isRealData()
-
-        std::vector<edm::Ptr<Electron> > looseElectrons = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_,  electronEtaThresholds_ ,
-                0, 3, deltaRPhoElectronThreshold_,DeltaRTrkElec_,deltaMassElectronZThreshold_ , rho_, true ); //evt.isRealData()
-
-        std::vector<edm::Ptr<Electron> > vetoElectrons = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_,  electronEtaThresholds_ ,
-                0, 0, deltaRPhoElectronThreshold_,DeltaRTrkElec_,deltaMassElectronZThreshold_ , rho_, true ); //evt.isRealData()
-
-        std::vector<edm::Ptr<Electron> > mediumElectrons = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_,  electronEtaThresholds_ ,
-                0, 2, deltaRPhoElectronThreshold_,DeltaRTrkElec_,deltaMassElectronZThreshold_ , rho_, true ); //evt.isRealData()
-
-        std::vector<edm::Ptr<Electron> > goodElectrons = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_,  electronEtaThresholds_ ,
-                0, 1, deltaRPhoElectronThreshold_,DeltaRTrkElec_,deltaMassElectronZThreshold_ , rho_, true);
+        std::vector<edm::Ptr<Electron> > vetoNonIsoElectrons = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_, electronEtaThresholds_, 0, 4, deltaRPhoElectronThreshold_, DeltaRTrkElec_, deltaMassElectronZThreshold_, rho_, true );
+        std::vector<edm::Ptr<Electron> > looseElectrons      = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_, electronEtaThresholds_, 0, 3, deltaRPhoElectronThreshold_, DeltaRTrkElec_, deltaMassElectronZThreshold_, rho_, true );
+        std::vector<edm::Ptr<Electron> > vetoElectrons       = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_, electronEtaThresholds_, 0, 0, deltaRPhoElectronThreshold_, DeltaRTrkElec_, deltaMassElectronZThreshold_, rho_, true );
+        std::vector<edm::Ptr<Electron> > mediumElectrons     = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_, electronEtaThresholds_, 0, 2, deltaRPhoElectronThreshold_, DeltaRTrkElec_, deltaMassElectronZThreshold_, rho_, true );
+        std::vector<edm::Ptr<Electron> > goodElectrons       = selectStdElectrons(theElectrons->ptrs(), dipho, vertices->ptrs(), electronPtThreshold_, electronEtaThresholds_, 0, 1, deltaRPhoElectronThreshold_, DeltaRTrkElec_, deltaMassElectronZThreshold_, rho_, true );
 
         std::vector<int> vetoNonIsoElectrons_PassTight;
         std::vector<int> vetoNonIsoElectrons_PassVeto;
@@ -475,6 +429,7 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         }
 
         if((goodElectrons.size() + goodMuons.size()) > 0) continue; // selection of hadronic channel
+        if(debug) printf("[check] survive lepton veto!\n");
 
         //hasGoodElec = ( goodElectrons.size() == 1 );
         //hasVetoElec = ( vetoElectrons.size() > 0 );
@@ -483,19 +438,19 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         //LeptonType = 0; //1 : electron, 2:muon
         //if( hasGoodMuons && !hasVetoElec) LeptonType = 2;
 
-        float ht=0;
-        float dRPhoLeadJet=0;
-        float dRPhoSubLeadJet=0;
-        double minDrLepton = 999.;
-        int njets_btagloose_ = 0;
+        float ht = 0;
+        float dRPhoLeadJet    = 0;
+        float dRPhoSubLeadJet = 0;
+        double minDrLepton    = 999.;
+        int njets_btagloose_  = 0;
         int njets_btagmedium_ = 0;
-        int njets_btagtight_ = 0;
+        int njets_btagtight_  = 0;
         std::vector<edm::Ptr<flashgg::Jet> > SelJetVect;
         std::vector<edm::Ptr<flashgg::Jet> > SelJetVect_EtaSorted;
         std::vector<edm::Ptr<flashgg::Jet> > SelJetVect_PtSorted;
         std::vector<edm::Ptr<flashgg::Jet> > SelJetVect_BSorted;
         std::vector<edm::Ptr<flashgg::Jet> > MediumBJetVect, MediumBJetVect_PtSorted, BJetVect;
-        std::vector<edm::Ptr<flashgg::Jet> > LooseBJetVect, LooseBJetVect_PtSorted ;
+        std::vector<edm::Ptr<flashgg::Jet> > LooseBJetVect, LooseBJetVect_PtSorted;
         std::vector<edm::Ptr<flashgg::Jet> > TightBJetVect, TightBJetVect_PtSorted;
         std::vector<edm::Ptr<flashgg::Jet> > centraljet;
         std::vector<edm::Ptr<flashgg::Jet> > forwardjet;
@@ -511,54 +466,10 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             if( fabs( thejet->eta() ) > jetEtaThreshold_ ) continue;
             if( thejet->pt() < jetPtThreshold_ ) continue;
 
-            dRPhoLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->leadingPhoton()->superCluster()->eta(), dipho->leadingPhoton()->superCluster()->phi() ) ;
+            dRPhoLeadJet    = deltaR( thejet->eta(), thejet->phi(), dipho->leadingPhoton()->superCluster()->eta(), dipho->leadingPhoton()->superCluster()->phi() ) ;
             dRPhoSubLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->subLeadingPhoton()->superCluster()->eta(),dipho->subLeadingPhoton()->superCluster()->phi() );
 
             if( dRPhoLeadJet < deltaRJetLeadPhoThreshold_ || dRPhoSubLeadJet < deltaRJetSubLeadPhoThreshold_ ) continue;
-
-//            int goodElectrons_count = 0;
-//            int goodMuons_count = 0;
-//            int rejectJet_wrt_muon = 1;
-//            int rejectJet_wrt_ele = 1;
-//
-////deltaR check with ele------------------------------------
-//            for(auto ele : goodElectrons) {
-//                float dRJetLepton_ele = deltaR( thejet->eta(), thejet->phi(), ele->eta() , ele->phi() );
-//                minDrLepton_ele.push_back(dRJetLepton_ele);
-//                goodElectrons_count++;
-//            }
-//            if(minDrLepton_ele.size() > 0) {
-//                for(unsigned int minDrLepton_ele_index=0; minDrLepton_ele_index < minDrLepton_ele.size() ; minDrLepton_ele_index++ ) {
-//                    if( minDrLepton_ele.at(minDrLepton_ele_index) < deltaRJetLepThreshold_) {
-//                        rejectJet_wrt_ele = 0;
-//                    }
-//                    rejectJet_wrt_ele = rejectJet_wrt_ele * rejectJet_wrt_ele ;
-//                }
-//            }
-//            if( rejectJet_wrt_ele == 0) {
-//                continue;
-//            }
-//            minDrLepton_ele.clear();
-////deltaR check with muon---------------------------
-//            for(auto mu : goodMuons) {
-//                float dRJetLepton_muon = deltaR( thejet->eta(), thejet->phi(), mu->eta() , mu->phi() );
-//                minDrLepton_muon.push_back(dRJetLepton_muon);
-//                goodMuons_count++;
-//            }
-//
-//            if(minDrLepton_muon.size() > 0) {
-//                for(unsigned int minDrLepton_muon_index=0; minDrLepton_muon_index < minDrLepton_muon.size() ; minDrLepton_muon_index++ ) {
-//                    if( minDrLepton_muon.at(minDrLepton_muon_index) < deltaRJetLepThreshold_) {
-//                        rejectJet_wrt_muon = 0;
-//                    }
-//                    rejectJet_wrt_muon = rejectJet_wrt_muon * rejectJet_wrt_muon ;
-//                }
-//            }
-//            if( rejectJet_wrt_muon == 0) {
-//                continue;
-//            }
-//            minDrLepton_muon.clear();
-
 
             float bDiscriminatorValue; //= -2.;
             if(bTag_ == "pfDeepCSV") bDiscriminatorValue = thejet->bDiscriminator("pfDeepCSVJetTags:probb") + thejet->bDiscriminator("pfDeepCSVJetTags:probbb");
@@ -582,12 +493,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 
             ht+=thejet->pt();
 
-            if( fabs( thejet->eta() ) < 1) {
-                centraljet.push_back( thejet );
-            }
-            if( fabs( thejet->eta() ) > 1) {
-                forwardjet.push_back( thejet );
-            }
+            if( fabs( thejet->eta() ) < 1) centraljet.push_back( thejet );
+            if( fabs( thejet->eta() ) > 1) forwardjet.push_back( thejet );
 
             SelJetVect.push_back( thejet );
             SelJetVect_EtaSorted.push_back( thejet );
@@ -595,12 +502,15 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             bDiscr_jets.push_back( thejet->bDiscriminator("pfDeepCSVJetTags:probb") + thejet->bDiscriminator("pfDeepCSVJetTags:probbb") );
         }//end of jets loop
 
+
+        if(debug) printf("[debug] num leps = %lu, num_jets = %lu \n", goodElectrons.size() + goodMuons.size(), SelJetVect.size());
+
         //Calculate scalar sum of jets
-        std::sort(LooseBJetVect_PtSorted.begin(),LooseBJetVect_PtSorted.end(),GreaterByPt());
-        std::sort(MediumBJetVect_PtSorted.begin(),MediumBJetVect_PtSorted.end(),GreaterByPt());
-        std::sort(TightBJetVect_PtSorted.begin(),TightBJetVect_PtSorted.end(),GreaterByPt());
-        std::sort(SelJetVect_EtaSorted.begin(),SelJetVect_EtaSorted.end(),GreaterByEta());
-        std::sort(SelJetVect_PtSorted.begin(),SelJetVect_PtSorted.end(),GreaterByPt());
+        std::sort( LooseBJetVect_PtSorted.begin()  , LooseBJetVect_PtSorted.end()  , GreaterByPt()  );
+        std::sort( MediumBJetVect_PtSorted.begin() , MediumBJetVect_PtSorted.end() , GreaterByPt()  );
+        std::sort( TightBJetVect_PtSorted.begin()  , TightBJetVect_PtSorted.end()  , GreaterByPt()  );
+        std::sort( SelJetVect_EtaSorted.begin()    , SelJetVect_EtaSorted.end()    , GreaterByEta() );
+        std::sort( SelJetVect_PtSorted.begin()     , SelJetVect_PtSorted.end()     , GreaterByPt()  );
 
 	    for(unsigned int bjetsindex = 0 ; bjetsindex < LooseBJetVect.size(); bjetsindex++){
 	        if(LooseBJetVect[bjetsindex] !=  SelJetVect_EtaSorted[0] ){
@@ -613,31 +523,32 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 	    std::sort(bDiscr_bjets.begin(), bDiscr_bjets.end(), std::greater<float>());
 
         if(SelJetVect.size() < jetsNumberThreshold_ || BJetVect.size() < bjetsNumberThreshold_) continue;	
+        if(debug) printf("[check] survive jets criteria!\n");
 
-        float bjet1_discr_=-999;
-        float bjet2_discr_=-999;
-        float bjet3_discr_=-999;
-        float bjet1_pt_=-999;
-        float bjet2_pt_=-999;
-        float bjet3_pt_=-999;
-        float bjet1_eta_=-999;
-        float bjet2_eta_=-999;
-        float bjet3_eta_=-999;
-        float jet1_pt_=-999;
-        float jet2_pt_=-999;
-        float jet3_pt_=-999;
-        float jet4_pt_=-999;
-        float jet1_eta_=-999;
-        float jet2_eta_=-999;
-        float jet3_eta_=-999;
-        float jet4_eta_=-999;
-        float jet1_discr_=-999;
-        float jet2_discr_=-999;
-        float jet3_discr_=-999;
-        float jet4_discr_=-999;
-        float fwdJet1_pt_=-999;
-        float fwdJet1_eta_=-999;
-        float fwdJet1_discr_=-999;
+        bjet1_discr_   = -999;
+        bjet2_discr_   = -999;
+        bjet3_discr_   = -999;
+        bjet1_pt_      = -999;
+        bjet2_pt_      = -999;
+        bjet3_pt_      = -999;
+        bjet1_eta_     = -999;
+        bjet2_eta_     = -999;
+        bjet3_eta_     = -999;
+        jet1_pt_       = -999;
+        jet2_pt_       = -999;
+        jet3_pt_       = -999;
+        jet4_pt_       = -999;
+        jet1_eta_      = -999;
+        jet2_eta_      = -999;
+        jet3_eta_      = -999;
+        jet4_eta_      = -999;
+        jet1_discr_    = -999;
+        jet2_discr_    = -999;
+        jet3_discr_    = -999;
+        jet4_discr_    = -999;
+        fwdJet1_pt_    = -999;
+        fwdJet1_eta_   = -999;
+        fwdJet1_discr_ = -999;
 
 //------------------------------------ Likelihood and MVA -----------------------------------------//
 
@@ -702,33 +613,29 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             fwdJet1_eta_ = SelJetVect_EtaSorted[0]->eta();
             fwdJet1_discr_= SelJetVect_EtaSorted[0]->bDiscriminator("pfDeepCSVJetTags:probb") + SelJetVect_EtaSorted[0]->bDiscriminator("pfDeepCSVJetTags:probbb");
         }
-        //bDiscr_jets.push_back(jet1_discr_);
-        //bDiscr_jets.push_back(jet2_discr_);
-        //bDiscr_jets.push_back(jet3_discr_);
-        //bDiscr_jets.push_back(jet4_discr_);
         bDiscr_fwdjets.push_back(fwdJet1_discr_ );
 
-        dRbjetfwdjet_ = deltaR( b1.Eta() , b1.Phi() , fwdJet1->eta() , fwdJet1->phi() );
-        dRleadphobjet_ = deltaR( G1.Eta() , G1.Phi(), b1.Eta() , b1.Phi());
-        dRsubleadphobjet_ = deltaR( G2.Eta() , G2.Phi(), b1.Eta() , b1.Phi());
-        dRleadphofwdjet_ = deltaR( G1.Eta() , G1.Phi(), fwdJet1->eta() , fwdJet1->phi());
+        dRbjetfwdjet_       = deltaR( b1.Eta() , b1.Phi() , fwdJet1->eta() , fwdJet1->phi() );
+        dRleadphobjet_      = deltaR( G1.Eta() , G1.Phi(), b1.Eta() , b1.Phi());
+        dRsubleadphobjet_   = deltaR( G2.Eta() , G2.Phi(), b1.Eta() , b1.Phi());
+        dRleadphofwdjet_    = deltaR( G1.Eta() , G1.Phi(), fwdJet1->eta() , fwdJet1->phi());
         dRsubleadphofwdjet_ = deltaR( G2.Eta() , G2.Phi(), fwdJet1->eta() , fwdJet1->phi());
 
-        minPhoID_=TMath::Min( dipho_leadIDMVA_, dipho_subleadIDMVA_);
-        maxPhoID_=TMath::Max( dipho_leadIDMVA_, dipho_subleadIDMVA_);
+        minPhoID_           = TMath::Min( dipho_leadIDMVA_, dipho_subleadIDMVA_);
+        maxPhoID_           = TMath::Max( dipho_leadIDMVA_, dipho_subleadIDMVA_);
 
-        maxBTagVal_ = bDiscr_bjets.size() > 0 ? bDiscr_bjets[0] : -1.;
-        secondMaxBTagVal_ = bDiscr_bjets.size() > 1 ? bDiscr_bjets[1]: -1.;
+        maxBTagVal_         = bDiscr_bjets.size() > 0 ? bDiscr_bjets[0] : -1.;
+        secondMaxBTagVal_   = bDiscr_bjets.size() > 1 ? bDiscr_bjets[1]: -1.;
 
-/*---------------------------------------------------------------------------------------
-# Evaluate MVA
-# DNN input variables
-# Evaluate DNN
-int catnum = -1;
-catnum = chooseCategory( MVAscore_tHqVsttHBDT );
-catnum = chooseCategory( mvares->result );
-catnum = chooseCategory( idmva1, idmva2 );
----------------------------------------------------------------------------------------*/
+        /*---------------------------------------------------------------------------------------
+        # Evaluate MVA
+        # DNN input variables
+        # Evaluate DNN
+        int catnum = -1;
+        catnum = chooseCategory( MVAscore_tHqVsttHBDT );
+        catnum = chooseCategory( mvares->result );
+        catnum = chooseCategory( idmva1, idmva2 );
+        ---------------------------------------------------------------------------------------*/
         if(debug_){
             cout<<"jet1_eta_"<<jet1_eta_<<endl;
             cout<<"jet2_eta_"<<jet2_eta_<<endl;
@@ -755,208 +662,209 @@ catnum = chooseCategory( idmva1, idmva2 );
             cout<<"fwdJet1_pt_= "<<fwdJet1_eta_<<endl;
             cout<<"fwdJet1_discr_= "<<fwdJet1_discr_<<endl;
         }
-//---------------------------------------------------------------------------------------
-            thqhtags_obj.setHT(ht);
 
-            if( photonSelection ) {
-                thqhtags_obj.setrho(rho_);
+//-------------------------------------------------------------------------------------------------//
 
-                //thqhtags_obj.setLeptonType(LeptonType);
-                thqhtags_obj.includeWeights( *dipho );
+        thqhtags_obj.setHT(ht);
 
-                thqhtags_obj.photonWeights = dipho->leadingPhoton()->centralWeight()*dipho->subLeadingPhoton()->centralWeight() ;
-                thqhtags_obj.setJets( SelJetVect_PtSorted , SelJetVect_EtaSorted);
-                thqhtags_obj.setBJets( BJetVect );
-                thqhtags_obj.nCentralJets = centraljet.size();
-                thqhtags_obj.nForwardJets = forwardjet.size();
-                thqhtags_obj.setcentraljet( centraljet );
-                thqhtags_obj.setforwardjet( forwardjet );
-                thqhtags_obj.setdRbjetfwdjet( dRbjetfwdjet_ ) ;
-                thqhtags_obj.setdRleadphobjet( dRleadphobjet_ );
-                thqhtags_obj.setdRsubleadphobjet( dRsubleadphobjet_ );
-                thqhtags_obj.setdRleadphofwdjet( dRleadphofwdjet_ );
-                thqhtags_obj.setdRsubleadphofwdjet( dRsubleadphofwdjet_ );
-                thqhtags_obj.setmvaresult ( mvares->result ) ;     //diphoton mva
-		        thqhtags_obj.setbDiscriminatorValue( bDiscr_bjets, bDiscr_jets, bDiscr_fwdjets );
-                //thqhtags_obj.setCategoryNumber( catnum );
-                thqhtags_obj.bTagWeight = 1.0;
-                thqhtags_obj.bTagWeightDown = 1.0;
-                thqhtags_obj.bTagWeightUp = 1.0;
-                for( auto j : SelJetVect_PtSorted ) {
-                    thqhtags_obj.includeWeights( *j );
+        if( photonSelection ) {
+            thqhtags_obj.setrho(rho_);
 
-                    //if( j->hasWeight("JetBTagCutWeightCentral") ){
-                    //    thqhtags_obj.bTagWeight *= j->weight( "JetBTagCutWeightCentral" );
-                    //    thqhtags_obj.bTagWeightDown *= j->weight( "JetBTagCutWeightDown01sigma" );
-                    //    thqhtags_obj.bTagWeightUp *= j->weight( "JetBTagCutWeightUp01sigma" );
-                    //}
-                    //else
-                    //  cout << "BTag weight is not set in jet" << endl;
-                }
+            //thqhtags_obj.setLeptonType(LeptonType);
+            thqhtags_obj.includeWeights( *dipho );
+            thqhtags_obj.photonWeights = dipho->leadingPhoton()->centralWeight()*dipho->subLeadingPhoton()->centralWeight() ;
+            thqhtags_obj.setJets( SelJetVect_PtSorted , SelJetVect_EtaSorted);
+            thqhtags_obj.setBJets( BJetVect );
+            thqhtags_obj.nCentralJets = centraljet.size();
+            thqhtags_obj.nForwardJets = forwardjet.size();
+            thqhtags_obj.setcentraljet( centraljet );
+            thqhtags_obj.setforwardjet( forwardjet );
+            thqhtags_obj.setdRbjetfwdjet( dRbjetfwdjet_ ) ;
+            thqhtags_obj.setdRleadphobjet( dRleadphobjet_ );
+            thqhtags_obj.setdRsubleadphobjet( dRsubleadphobjet_ );
+            thqhtags_obj.setdRleadphofwdjet( dRleadphofwdjet_ );
+            thqhtags_obj.setdRsubleadphofwdjet( dRsubleadphofwdjet_ );
+            thqhtags_obj.setmvaresult ( mvares->result ) ;     //diphoton mva
+		    thqhtags_obj.setbDiscriminatorValue( bDiscr_bjets, bDiscr_jets, bDiscr_fwdjets );
+            //thqhtags_obj.setCategoryNumber( catnum );
+            thqhtags_obj.bTagWeight     = 1.0;
+            thqhtags_obj.bTagWeightDown = 1.0;
+            thqhtags_obj.bTagWeightUp   = 1.0;
+            for( auto j : SelJetVect_PtSorted ) {
+                thqhtags_obj.includeWeights( *j );
 
-                thqhtags_obj.setVertices( vertices->ptrs() );
-                thqhtags_obj.setMuons( goodMuons , looseMus_PassTight , LooseMu25.size() , LooseMu15.size() , MediumMu25.size() , MediumMu15.size() , TightMuo25.size() , TightMuo15.size() );
-                thqhtags_obj.setElectrons( goodElectrons , vetoNonIsoElectrons_PassTight , vetoNonIsoElectrons_PassVeto , looseElectrons.size() , vetoElectrons.size() , mediumElectrons.size() , goodElectrons.size() );
-                thqhtags_obj.setDiPhotonIndex( diphoIndex );
-                thqhtags_obj.setSystLabel( systLabel_ );
-                thqhtags_obj.nMedium_bJets = MediumBJetVect.size();
-                thqhtags_obj.nLoose_bJets = LooseBJetVect_PtSorted.size();
-                thqhtags_obj.nTight_bJets = TightBJetVect_PtSorted.size();
+                //if( j->hasWeight("JetBTagCutWeightCentral") ){
+                //    thqhtags_obj.bTagWeight *= j->weight( "JetBTagCutWeightCentral" );
+                //    thqhtags_obj.bTagWeightDown *= j->weight( "JetBTagCutWeightDown01sigma" );
+                //    thqhtags_obj.bTagWeightUp *= j->weight( "JetBTagCutWeightUp01sigma" );
+                //}
+                //else
+                //  cout << "BTag weight is not set in jet" << endl;
+            }
 
-                /*
-                if ( ! evt.isRealData() ) {
-                    evt.getByToken( genParticleToken_, genParticles );
-                    evt.getByToken( genJetToken_, genJets );
+            thqhtags_obj.setVertices( vertices->ptrs() );
+            thqhtags_obj.setMuons( goodMuons , looseMus_PassTight , LooseMu25.size() , LooseMu15.size() , MediumMu25.size() , MediumMu15.size() , TightMuo25.size() , TightMuo15.size() );
+            thqhtags_obj.setElectrons( goodElectrons , vetoNonIsoElectrons_PassTight , vetoNonIsoElectrons_PassVeto , looseElectrons.size() , vetoElectrons.size() , mediumElectrons.size() , goodElectrons.size() );
+            thqhtags_obj.setDiPhotonIndex( diphoIndex );
+            thqhtags_obj.setSystLabel( systLabel_ );
+            thqhtags_obj.nMedium_bJets = MediumBJetVect.size();
+            thqhtags_obj.nLoose_bJets  = LooseBJetVect_PtSorted.size();
+            thqhtags_obj.nTight_bJets  = TightBJetVect_PtSorted.size();
 
-                    //--- gen met ---//
-                    TLorentzVector nu_lorentzVector, allnus_LorentzVector, promptnus_LorentzVector;
+//------------------------------------ MC-Truth Info -----------------------------------------//
+//            if ( ! evt.isRealData() ) {
+//                evt.getByToken( genParticleToken_, genParticles );
+//                evt.getByToken( genJetToken_, genJets );
+//
+//                //--- gen met ---//
+//                TLorentzVector nu_lorentzVector, allnus_LorentzVector, promptnus_LorentzVector;
+//
+//                for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+//                    edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
+//                    bool fid_cut = (abs(part->eta())<5.0 && part->status()==1) ? 1 : 0;
+//                    bool isNu = (abs(part->pdgId())==12 || abs(part->pdgId())==14 || abs(part->pdgId())==16) ? 1 : 0;
+//                    if (!fid_cut || !isNu) continue;
+//                    if( part->isPromptFinalState() || part->isDirectPromptTauDecayProductFinalState()) {
+//                        nu_lorentzVector.SetPtEtaPhiE(  part->pt() , part->eta() , part->phi() , part->energy() );
+//                        promptnus_LorentzVector+=nu_lorentzVector;
+//                    }
+//                    else {
+//                        nu_lorentzVector.SetPtEtaPhiE(  part->pt() , part->eta() , part->phi() , part->energy() );
+//                        allnus_LorentzVector+=nu_lorentzVector;
+//                    }
+//                }
+//                thqhtags_obj.setMETPtEtaPhiE( "allPromptNus", promptnus_LorentzVector.Pt(), promptnus_LorentzVector.Eta(), promptnus_LorentzVector.Phi(), promptnus_LorentzVector.Energy() );
+//                thqhtags_obj.setMETPtEtaPhiE( "allNus", allnus_LorentzVector.Pt(), allnus_LorentzVector.Eta(), allnus_LorentzVector.Phi(), allnus_LorentzVector.Energy() );
+//                thqhtags_obj.setMETPtEtaPhiE( "genMetTrue", theMET->genMET()->pt(), theMET->genMET()->eta(), theMET->genMET()->phi(), theMET->genMET()->energy() );
+//                thqhtags_obj.setStage1recoTag( DiPhotonTagBase::stage1recoTag::RECO_THQ_LEP );
+//
+//                // MC truth matching
+//                std::vector<int> vec_pdgId_register;
+//                std::vector<int> vec_index_register;
+//                std::vector<double> vec_deltaR_register;
+//                std::vector<int> gens_pdgId;
+//                std::vector<int> gens_status;
+//                std::vector<double> gens_pt;
+//                std::vector<double> gens_eta;
+//                std::vector<double> gens_phi;
+//                std::vector<double> gens_mass;
+//                std::vector<int> moms_pdgId;
+//                std::vector<int> moms_status;
+//                std::vector<double> moms_pt;
+//                std::vector<double> moms_eta;
+//                std::vector<double> moms_phi;
+//                std::vector<double> moms_mass;
+//                int counter_num_gen_particles = 0;
+//                for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+//                    edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
+//                    //printf("[check] ");
+//                    //printf("(%2d) ", genLoop);
+//                    //printf("status = %5d, ", part->status());
+//                    //printf("pdgId = %5d, ", part->pdgId());
+//                    //printf("pt = %7.3f, ", part->pt());
+//                    //printf("eta = %7.3f, ", part->eta());
+//                    //printf("\n");
+//
+//                    const reco::GenParticle *mom = getMother( *part );
+//
+//                    bool fid_cut = ( abs(part->eta())<jetEtaThreshold_ ) ? 1 : 0;
+//                    bool status_cut = ( part->status()==22 || part->status()==23 ) ? 1 : 0; //22: intermediate state, 23: outgoing particles
+//                    if (!fid_cut || !status_cut) continue;
+//                    counter_num_gen_particles += 1;
+//
+//                    //printf("[check] ");
+//                    //printf("(%2d) ", genLoop);
+//                    //printf("status = %5d, ", part->status());
+//                    //printf("pdgId = %9d, ", part->pdgId());
+//                    //printf("pt = %7.3f, ", part->pt());
+//                    //printf("eta = %7.3f, ", part->eta());
+//                    //printf("mom status = %9d, ", mom->status());
+//                    //printf("pdgId = %5d, ", mom->pdgId());
+//                    //printf("pt = %7.3f, ", mom->pt());
+//                    //printf("eta = %7.3f, ", mom->eta());
+//                    //printf("\n");
+//                    
+//                    // store gen parton & mom kinematic info
+//                    gens_pdgId.push_back(part->pdgId());
+//                    gens_status.push_back(part->status());
+//                    gens_pt.push_back(part->pt());
+//                    gens_eta.push_back(part->eta());
+//                    gens_phi.push_back(part->phi());
+//                    gens_mass.push_back(part->mass());
+//
+//                    moms_pdgId.push_back(mom->pdgId());
+//                    moms_status.push_back(mom->status());
+//                    moms_pt.push_back(mom->pt());
+//                    moms_eta.push_back(mom->eta());
+//                    moms_phi.push_back(mom->phi());
+//                    moms_mass.push_back(mom->mass());
+//
+//                    // gen matching
+//                    std::vector<double> vec_deltaR;
+//	                for(unsigned int index = 0 ; index < SelJetVect_PtSorted.size(); index++){
+//                        edm::Ptr<reco::Jet> jet = SelJetVect_PtSorted[index];
+//                        double deltaR = sqrt( (jet->eta()-part->eta())*(jet->eta()-part->eta()) + (jet->phi()-part->phi())*(jet->phi()-part->phi()) );
+//                        vec_deltaR.push_back(deltaR);
+//                    }
+//                    std::vector<std::pair<int, double>> vec_deltaR_sorted = sortVector(vec_deltaR);
+//                    if(vec_deltaR_sorted[0].second > 0.4) continue;
+//                    vec_pdgId_register.push_back(part->pdgId());
+//                    vec_index_register.push_back(vec_deltaR_sorted[0].first);
+//                    vec_deltaR_register.push_back(vec_deltaR_sorted[0].second);
+//                    //printf("part->pdgId() = %d\n", part->pdgId());
+//                    //printf("vec_deltaR_sorted[0].first = %d\n", vec_deltaR_sorted[0].first);
+//                    //printf("vec_deltaR_sorted[0].second = %.2f\n", vec_deltaR_sorted[0].second);
+//                }
+//
+//                printf("[check] counter_num_gen_particles = %d\n", counter_num_gen_particles);
+//
+//                unsigned int register_size = vec_deltaR_register.size();
+//                int    pdgId_jet0  = register_size > 0 ? vec_pdgId_register[0] : -1;
+//                int    pdgId_jet1  = register_size > 1 ? vec_pdgId_register[1] : -1;
+//                int    pdgId_jet2  = register_size > 2 ? vec_pdgId_register[2] : -1;
+//                int    index_jet0  = register_size > 0 ? vec_index_register[0] : -1;
+//                int    index_jet1  = register_size > 1 ? vec_index_register[1] : -1;
+//                int    index_jet2  = register_size > 2 ? vec_index_register[2] : -1;
+//                double deltaR_jet0 = register_size > 0 ? vec_deltaR_register[0] : -1.;
+//                double deltaR_jet1 = register_size > 1 ? vec_deltaR_register[1] : -1.;
+//                double deltaR_jet2 = register_size > 2 ? vec_deltaR_register[2] : -1.;
+//
+//                //printf("[check] vec_deltaR_register size = %lu\n", vec_deltaR_register.size());
+//                //printf("(jet0, jet1, jet2) = (%d, %d, %d)\n", index_jet0, index_jet1, index_jet2);
+//                //printf("(jet0, jet1, jet2) = (%d, %d, %d)\n", pdgId_jet0, pdgId_jet1, pdgId_jet2);
+//                //printf("(jet0, jet1, jet2) = (%.2f, %.2f, %.2f)\n", deltaR_jet0, deltaR_jet1, deltaR_jet2);
+//                //printf("\n");
+//                std::vector<int > jets_matched_pdgId = { pdgId_jet0, pdgId_jet1, pdgId_jet2 };
+//                std::vector<int > jets_matched_index = { index_jet0, index_jet1, index_jet2 };
+//                std::vector<double > jets_matched_deltaR = { deltaR_jet0, deltaR_jet1, deltaR_jet2 };
+//                thqhtags_obj.setMatchedPdgId  ( jets_matched_pdgId  );
+//                thqhtags_obj.setMatchedIndex  ( jets_matched_index  );
+//                thqhtags_obj.setMatchedDeltaR ( jets_matched_deltaR );
+//                thqhtags_obj.setGenPdgId      ( gens_pdgId          );
+//                thqhtags_obj.setGenStatus     ( gens_status         );
+//                thqhtags_obj.setGenPt         ( gens_pt             );
+//                thqhtags_obj.setGenEta        ( gens_eta            );
+//                thqhtags_obj.setGenPhi        ( gens_phi            );
+//                thqhtags_obj.setGenMass       ( gens_mass           );
+//                thqhtags_obj.setMomPdgId      ( moms_pdgId          );
+//                thqhtags_obj.setMomStatus     ( moms_status         );
+//                thqhtags_obj.setMomPt         ( moms_pt             );
+//                thqhtags_obj.setMomEta        ( moms_eta            );
+//                thqhtags_obj.setMomPhi        ( moms_phi            );
+//                thqhtags_obj.setMomMass       ( moms_mass           );
+//            }
+//--------------------------------------------------------------------------------------------//
 
-                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
-                        edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
-                        bool fid_cut = (abs(part->eta())<5.0 && part->status()==1) ? 1 : 0;
-                        bool isNu = (abs(part->pdgId())==12 || abs(part->pdgId())==14 || abs(part->pdgId())==16) ? 1 : 0;
-                        if (!fid_cut || !isNu) continue;
-                        if( part->isPromptFinalState() || part->isDirectPromptTauDecayProductFinalState()) {
-                            nu_lorentzVector.SetPtEtaPhiE(  part->pt() , part->eta() , part->phi() , part->energy() );
-                            promptnus_LorentzVector+=nu_lorentzVector;
-                        }
-                        else {
-                            nu_lorentzVector.SetPtEtaPhiE(  part->pt() , part->eta() , part->phi() , part->energy() );
-                            allnus_LorentzVector+=nu_lorentzVector;
-                        }
-                    }
-                    thqhtags_obj.setMETPtEtaPhiE( "allPromptNus", promptnus_LorentzVector.Pt(), promptnus_LorentzVector.Eta(), promptnus_LorentzVector.Phi(), promptnus_LorentzVector.Energy() );
-                    thqhtags_obj.setMETPtEtaPhiE( "allNus", allnus_LorentzVector.Pt(), allnus_LorentzVector.Eta(), allnus_LorentzVector.Phi(), allnus_LorentzVector.Energy() );
-                    thqhtags_obj.setMETPtEtaPhiE( "genMetTrue", theMET->genMET()->pt(), theMET->genMET()->eta(), theMET->genMET()->phi(), theMET->genMET()->energy() );
-                    thqhtags_obj.setStage1recoTag( DiPhotonTagBase::stage1recoTag::RECO_THQ_LEP );
+            thqhtags->push_back( thqhtags_obj );
 
-                    // MC truth matching
-                    std::vector<int> vec_pdgId_register;
-                    std::vector<int> vec_index_register;
-                    std::vector<double> vec_deltaR_register;
-                    std::vector<int> gens_pdgId;
-                    std::vector<int> gens_status;
-                    std::vector<double> gens_pt;
-                    std::vector<double> gens_eta;
-                    std::vector<double> gens_phi;
-                    std::vector<double> gens_mass;
-                    std::vector<int> moms_pdgId;
-                    std::vector<int> moms_status;
-                    std::vector<double> moms_pt;
-                    std::vector<double> moms_eta;
-                    std::vector<double> moms_phi;
-                    std::vector<double> moms_mass;
-                    int counter_num_gen_particles = 0;
-                    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
-                        edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
-                        //printf("[check] ");
-                        //printf("(%2d) ", genLoop);
-                        //printf("status = %5d, ", part->status());
-                        //printf("pdgId = %5d, ", part->pdgId());
-                        //printf("pt = %7.3f, ", part->pt());
-                        //printf("eta = %7.3f, ", part->eta());
-                        //printf("\n");
+            if (evt.isRealData()) {
+                thqhtags_obj.setStage1recoTag( DiPhotonTagBase::stage1recoTag::RECO_THQ_LEP );
+                thqhtags->push_back( thqhtags_obj ); //FIXME at next iteration!!
+            }
 
-                        const reco::GenParticle *mom = getMother( *part );
-
-                        bool fid_cut = ( abs(part->eta())<jetEtaThreshold_ ) ? 1 : 0;
-                        bool status_cut = ( part->status()==22 || part->status()==23 ) ? 1 : 0; //22: intermediate state, 23: outgoing particles
-                        if (!fid_cut || !status_cut) continue;
-                        counter_num_gen_particles += 1;
-
-                        //printf("[check] ");
-                        //printf("(%2d) ", genLoop);
-                        //printf("status = %5d, ", part->status());
-                        //printf("pdgId = %9d, ", part->pdgId());
-                        //printf("pt = %7.3f, ", part->pt());
-                        //printf("eta = %7.3f, ", part->eta());
-                        //printf("mom status = %9d, ", mom->status());
-                        //printf("pdgId = %5d, ", mom->pdgId());
-                        //printf("pt = %7.3f, ", mom->pt());
-                        //printf("eta = %7.3f, ", mom->eta());
-                        //printf("\n");
-                        
-                        // store gen parton & mom kinematic info
-                        gens_pdgId.push_back(part->pdgId());
-                        gens_status.push_back(part->status());
-                        gens_pt.push_back(part->pt());
-                        gens_eta.push_back(part->eta());
-                        gens_phi.push_back(part->phi());
-                        gens_mass.push_back(part->mass());
-
-                        moms_pdgId.push_back(mom->pdgId());
-                        moms_status.push_back(mom->status());
-                        moms_pt.push_back(mom->pt());
-                        moms_eta.push_back(mom->eta());
-                        moms_phi.push_back(mom->phi());
-                        moms_mass.push_back(mom->mass());
-
-                        // gen matching
-                        std::vector<double> vec_deltaR;
-	                    for(unsigned int index = 0 ; index < SelJetVect_PtSorted.size(); index++){
-                            edm::Ptr<reco::Jet> jet = SelJetVect_PtSorted[index];
-                            double deltaR = sqrt( (jet->eta()-part->eta())*(jet->eta()-part->eta()) + (jet->phi()-part->phi())*(jet->phi()-part->phi()) );
-                            vec_deltaR.push_back(deltaR);
-                        }
-                        std::vector<std::pair<int, double>> vec_deltaR_sorted = sortVector(vec_deltaR);
-                        if(vec_deltaR_sorted[0].second > 0.4) continue;
-                        vec_pdgId_register.push_back(part->pdgId());
-                        vec_index_register.push_back(vec_deltaR_sorted[0].first);
-                        vec_deltaR_register.push_back(vec_deltaR_sorted[0].second);
-                        //printf("part->pdgId() = %d\n", part->pdgId());
-                        //printf("vec_deltaR_sorted[0].first = %d\n", vec_deltaR_sorted[0].first);
-                        //printf("vec_deltaR_sorted[0].second = %.2f\n", vec_deltaR_sorted[0].second);
-                    }
-
-                    printf("[check] counter_num_gen_particles = %d\n", counter_num_gen_particles);
-
-                    unsigned int register_size = vec_deltaR_register.size();
-                    int    pdgId_jet0  = register_size > 0 ? vec_pdgId_register[0] : -1;
-                    int    pdgId_jet1  = register_size > 1 ? vec_pdgId_register[1] : -1;
-                    int    pdgId_jet2  = register_size > 2 ? vec_pdgId_register[2] : -1;
-                    int    index_jet0  = register_size > 0 ? vec_index_register[0] : -1;
-                    int    index_jet1  = register_size > 1 ? vec_index_register[1] : -1;
-                    int    index_jet2  = register_size > 2 ? vec_index_register[2] : -1;
-                    double deltaR_jet0 = register_size > 0 ? vec_deltaR_register[0] : -1.;
-                    double deltaR_jet1 = register_size > 1 ? vec_deltaR_register[1] : -1.;
-                    double deltaR_jet2 = register_size > 2 ? vec_deltaR_register[2] : -1.;
-
-                    //printf("[check] vec_deltaR_register size = %lu\n", vec_deltaR_register.size());
-                    //printf("(jet0, jet1, jet2) = (%d, %d, %d)\n", index_jet0, index_jet1, index_jet2);
-                    //printf("(jet0, jet1, jet2) = (%d, %d, %d)\n", pdgId_jet0, pdgId_jet1, pdgId_jet2);
-                    //printf("(jet0, jet1, jet2) = (%.2f, %.2f, %.2f)\n", deltaR_jet0, deltaR_jet1, deltaR_jet2);
-                    //printf("\n");
-                    std::vector<int > jets_matched_pdgId = { pdgId_jet0, pdgId_jet1, pdgId_jet2 };
-                    std::vector<int > jets_matched_index = { index_jet0, index_jet1, index_jet2 };
-                    std::vector<double > jets_matched_deltaR = { deltaR_jet0, deltaR_jet1, deltaR_jet2 };
-                    thqhtags_obj.setMatchedPdgId  ( jets_matched_pdgId  );
-                    thqhtags_obj.setMatchedIndex  ( jets_matched_index  );
-                    thqhtags_obj.setMatchedDeltaR ( jets_matched_deltaR );
-                    thqhtags_obj.setGenPdgId      ( gens_pdgId          );
-                    thqhtags_obj.setGenStatus     ( gens_status         );
-                    thqhtags_obj.setGenPt         ( gens_pt             );
-                    thqhtags_obj.setGenEta        ( gens_eta            );
-                    thqhtags_obj.setGenPhi        ( gens_phi            );
-                    thqhtags_obj.setGenMass       ( gens_mass           );
-                    thqhtags_obj.setMomPdgId      ( moms_pdgId          );
-                    thqhtags_obj.setMomStatus     ( moms_status         );
-                    thqhtags_obj.setMomPt         ( moms_pt             );
-                    thqhtags_obj.setMomEta        ( moms_eta            );
-                    thqhtags_obj.setMomPhi        ( moms_phi            );
-                    thqhtags_obj.setMomMass       ( moms_mass           );
-                }
-                */
-
-                thqhtags->push_back( thqhtags_obj );
-
-                if (evt.isRealData()) {
-                    thqhtags_obj.setStage1recoTag( DiPhotonTagBase::stage1recoTag::RECO_THQ_LEP );
-                    thqhtags->push_back( thqhtags_obj ); //FIXME at next iteration!!
-                }
-
-            } else {
-                if(false) std::cout << " THQHadronicTagProducer NO TAG " << std::endl;
-            }// end of photon if-else statement
+        } else {
+            if(false) std::cout << " THQHadronicTagProducer NO TAG " << std::endl;
+        }// end of photon if-else statement
     }//diPho loop end !
     evt.put( std::move( thqhtags ) );
 }// end of THQHadronicTagProducer::produce
