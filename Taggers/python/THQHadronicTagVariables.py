@@ -413,6 +413,7 @@ thqmva_variables=[
     "MVAscore_tHqVsttH_BDT          :=getthq_mvaresult",
     "MVAscore_thqVsNonHiggsBkg :=getthq_mvaresult_ForNonPeakingBkg",
     "MVAscore_tHqVsttH_DNN  :=getMVAscore_ttHvstHDNN",
+    "MVAscore_BDT           :=getMVAscore",
 ]
 
 for label in ["HighestBTagVal", "Medium" , "Loose" , "Tight"]:

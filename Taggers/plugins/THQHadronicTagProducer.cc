@@ -45,6 +45,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "flashgg/Taggers/interface/TTH_DNN_Helper.h"
+#include "flashgg/Taggers/interface/THQ_BDT_Helper.h"
 #include "TCanvas.h"
 #include <map>
 #include <typeinfo>
@@ -86,6 +87,9 @@ private:
     edm::EDGetTokenT<vector<flashgg::PDFWeightObject> > weightToken_;
     EDGetTokenT<double> rhoTag_;
     string systLabel_;
+    FileInPath BDT_xml_file_;
+    ///afs/cern.ch/work/y/ykao/tPrimeExcessHgg/CMSSW_10_6_8/src/tprimetH/mva/
+    //mva_smh_m600->BookMVA("BDT", "./mva/Hadronic_tprime_SMH_varSet2_sigM600_bdt.xml");
 
 
     typedef std::vector<edm::Handle<edm::View<flashgg::Jet> > > JetCollectionVector;
@@ -185,8 +189,10 @@ private:
     float secondMaxBTagVal_;
     float MVAscore_tHqVsttHDNN;
 
+    THQ_BDT_Helper *tprimeTagger;
+
     int counter = 0; //mytool
-    bool debug  = true; //mytool
+    bool debug  = false; //mytool
     bool debug_ = false;
     struct GreaterByPt
     {
@@ -281,8 +287,11 @@ THQHadronicTagProducer::THQHadronicTagProducer( const ParameterSet &iConfig ) :
     use_MVAs_ = iConfig.getParameter<bool> ( "use_MVAs" );
     use_tthVstHDNN_ = iConfig.getParameter<bool> ( "use_tthVstHDNN" );
     use_tthVstHBDT_ = iConfig.getParameter<bool> ( "use_tthVstHBDT" );
+    BDT_xml_file_ = iConfig.getParameter<edm::FileInPath> ( "tprimeXMLfile" );
 
-
+    if(use_MVAs_) {
+        tprimeTagger = new THQ_BDT_Helper(BDT_xml_file_.fullPath());
+    }
 
     for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
         auto token = consumes<View<flashgg::Jet> >(inputTagJets_[i]);
@@ -382,7 +391,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         idmva1 = dipho->leadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
         idmva2 = dipho->subLeadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
         if(debug) printf("[check] idmva1 = %.3f, idmva2 = %.3f\n", idmva1, idmva2);
-        if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
+        //if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
+        if( (! evt.isRealData()) && (idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_) ) continue; // for ntuple production, data skips the condition
         if(debug) printf("[check] survive idmva cuts!\n");
 
         //if( mvares->result < MVAThreshold_ ) continue;            //DiPho_MVA
@@ -500,6 +510,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             SelJetVect_EtaSorted.push_back( thejet );
             SelJetVect_PtSorted.push_back( thejet );
             bDiscr_jets.push_back( thejet->bDiscriminator("pfDeepCSVJetTags:probb") + thejet->bDiscriminator("pfDeepCSVJetTags:probbb") );
+
+            if(use_MVAs_) tprimeTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue);
         }//end of jets loop
 
 
@@ -627,6 +639,18 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         maxBTagVal_         = bDiscr_bjets.size() > 0 ? bDiscr_bjets[0] : -1.;
         secondMaxBTagVal_   = bDiscr_bjets.size() > 1 ? bDiscr_bjets[1]: -1.;
 
+        double mva_value = -999;
+        if(use_MVAs_) {
+            tprimeTagger->addPhoton(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), 0., dipho_leadIDMVA_);
+            tprimeTagger->addPhoton(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), 0., dipho_subleadIDMVA_);
+            tprimeTagger->addPhotonPixelSeed(dipho_lead_haspixelseed_, dipho_sublead_haspixelseed_);
+            tprimeTagger->addNbjets((float) MediumBJetVect.size());
+            tprimeTagger->addHt(ht);
+            tprimeTagger->addMet(theMET->getCorPt());
+
+            mva_value = tprimeTagger->EvalMVA();
+            tprimeTagger->clear();
+        }
         /*---------------------------------------------------------------------------------------
         # Evaluate MVA
         # DNN input variables
@@ -668,6 +692,7 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         thqhtags_obj.setHT(ht);
 
         if( photonSelection ) {
+            thqhtags_obj.setMVAscore(mva_value);
             thqhtags_obj.setrho(rho_);
 
             //thqhtags_obj.setLeptonType(LeptonType);

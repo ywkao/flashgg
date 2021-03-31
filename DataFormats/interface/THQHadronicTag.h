@@ -96,7 +96,7 @@ namespace flashgg {
             return Aeff;
             
         };
-        
+
         float getrho() const{
             return rho_;
         }
@@ -179,6 +179,10 @@ namespace flashgg {
         float getMVAscore_ttHvstHDNN() const{
             return MVAscore_ttHvstHDNN_;
         }
+        float getMVAscore() const{
+            return mva_value_;
+        }
+        
         double getlikelihood() const{
             return likelihood_result_;
         }
@@ -391,6 +395,8 @@ namespace flashgg {
 
 //----------------------------------------------------------------------------
 
+        void setMVAscore(double mva_value){mva_value_ = mva_value;}
+        
 
         void setVertices( std::vector<edm::Ptr<reco::Vertex> > vertices ) {
             vertices_ = vertices;
@@ -606,6 +612,7 @@ namespace flashgg {
         std::map <std::string, std::vector<float> > vtx_dxy_; std::map <std::string, std::vector<float> > vtx_dz_;
         std::map <std::string, std::vector<float> > diphovtx_dxy_; std::map <std::string, std::vector<float> > diphovtx_dz_;
         std::vector<float> eleMisHits_;
+        double mva_value_;
         float rho_;
         float dRtHchainfwdjet_=0;
         float dRbjetfwdjet_;
