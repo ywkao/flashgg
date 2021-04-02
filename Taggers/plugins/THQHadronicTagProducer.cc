@@ -391,8 +391,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         idmva1 = dipho->leadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
         idmva2 = dipho->subLeadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
         if(debug) printf("[check] idmva1 = %.3f, idmva2 = %.3f\n", idmva1, idmva2);
-        //if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
-        if( (! evt.isRealData()) && (idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_) ) continue; // for ntuple production, data skips the condition
+        if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
+        //if( (! evt.isRealData()) && (idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_) ) continue; // for ntuple production, data skips the condition
         if(debug) printf("[check] survive idmva cuts!\n");
 
         //if( mvares->result < MVAThreshold_ ) continue;            //DiPho_MVA
@@ -651,6 +651,10 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             mva_value = tprimeTagger->EvalMVA();
             tprimeTagger->clear();
         }
+
+        // select events that pass specified bdt scores
+        if(mva_value < 0.5) continue;
+
         /*---------------------------------------------------------------------------------------
         # Evaluate MVA
         # DNN input variables

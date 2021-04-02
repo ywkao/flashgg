@@ -131,6 +131,7 @@ private:
   float chi2_tprime_deltaR_tbw_   = -999;
   float chi2_tprime_deltaR_dipho_ = -999;
   float tprime_pt_ratio_          = -999;
+  float helicity_tprime_          = -999;
 };
 //}}}
 
@@ -189,12 +190,13 @@ void THQ_BDT_Helper::Init(std::string weight_file_name){
   reader->AddVariable("chi2_tbw_mass_"            , &chi2_tbw_mass_            );
   reader->AddVariable("chi2_tbw_ptOverM_"         , &chi2_tbw_ptOverM_         );
   reader->AddVariable("chi2_tbw_eta_"             , &chi2_tbw_eta_             );
-  reader->AddVariable("chi2_tbw_deltaR_dipho_"    , &chi2_tbw_deltaR_dipho_    );
+  //reader->AddVariable("chi2_tbw_deltaR_dipho_"    , &chi2_tbw_deltaR_dipho_    );
   reader->AddVariable("chi2_tprime_ptOverM_"      , &chi2_tprime_ptOverM_      );
   reader->AddVariable("chi2_tprime_eta_"          , &chi2_tprime_eta_          );
-  reader->AddVariable("chi2_tprime_deltaR_tbw_"   , &chi2_tprime_deltaR_tbw_   );
-  reader->AddVariable("chi2_tprime_deltaR_dipho_" , &chi2_tprime_deltaR_dipho_ );
+  //reader->AddVariable("chi2_tprime_deltaR_tbw_"   , &chi2_tprime_deltaR_tbw_   );
+  //reader->AddVariable("chi2_tprime_deltaR_dipho_" , &chi2_tprime_deltaR_dipho_ );
   reader->AddVariable("tprime_pt_ratio_"          , &tprime_pt_ratio_          );
+  reader->AddVariable("helicity_tprime_"          , &helicity_tprime_          );
 
   reader->BookMVA("BDT", weight_file_name);
 };
@@ -262,6 +264,7 @@ void THQ_BDT_Helper::clear(){
   chi2_tprime_deltaR_tbw_   = -999;
   chi2_tprime_deltaR_dipho_ = -999;
   tprime_pt_ratio_          = -999;
+  helicity_tprime_          = -999;
 };
 //}}}
 //double THQ_BDT_Helper::chi2_calculator_2x2(double w_mass, double t_mass){{{
@@ -462,6 +465,7 @@ double THQ_BDT_Helper::EvalScore(const std::shared_ptr<BDT_Hadronic_tprime> obje
   chi2_wboson_mass_         = reco_condition ? object->wboson->M()                               : -999;
   chi2_tbw_mass_            = reco_condition ? object->top->M()                                  : -999;
   tprime_pt_ratio_          = reco_condition ? (object->top->Pt() + object->diphoton->Pt())/ ht_ : -999;
+  helicity_tprime_          = reco_condition ? Helicity(dynamic_cast<BDT_ptvec*>(object->top.get())  , dynamic_cast<BDT_ptvec*>(object->diphoton.get())) : -999;
   chi2_wboson_deltaR_bjet_  = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->wboson.get()) , dynamic_cast<BDT_ptvec*>(object->bjet.get()))     : -999;
   chi2_tbw_deltaR_dipho_    = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->top.get())    , dynamic_cast<BDT_ptvec*>(object->diphoton.get())) : -999;
   chi2_tprime_deltaR_tbw_   = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->tprime.get()) , dynamic_cast<BDT_ptvec*>(object->top.get()))      : -999;
@@ -526,6 +530,7 @@ double THQ_BDT_Helper::EvalScore(const std::shared_ptr<BDT_Hadronic_tprime> obje
       printf("%-20s: %.2f\n" , "chi2_tprime_deltaR_tbw_"   , chi2_tprime_deltaR_tbw_   );
       printf("%-20s: %.2f\n" , "chi2_tprime_deltaR_dipho_" , chi2_tprime_deltaR_dipho_ );
       printf("%-20s: %.2f\n" , "tprime_pt_ratio_"          , tprime_pt_ratio_          );
+      printf("%-20s: %.2f\n" , "helicity_tprime_"          , helicity_tprime_          );
 
       std::cout << score << std::endl;
   }
