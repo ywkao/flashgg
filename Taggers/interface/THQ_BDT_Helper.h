@@ -340,7 +340,7 @@ double THQ_BDT_Helper::Helicity(const BDT_ptvec* particle_1, const BDT_ptvec* pa
   TVector3 v1 = p1.Vect();
   TVector3 vParent = parent.Vect();
   
-  if (isnan(v1.Mag()==0)) return -999;
+  if (isnan(v1.Mag())) return -999;
 
   double cos_theta_1 = (v1.Dot(vParent)) / (v1.Mag() * vParent.Mag());
 
