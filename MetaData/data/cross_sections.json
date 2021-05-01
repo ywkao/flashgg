@@ -341,14 +341,14 @@
     "TprimeBToTH_M-700_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"        : { "xs" : 1.0 },
     "TprimeBToTH_M-700_LH_TuneCUETP8M1_13TeV-madgraph-pythia8"             : { "xs" : 1.0 },
 
-    "TprimeBToTH_Hgg_M-600_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.17640 },
-    "TprimeBToTH_Hgg_M-625_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.14885 },
-    "TprimeBToTH_Hgg_M-650_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.12130 },
-    "TprimeBToTH_Hgg_M-675_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.10495 },
-    "TprimeBToTH_Hgg_M-700_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.08860 },
-    "TprimeBToTH_Hgg_M-800_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.04590 },
-    "TprimeBToTH_Hgg_M-900_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.02510 },
-    "TprimeBToTH_Hgg_M-1000_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"   : { "xs" : 0.01450 },
-    "TprimeBToTH_Hgg_M-1100_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"   : { "xs" : 0.00867 },
-    "TprimeBToTH_Hgg_M-1200_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"   : { "xs" : 0.00536 }
+    "TprimeBToTH_Hgg_M-600_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.17640, "br" : 0.00227 },
+    "TprimeBToTH_Hgg_M-625_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.14885, "br" : 0.00227 },
+    "TprimeBToTH_Hgg_M-650_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.12130, "br" : 0.00227 },
+    "TprimeBToTH_Hgg_M-675_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.10495, "br" : 0.00227 },
+    "TprimeBToTH_Hgg_M-700_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.08860, "br" : 0.00227 },
+    "TprimeBToTH_Hgg_M-800_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.04590, "br" : 0.00227 },
+    "TprimeBToTH_Hgg_M-900_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"    : { "xs" : 0.02510, "br" : 0.00227 },
+    "TprimeBToTH_Hgg_M-1000_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"   : { "xs" : 0.01450, "br" : 0.00227 },
+    "TprimeBToTH_Hgg_M-1100_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"   : { "xs" : 0.00867, "br" : 0.00227 },
+    "TprimeBToTH_Hgg_M-1200_LH_TuneCP5_PSweights_13TeV-madgraph_pythia8"   : { "xs" : 0.00536, "br" : 0.00227 }
 }
