@@ -87,7 +87,8 @@ private:
     edm::EDGetTokenT<vector<flashgg::PDFWeightObject> > weightToken_;
     EDGetTokenT<double> rhoTag_;
     string systLabel_;
-    FileInPath BDT_xml_file_;
+    FileInPath BDT_nrb_xml_file_;
+    FileInPath BDT_smh_xml_file_;
     ///afs/cern.ch/work/y/ykao/tPrimeExcessHgg/CMSSW_10_6_8/src/tprimetH/mva/
     //mva_smh_m600->BookMVA("BDT", "./mva/Hadronic_tprime_SMH_varSet2_sigM600_bdt.xml");
 
@@ -189,7 +190,8 @@ private:
     float secondMaxBTagVal_;
     float MVAscore_tHqVsttHDNN;
 
-    THQ_BDT_Helper *tprimeTagger;
+    THQ_BDT_Helper *tprimeTagger_nrb;
+    THQ_BDT_Helper *tprimeTagger_smh;
 
     int counter = 0; //mytool
     bool debug  = false; //mytool
@@ -287,10 +289,12 @@ THQHadronicTagProducer::THQHadronicTagProducer( const ParameterSet &iConfig ) :
     use_MVAs_ = iConfig.getParameter<bool> ( "use_MVAs" );
     use_tthVstHDNN_ = iConfig.getParameter<bool> ( "use_tthVstHDNN" );
     use_tthVstHBDT_ = iConfig.getParameter<bool> ( "use_tthVstHBDT" );
-    BDT_xml_file_ = iConfig.getParameter<edm::FileInPath> ( "tprimeXMLfile" );
+    BDT_nrb_xml_file_ = iConfig.getParameter<edm::FileInPath> ( "tprime_bdt_nrb_xmlfile" );
+    BDT_smh_xml_file_ = iConfig.getParameter<edm::FileInPath> ( "tprime_bdt_smh_xmlfile" );
 
     if(use_MVAs_) {
-        tprimeTagger = new THQ_BDT_Helper(BDT_xml_file_.fullPath());
+        tprimeTagger_nrb = new THQ_BDT_Helper(BDT_nrb_xml_file_.fullPath());
+        tprimeTagger_smh = new THQ_BDT_Helper(BDT_smh_xml_file_.fullPath());
     }
 
     for (unsigned i = 0 ; i < inputTagJets_.size() ; i++) {
@@ -511,7 +515,11 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             SelJetVect_PtSorted.push_back( thejet );
             bDiscr_jets.push_back( thejet->bDiscriminator("pfDeepCSVJetTags:probb") + thejet->bDiscriminator("pfDeepCSVJetTags:probbb") );
 
-            if(use_MVAs_) tprimeTagger->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue);
+            if(use_MVAs_)
+            {
+                tprimeTagger_nrb->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue);
+                tprimeTagger_smh->addJet(thejet->pt(), thejet->eta(), thejet->phi(), thejet->mass(), bDiscriminatorValue);
+            }
         }//end of jets loop
 
 
@@ -639,21 +647,31 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         maxBTagVal_         = bDiscr_bjets.size() > 0 ? bDiscr_bjets[0] : -1.;
         secondMaxBTagVal_   = bDiscr_bjets.size() > 1 ? bDiscr_bjets[1]: -1.;
 
-        double mva_value = -999;
+        double mva_value_nrb = -999;
+        double mva_value_smh = -999;
         if(use_MVAs_) {
-            tprimeTagger->addPhoton(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), 0., dipho_leadIDMVA_);
-            tprimeTagger->addPhoton(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), 0., dipho_subleadIDMVA_);
-            tprimeTagger->addPhotonPixelSeed(dipho_lead_haspixelseed_, dipho_sublead_haspixelseed_);
-            tprimeTagger->addNbjets((float) MediumBJetVect.size());
-            tprimeTagger->addHt(ht);
-            tprimeTagger->addMet(theMET->getCorPt());
+            tprimeTagger_nrb->addPhoton(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), 0., dipho_leadIDMVA_);
+            tprimeTagger_nrb->addPhoton(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), 0., dipho_subleadIDMVA_);
+            tprimeTagger_nrb->addPhotonPixelSeed(dipho_lead_haspixelseed_, dipho_sublead_haspixelseed_);
+            tprimeTagger_nrb->addNbjets((float) MediumBJetVect.size());
+            tprimeTagger_nrb->addHt(ht);
+            tprimeTagger_nrb->addMet(theMET->getCorPt());
+            mva_value_nrb = tprimeTagger_nrb->EvalMVA();
+            tprimeTagger_nrb->clear();
 
-            mva_value = tprimeTagger->EvalMVA();
-            tprimeTagger->clear();
+            tprimeTagger_smh->addPhoton(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), 0., dipho_leadIDMVA_);
+            tprimeTagger_smh->addPhoton(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), 0., dipho_subleadIDMVA_);
+            tprimeTagger_smh->addPhotonPixelSeed(dipho_lead_haspixelseed_, dipho_sublead_haspixelseed_);
+            tprimeTagger_smh->addNbjets((float) MediumBJetVect.size());
+            tprimeTagger_smh->addHt(ht);
+            tprimeTagger_smh->addMet(theMET->getCorPt());
+            mva_value_smh = tprimeTagger_smh->EvalMVA();
+            tprimeTagger_smh->clear();
         }
 
         // select events that pass specified bdt scores
-        if(mva_value < 0.5) continue;
+        if(mva_value_nrb < 0.56) continue;
+        if(mva_value_smh < 0.52) continue;
 
         /*---------------------------------------------------------------------------------------
         # Evaluate MVA
@@ -696,7 +714,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         thqhtags_obj.setHT(ht);
 
         if( photonSelection ) {
-            thqhtags_obj.setMVAscore(mva_value);
+            thqhtags_obj.setMVAscore_nrb(mva_value_nrb);
+            thqhtags_obj.setMVAscore_smh(mva_value_smh);
             thqhtags_obj.setrho(rho_);
 
             //thqhtags_obj.setLeptonType(LeptonType);

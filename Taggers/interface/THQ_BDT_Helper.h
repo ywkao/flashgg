@@ -43,6 +43,7 @@ public:
 //class THQ_BDT_Helper {{{
 class THQ_BDT_Helper {
 public:
+  //THQ_BDT_Helper(std::string weight_file_name){ Init(weight_file_name); MakeBabyNtuple("my_ntuple.root"); };
   THQ_BDT_Helper(std::string weight_file_name){ Init(weight_file_name); };
   ~THQ_BDT_Helper(){ clear(); };
 
@@ -63,7 +64,14 @@ public:
   double Helicity(const BDT_ptvec* particle_1, const BDT_ptvec* particle_2);
   double EvalMVA();
 
+  //void MakeBabyNtuple(const char*);
+  //void FillBabyNtuple();
+  //void CloseBabyNtuple();
+
 private:
+  //TFile *BabyFile_;
+  //TTree *BabyTree_;
+
   std::vector<std::shared_ptr<BDT_Jet>> jets;
   std::vector<std::shared_ptr<BDT_Jet>> bjets; // for b-tag scores sorting only
   std::vector<std::shared_ptr<BDT_Photon>> photons;
@@ -132,6 +140,8 @@ private:
   float chi2_tprime_deltaR_dipho_ = -999;
   float tprime_pt_ratio_          = -999;
   float helicity_tprime_          = -999;
+
+  double score_ = -999;
 };
 //}}}
 
@@ -409,6 +419,98 @@ double THQ_BDT_Helper::EvalMVA(){
 };
 //}}}
 
+/*
+//void MakeBabyNtuple(const char* BabyFilename){{{
+inline
+void MakeBabyNtuple(const char* BabyFilename)
+{
+  printf("BabyMaker::MakeBabyNtuple: %s\n", BabyFilename);
+  BabyFile_ = new TFile(Form("%s", BabyFilename), "RECREATE");
+  BabyFile_->cd();
+  BabyTree_ = new TTree("t", "A Baby Ntuple");
+
+  BabyTree_->Branch("maxIDMVA_"                 , &maxIDMVA_                 );
+  BabyTree_->Branch("minIDMVA_"                 , &minIDMVA_                 );
+  BabyTree_->Branch("max1_btag_"                , &max1_btag_                );
+  BabyTree_->Branch("max2_btag_"                , &max2_btag_                );
+  BabyTree_->Branch("dipho_delta_R"             , &dipho_delta_R             );
+  BabyTree_->Branch("njets_"                    , &njets_                    );
+  BabyTree_->Branch("nbjets_"                   , &nbjets_                   );
+  BabyTree_->Branch("ht_"                       , &ht_                       );
+  BabyTree_->Branch("leadptoM_"                 , &leadptoM_                 );
+  BabyTree_->Branch("subleadptoM_"              , &subleadptoM_              );
+  BabyTree_->Branch("lead_eta_"                 , &lead_eta_                 );
+  BabyTree_->Branch("sublead_eta_"              , &sublead_eta_              );
+  BabyTree_->Branch("jet1_ptOverM_"             , &jet1_ptOverM_             );
+  BabyTree_->Branch("jet1_eta_"                 , &jet1_eta_                 );
+  BabyTree_->Branch("jet1_btag_"                , &jet1_btag_                );
+  BabyTree_->Branch("jet2_ptOverM_"             , &jet2_ptOverM_             );
+  BabyTree_->Branch("jet2_eta_"                 , &jet2_eta_                 );
+  BabyTree_->Branch("jet2_btag_"                , &jet2_btag_                );
+  BabyTree_->Branch("jet3_ptOverM_"             , &jet3_ptOverM_             );
+  BabyTree_->Branch("jet3_eta_"                 , &jet3_eta_                 );
+  BabyTree_->Branch("jet3_btag_"                , &jet3_btag_                );
+  BabyTree_->Branch("jet4_ptOverM_"             , &jet4_ptOverM_             );
+  BabyTree_->Branch("jet4_eta_"                 , &jet4_eta_                 );
+  BabyTree_->Branch("jet4_btag_"                , &jet4_btag_                );
+  BabyTree_->Branch("leadPSV_"                  , &leadPSV_                  );
+  BabyTree_->Branch("subleadPSV_"               , &subleadPSV_               );
+  BabyTree_->Branch("dipho_cosphi_"             , &dipho_cosphi_             );
+  BabyTree_->Branch("dipho_rapidity_"           , &dipho_rapidity_           );
+  BabyTree_->Branch("met_"                      , &met_                      );
+  BabyTree_->Branch("dipho_pt_over_mass_"       , &dipho_pt_over_mass_       );
+  BabyTree_->Branch("helicity_angle_"           , &helicity_angle_           );
+  BabyTree_->Branch("chi2_value_"               , &chi2_value_               );
+  BabyTree_->Branch("chi2_bjet_ptOverM_"        , &chi2_bjet_ptOverM_        );
+  BabyTree_->Branch("chi2_bjet_eta_"            , &chi2_bjet_eta_            );
+  BabyTree_->Branch("chi2_bjet_btagScores_"     , &chi2_bjet_btagScores_     );
+  BabyTree_->Branch("chi2_wjet1_ptOverM_"       , &chi2_wjet1_ptOverM_       );
+  BabyTree_->Branch("chi2_wjet1_eta_"           , &chi2_wjet1_eta_           );
+  BabyTree_->Branch("chi2_wjet1_btagScores_"    , &chi2_wjet1_btagScores_    );
+  BabyTree_->Branch("chi2_wjet2_ptOverM_"       , &chi2_wjet2_ptOverM_       );
+  BabyTree_->Branch("chi2_wjet2_eta_"           , &chi2_wjet2_eta_           );
+  BabyTree_->Branch("chi2_wjet2_btagScores_"    , &chi2_wjet2_btagScores_    );
+  BabyTree_->Branch("chi2_wjets_deltaR_"        , &chi2_wjets_deltaR_        );
+  BabyTree_->Branch("chi2_wboson_ptOverM_"      , &chi2_wboson_ptOverM_      );
+  BabyTree_->Branch("chi2_wboson_eta_"          , &chi2_wboson_eta_          );
+  BabyTree_->Branch("chi2_wboson_mass_"         , &chi2_wboson_mass_         );
+  BabyTree_->Branch("chi2_wboson_deltaR_bjet_"  , &chi2_wboson_deltaR_bjet_  );
+  BabyTree_->Branch("chi2_tbw_mass_"            , &chi2_tbw_mass_            );
+  BabyTree_->Branch("chi2_tbw_ptOverM_"         , &chi2_tbw_ptOverM_         );
+  BabyTree_->Branch("chi2_tbw_eta_"             , &chi2_tbw_eta_             );
+  BabyTree_->Branch("chi2_tbw_deltaR_dipho_"    , &chi2_tbw_deltaR_dipho_    );
+  BabyTree_->Branch("chi2_tprime_ptOverM_"      , &chi2_tprime_ptOverM_      );
+  BabyTree_->Branch("chi2_tprime_eta_"          , &chi2_tprime_eta_          );
+  BabyTree_->Branch("chi2_tprime_deltaR_tbw_"   , &chi2_tprime_deltaR_tbw_   );
+  BabyTree_->Branch("chi2_tprime_deltaR_dipho_" , &chi2_tprime_deltaR_dipho_ );
+  BabyTree_->Branch("tprime_pt_ratio_"          , &tprime_pt_ratio_          );
+  BabyTree_->Branch("helicity_tprime_"          , &helicity_tprime_          );
+
+  BabyTree_->Branch("score_" , &score_ );
+
+  return;
+}
+//}}}
+//void BabyMaker::FillBabyNtuple(){{{
+inline
+void BabyMaker::FillBabyNtuple()
+{
+  BabyTree_->Fill();
+  return;
+}
+//}}}
+//void BabyMaker::CloseBabyNtuple(){{{
+inline
+void BabyMaker::CloseBabyNtuple()
+{
+  BabyFile_->cd();
+  BabyTree_->Write();
+  BabyFile_->Close();
+  return;
+}
+//}}}
+*/
+
 
 inline
 double THQ_BDT_Helper::EvalScore(const std::shared_ptr<BDT_Hadronic_tprime> object){
@@ -474,7 +576,7 @@ double THQ_BDT_Helper::EvalScore(const std::shared_ptr<BDT_Hadronic_tprime> obje
   chi2_tprime_deltaR_dipho_ = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->tprime.get()) , dynamic_cast<BDT_ptvec*>(object->diphoton.get())) : -999;
   chi2_wjets_deltaR_        = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->wjet1.get())  , dynamic_cast<BDT_ptvec*>(object->wjet2.get()))    : -999;
 
-  double score = convert_tmva_to_prob( reader->EvaluateMVA("BDT") );
+  score_ = convert_tmva_to_prob( reader->EvaluateMVA("BDT") );
 
   if (debug) {
       printf("%-20s: %.2f\n" , "maxIDMVA_"                 , maxIDMVA_                 );
@@ -534,10 +636,11 @@ double THQ_BDT_Helper::EvalScore(const std::shared_ptr<BDT_Hadronic_tprime> obje
       printf("%-20s: %.2f\n" , "tprime_pt_ratio_"          , tprime_pt_ratio_          );
       printf("%-20s: %.2f\n" , "helicity_tprime_"          , helicity_tprime_          );
 
-      std::cout << score << std::endl;
+      std::cout << score_ << std::endl;
   }
 
-  return score;
+  //FillBabyNtuple();
+  return score_;
 };
 
 }

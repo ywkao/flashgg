@@ -355,9 +355,16 @@ flashggTHQHadronicTag = cms.EDProducer("FlashggTHQHadronicTagProducer",
                                        DeltaRtHchainfwdjet=cms.double(0.4),
                                        #thqleptonicMVAweightfile = cms.FileInPath("flashgg/Taggers/data/TMVA_THQLeptonicTag_tHq_Vs_ttH_BDT.weights.xml"),
                                        #thqCatweightfile_ForNonPeakingBkg = cms.FileInPath("flashgg/Taggers/data/TMVA_THQLeptonicTag_tHq_Vs_NonPeakingBkg_BDT_16.weights.xml"),
-                                       tprimeXMLfile = cms.FileInPath("flashgg/Taggers/mydata/Hadronic_tprime_SMH_varSet8_sigMixed03_bdt.xml"),
-                                       #tprimeXMLfile = cms.FileInPath("flashgg/Taggers/mydata/Hadronic_tprime_SMH_varSet8_sigMixed04_bdt.xml"),
-                                       #tprimeXMLfile = cms.FileInPath("flashgg/Taggers/mydata/Hadronic_tprime_SMH_varSet8_sigMixed05_bdt.xml"),
+                                       #----------------------------------------------------------------------------------------------------
+                                       # bdt scores for tprime hadronic channel
+                                       #----------------------------------------------------------------------------------------------------
+                                       tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDT_tprime_NRB_varSet8_M600_M700_20210430.weights.xml"),
+                                       #tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDT_tprime_NRB_varSet8_M800_M1000_20210430.weights.xml"),
+                                       #tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDT_tprime_NRB_varSet8_M1100_M1200_20210430.weights.xml"),
+                                       tprime_bdt_smh_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDT_tprime_SMH_varSet8_M600_M700_20210426.weights.xml"),
+                                       #tprime_bdt_smh_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDT_tprime_SMH_varSet8_M800_M1000_20210426.weights.xml"),
+                                       #tprime_bdt_smh_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDT_tprime_SMH_varSet8_M1100_M1200_20210426.weights.xml"),
+                                       #----------------------------------------------------------------------------------------------------
                                        tthVstHDNNfile = cms.FileInPath("flashgg/Taggers/data/Leptonic_ttHLeptonic_ttH_vs_tH_v4.14_ttH_vs_tH_13Jan2020_weights.pb"),
                                        tthVstHDNN_global_mean = ttHLeptonic_ttH_vs_tH_DNN_preprocess_scheme["global_mean"],
                                        tthVstHDNN_global_stddev = ttHLeptonic_ttH_vs_tH_DNN_preprocess_scheme["global_stddev"],
