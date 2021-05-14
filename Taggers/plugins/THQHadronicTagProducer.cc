@@ -63,6 +63,11 @@ public:
     THQHadronicTagProducer( const ParameterSet & );
     ~THQHadronicTagProducer();
 
+    const  reco::GenParticle* motherID(const reco::GenParticle* gp);
+    int  GenPhoIndex(Handle<View<reco::GenParticle> > genParticles, const flashgg::Photon* pho, int usedIndex);
+    bool PassFrixione(Handle<View<reco::GenParticle> > genParticles, const reco::GenParticle* gp, int nBinsForFrix, double cone_frix);
+    vector<int> IsPromptAfterOverlapRemove(Handle<View<reco::GenParticle> > genParticles, const edm::Ptr<reco::GenParticle> genPho);
+
 private:
     std::string processId_;
 //    edm::EDGetTokenT< LHEEventProduct > token_lhe;
@@ -307,6 +312,109 @@ THQHadronicTagProducer::THQHadronicTagProducer( const ParameterSet &iConfig ) :
 THQHadronicTagProducer::~THQHadronicTagProducer() {
 }
 
+int THQHadronicTagProducer::GenPhoIndex(Handle<View<reco::GenParticle> > genParticles, const flashgg::Photon* pho, int usedIndex)
+{
+    double maxDr = 0.2;
+    double ptDiffMax = 99e15;
+    int index = -1;
+            
+    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
+        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+        if (pho->genMatchType() != 1) continue;
+        if (int(genLoop) == usedIndex) continue;
+        if (abs(pdgid) != 22) continue;
+        if (genParticles->ptrAt( genLoop )->p4().pt() < 10) continue;
+        if (!genParticles->ptrAt( genLoop )->isPromptFinalState()) continue;
+        double gen_photon_candidate_pt  = genParticles->ptrAt( genLoop )->p4().pt();
+        double gen_photon_candidate_eta = genParticles->ptrAt( genLoop )->p4().eta();
+        double gen_photon_candidate_phi = genParticles->ptrAt( genLoop )->p4().phi();
+        double deltaR_ = deltaR(gen_photon_candidate_eta, gen_photon_candidate_phi, pho->p4().eta(), pho->p4().phi());
+        if (deltaR_ > maxDr) continue;
+        double ptdiff = abs(gen_photon_candidate_pt - pho->p4().pt());
+        if (ptdiff < ptDiffMax) {
+            ptDiffMax = ptdiff;
+            index = genLoop;
+        }
+    } // end gen loop
+    return index;
+}  
+
+const reco::GenParticle* THQHadronicTagProducer::motherID(const reco::GenParticle* gp)
+{
+    const reco::GenParticle* mom_lead = gp;
+    //cout << "in id: " << gp->pdgId() << endl;
+    while( mom_lead->numberOfMothers() > 0 ) {
+        for(uint j = 0; j < mom_lead->numberOfMothers(); ++j) {
+            mom_lead = dynamic_cast<const reco::GenParticle*>( mom_lead->mother(j) );
+            //cout << j << "th id: " << mom_lead->pdgId() << ", gpid: " << gp->pdgId() << endl;
+            if( mom_lead->pdgId() != gp->pdgId() )
+                return mom_lead; 
+        }
+    }
+     return mom_lead;
+}
+
+bool THQHadronicTagProducer::PassFrixione(Handle<View<reco::GenParticle> > genParticles, const reco::GenParticle* gp, int nBinsForFrix, double cone_frix)
+{
+    bool passFrix = true;
+    double pho_et = gp->p4().Et();
+    double pho_eta = gp->p4().eta();
+    double pho_phi = gp->p4().phi();
+    const double initConeFrix = 1E-10;
+    double ets[nBinsForFrix] = {};
+
+    for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ )
+    {
+        int status = genParticles->ptrAt( genLoop )->status();
+        if (!(status >= 21 && status <=24)) continue;
+        int pdgid = genParticles->ptrAt( genLoop )->pdgId();
+        if (!(abs(pdgid) == 11 || abs(pdgid) == 13 || abs(pdgid) == 15 || abs(pdgid) < 10 || abs(pdgid) == 21) ) continue; 
+        double et  = genParticles->ptrAt( genLoop )->p4().Et();
+        double eta = genParticles->ptrAt( genLoop )->p4().eta();
+        double phi = genParticles->ptrAt( genLoop )->p4().phi();
+        double dR  = deltaR(pho_eta,pho_phi,eta,phi);
+        for (int j = 0; j < nBinsForFrix; j++) { 
+            double cone_var = (initConeFrix + j*cone_frix/nBinsForFrix);
+            if (dR < cone_var && cone_var < cone_frix) ets[j] += et/(1-cos(cone_var) )*(1-cos(cone_frix) );
+        }
+    }
+    for (int k = 0; k < nBinsForFrix; k++) {
+        if (ets[k] > pho_et) {
+           passFrix = false; break;
+       }
+    }
+    return passFrix;
+}
+
+vector<int> THQHadronicTagProducer::IsPromptAfterOverlapRemove(Handle<View<reco::GenParticle> > genParticles, const edm::Ptr<reco::GenParticle> genPho)
+{
+    vector<int> flags;
+    bool isPromptAfterOverlapRemove = false;
+    int simplemotherID = -1;
+    int simplemotherStatus = -1;
+    if (genPho->numberOfMothers() > 0) {
+        simplemotherID = genPho->mother(0)->pdgId();
+        simplemotherStatus = genPho->mother(0)->status();
+    }
+    const reco::GenParticle* mom = motherID(&(*genPho));
+    const reco::GenParticle* mommom = motherID(mom);
+    bool isMad = false;
+    if (simplemotherID == 22 && simplemotherStatus >= 21 && simplemotherStatus <= 24) isMad = true;
+    bool isFromWb = false;
+    if (abs(mom->pdgId()) == 24 || abs(mommom->pdgId()) == 24 || (abs(mom->pdgId()) == 5 && abs(mommom->pdgId()) == 6) ) isFromWb = true;
+    bool isFromQuark = false;
+    if (abs(mom->pdgId()) == 21 || abs(mommom->pdgId()) == 21 || (abs(mom->pdgId()) <= 6 && abs(mommom->pdgId()) != 6 && abs(mommom->pdgId()) != 24 ) ) isFromQuark = true;
+    bool isFromProton = false;
+    if (abs(mom->pdgId()) == 2212) isFromProton = true;
+    bool failFrix = !PassFrixione(genParticles, &(*genPho), 100, 0.05);
+    bool isPythia = false;
+    if (!isMad && genPho->isPromptFinalState() && ( isFromWb || (isFromQuark && failFrix) || isFromProton) ) isPythia = true;
+    if (isMad || isPythia) isPromptAfterOverlapRemove = true;
+    flags.push_back(isPromptAfterOverlapRemove ? 1 : 0);
+    // other flags are removed for the moment
+    return flags;
+}
+
 int THQHadronicTagProducer::chooseCategory( float mvavalue )
 {
     for(int n = 0 ; n < ( int )boundaries.size() ; n++ ) {
@@ -395,8 +503,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         idmva1 = dipho->leadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
         idmva2 = dipho->subLeadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
         if(debug) printf("[check] idmva1 = %.3f, idmva2 = %.3f\n", idmva1, idmva2);
-        if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
-        //if( (! evt.isRealData()) && (idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_) ) continue; // for ntuple production, data skips the condition
+        //if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
+        if( (!evt.isRealData()) && (idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_) ) continue; // for ntuple production, data skips the condition
         if(debug) printf("[check] survive idmva cuts!\n");
 
         //if( mvares->result < MVAThreshold_ ) continue;            //DiPho_MVA
@@ -455,7 +563,7 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         float ht = 0;
         float dRPhoLeadJet    = 0;
         float dRPhoSubLeadJet = 0;
-        double minDrLepton    = 999.;
+        //double minDrLepton    = 999.;
         int njets_btagloose_  = 0;
         int njets_btagmedium_ = 0;
         int njets_btagtight_  = 0;
@@ -649,6 +757,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 
         double mva_value_nrb = -999;
         double mva_value_smh = -999;
+        double mva_value_nrb_raw = -999;
+        double mva_value_smh_raw = -999;
         if(use_MVAs_) {
             tprimeTagger_nrb->addPhoton(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), 0., dipho_leadIDMVA_);
             tprimeTagger_nrb->addPhoton(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), 0., dipho_subleadIDMVA_);
@@ -657,6 +767,7 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             tprimeTagger_nrb->addHt(ht);
             tprimeTagger_nrb->addMet(theMET->getCorPt());
             mva_value_nrb = tprimeTagger_nrb->EvalMVA();
+            mva_value_nrb_raw = tprimeTagger_nrb->get_raw_score();
             tprimeTagger_nrb->clear();
 
             tprimeTagger_smh->addPhoton(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), 0., dipho_leadIDMVA_);
@@ -666,12 +777,13 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             tprimeTagger_smh->addHt(ht);
             tprimeTagger_smh->addMet(theMET->getCorPt());
             mva_value_smh = tprimeTagger_smh->EvalMVA();
+            mva_value_smh_raw = tprimeTagger_smh->get_raw_score();
             tprimeTagger_smh->clear();
         }
 
         // select events that pass specified bdt scores
-        if(mva_value_nrb < 0.56) continue;
-        if(mva_value_smh < 0.52) continue;
+        //if(mva_value_nrb < 0.56) continue;
+        //if(mva_value_smh < 0.52) continue;
 
         /*---------------------------------------------------------------------------------------
         # Evaluate MVA
@@ -716,11 +828,17 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         if( photonSelection ) {
             thqhtags_obj.setMVAscore_nrb(mva_value_nrb);
             thqhtags_obj.setMVAscore_smh(mva_value_smh);
+            thqhtags_obj.setMVAscore_nrb_raw(mva_value_nrb_raw);
+            thqhtags_obj.setMVAscore_smh_raw(mva_value_smh_raw);
             thqhtags_obj.setrho(rho_);
 
             //thqhtags_obj.setLeptonType(LeptonType);
             thqhtags_obj.includeWeights( *dipho );
             thqhtags_obj.photonWeights = dipho->leadingPhoton()->centralWeight()*dipho->subLeadingPhoton()->centralWeight() ;
+
+            thqhtags_obj.setLeadGenMatch(dipho->leadingPhoton()->genMatchType());
+            thqhtags_obj.setSubLeadGenMatch(dipho->subLeadingPhoton()->genMatchType());
+
             thqhtags_obj.setJets( SelJetVect_PtSorted , SelJetVect_EtaSorted);
             thqhtags_obj.setBJets( BJetVect );
             thqhtags_obj.nCentralJets = centraljet.size();
@@ -759,10 +877,35 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             thqhtags_obj.nLoose_bJets  = LooseBJetVect_PtSorted.size();
             thqhtags_obj.nTight_bJets  = TightBJetVect_PtSorted.size();
 
-//------------------------------------ MC-Truth Info -----------------------------------------//
-//            if ( ! evt.isRealData() ) {
-//                evt.getByToken( genParticleToken_, genParticles );
-//                evt.getByToken( genJetToken_, genJets );
+
+                    
+////------------------------------------ MC-Truth Info -----------------------------------------//
+            if ( ! evt.isRealData() ) {
+                evt.getByToken( genParticleToken_, genParticles );
+                evt.getByToken( genJetToken_, genJets );
+
+                //----------------------------------------------------------------------------------------------------
+                // Extract lead prompt info
+                //----------------------------------------------------------------------------------------------------
+                int gp_lead_index = GenPhoIndex(genParticles, dipho->leadingPhoton(), -1);
+                int gp_sublead_index = GenPhoIndex(genParticles, dipho->subLeadingPhoton(), gp_lead_index);
+                vector<int> leadFlags; leadFlags.clear();
+                vector<int> subleadFlags; subleadFlags.clear();
+                thqhtags_obj.setLeadPrompt(-999);
+                thqhtags_obj.setSubleadPrompt(-999);
+                
+                if (gp_lead_index != -1) {
+                   const edm::Ptr<reco::GenParticle> gp_lead = genParticles->ptrAt(gp_lead_index);
+                   leadFlags = IsPromptAfterOverlapRemove(genParticles, gp_lead);
+                   thqhtags_obj.setLeadPrompt(leadFlags[0]);
+                }
+                if (gp_sublead_index != -1) {
+                   const edm::Ptr<reco::GenParticle> gp_sublead = genParticles->ptrAt(gp_sublead_index);
+                   subleadFlags = IsPromptAfterOverlapRemove(genParticles, gp_sublead);
+                   thqhtags_obj.setSubleadPrompt(subleadFlags[0]);
+                }
+                //----------------------------------------------------------------------------------------------------
+            
 //
 //                //--- gen met ---//
 //                TLorentzVector nu_lorentzVector, allnus_LorentzVector, promptnus_LorentzVector;
@@ -805,13 +948,6 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 //                int counter_num_gen_particles = 0;
 //                for( unsigned int genLoop = 0 ; genLoop < genParticles->size(); genLoop++ ) {
 //                    edm::Ptr<reco::GenParticle> part = genParticles->ptrAt( genLoop );
-//                    //printf("[check] ");
-//                    //printf("(%2d) ", genLoop);
-//                    //printf("status = %5d, ", part->status());
-//                    //printf("pdgId = %5d, ", part->pdgId());
-//                    //printf("pt = %7.3f, ", part->pt());
-//                    //printf("eta = %7.3f, ", part->eta());
-//                    //printf("\n");
 //
 //                    const reco::GenParticle *mom = getMother( *part );
 //
@@ -820,18 +956,6 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 //                    if (!fid_cut || !status_cut) continue;
 //                    counter_num_gen_particles += 1;
 //
-//                    //printf("[check] ");
-//                    //printf("(%2d) ", genLoop);
-//                    //printf("status = %5d, ", part->status());
-//                    //printf("pdgId = %9d, ", part->pdgId());
-//                    //printf("pt = %7.3f, ", part->pt());
-//                    //printf("eta = %7.3f, ", part->eta());
-//                    //printf("mom status = %9d, ", mom->status());
-//                    //printf("pdgId = %5d, ", mom->pdgId());
-//                    //printf("pt = %7.3f, ", mom->pt());
-//                    //printf("eta = %7.3f, ", mom->eta());
-//                    //printf("\n");
-//                    
 //                    // store gen parton & mom kinematic info
 //                    gens_pdgId.push_back(part->pdgId());
 //                    gens_status.push_back(part->status());
@@ -859,9 +983,6 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 //                    vec_pdgId_register.push_back(part->pdgId());
 //                    vec_index_register.push_back(vec_deltaR_sorted[0].first);
 //                    vec_deltaR_register.push_back(vec_deltaR_sorted[0].second);
-//                    //printf("part->pdgId() = %d\n", part->pdgId());
-//                    //printf("vec_deltaR_sorted[0].first = %d\n", vec_deltaR_sorted[0].first);
-//                    //printf("vec_deltaR_sorted[0].second = %.2f\n", vec_deltaR_sorted[0].second);
 //                }
 //
 //                printf("[check] counter_num_gen_particles = %d\n", counter_num_gen_particles);
@@ -877,11 +998,6 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 //                double deltaR_jet1 = register_size > 1 ? vec_deltaR_register[1] : -1.;
 //                double deltaR_jet2 = register_size > 2 ? vec_deltaR_register[2] : -1.;
 //
-//                //printf("[check] vec_deltaR_register size = %lu\n", vec_deltaR_register.size());
-//                //printf("(jet0, jet1, jet2) = (%d, %d, %d)\n", index_jet0, index_jet1, index_jet2);
-//                //printf("(jet0, jet1, jet2) = (%d, %d, %d)\n", pdgId_jet0, pdgId_jet1, pdgId_jet2);
-//                //printf("(jet0, jet1, jet2) = (%.2f, %.2f, %.2f)\n", deltaR_jet0, deltaR_jet1, deltaR_jet2);
-//                //printf("\n");
 //                std::vector<int > jets_matched_pdgId = { pdgId_jet0, pdgId_jet1, pdgId_jet2 };
 //                std::vector<int > jets_matched_index = { index_jet0, index_jet1, index_jet2 };
 //                std::vector<double > jets_matched_deltaR = { deltaR_jet0, deltaR_jet1, deltaR_jet2 };
@@ -900,15 +1016,15 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
 //                thqhtags_obj.setMomEta        ( moms_eta            );
 //                thqhtags_obj.setMomPhi        ( moms_phi            );
 //                thqhtags_obj.setMomMass       ( moms_mass           );
-//            }
-//--------------------------------------------------------------------------------------------//
-
-            thqhtags->push_back( thqhtags_obj );
+            }
+////--------------------------------------------------------------------------------------------//
 
             if (evt.isRealData()) {
                 thqhtags_obj.setStage1recoTag( DiPhotonTagBase::stage1recoTag::RECO_THQ_LEP );
-                thqhtags->push_back( thqhtags_obj ); //FIXME at next iteration!!
+                //thqhtags->push_back( thqhtags_obj ); //FIXME at next iteration!!
             }
+
+            thqhtags->push_back( thqhtags_obj );
 
         } else {
             if(false) std::cout << " THQHadronicTagProducer NO TAG " << std::endl;

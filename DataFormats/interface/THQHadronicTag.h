@@ -185,6 +185,36 @@ namespace flashgg {
         float getMVAscore_smh() const{
             return mva_value_smh_;
         }
+        float getMVAscore_nrb_raw() const{
+            return mva_value_nrb_raw_;
+        }
+        float getMVAscore_smh_raw() const{
+            return mva_value_smh_raw_;
+        }
+        //double getMVAscore_nrb() const{
+        //    return mva_value_nrb_;
+        //}
+        //double getMVAscore_smh() const{
+        //    return mva_value_smh_;
+        //}
+        //double getMVAscore_nrb_raw() const{
+        //    return mva_value_nrb_raw_;
+        //}
+        //double getMVAscore_smh_raw() const{
+        //    return mva_value_smh_raw_;
+        //}
+        float get_leadGenMatch() const{
+            return leadGenMatch_;
+        }
+        float get_subleadGenMatch() const{
+            return subleadGenMatch_;
+        }
+        float get_leadPrompt() const{
+            return leadPrompt_;
+        }
+        float get_subleadPrompt() const{
+            return subleadPrompt_;
+        }
         
         double getlikelihood() const{
             return likelihood_result_;
@@ -400,7 +430,14 @@ namespace flashgg {
 
         void setMVAscore_nrb(double mva_value){mva_value_nrb_ = mva_value;}
         void setMVAscore_smh(double mva_value){mva_value_smh_ = mva_value;}
+        void setMVAscore_nrb_raw(double mva_value){mva_value_nrb_raw_ = mva_value;}
+        void setMVAscore_smh_raw(double mva_value){mva_value_smh_raw_ = mva_value;}
         
+        void setLeadGenMatch    (double genMatchType) {leadGenMatch_    = genMatchType;}
+        void setSubLeadGenMatch (double genMatchType) {subleadGenMatch_ = genMatchType;}
+        void setLeadPrompt      (double isPrompt)     {leadPrompt_      = isPrompt;    }
+        void setSubleadPrompt   (double isPrompt)     {subleadPrompt_   = isPrompt;    }
+
 
         void setVertices( std::vector<edm::Ptr<reco::Vertex> > vertices ) {
             vertices_ = vertices;
@@ -616,8 +653,14 @@ namespace flashgg {
         std::map <std::string, std::vector<float> > vtx_dxy_; std::map <std::string, std::vector<float> > vtx_dz_;
         std::map <std::string, std::vector<float> > diphovtx_dxy_; std::map <std::string, std::vector<float> > diphovtx_dz_;
         std::vector<float> eleMisHits_;
-        double mva_value_nrb_;
-        double mva_value_smh_;
+        float mva_value_nrb_;
+        float mva_value_smh_;
+        float mva_value_nrb_raw_;
+        float mva_value_smh_raw_;
+        float leadGenMatch_;
+        float subleadGenMatch_;
+        float leadPrompt_;
+        float subleadPrompt_;
         float rho_;
         float dRtHchainfwdjet_=0;
         float dRbjetfwdjet_;

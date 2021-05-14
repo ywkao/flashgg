@@ -407,6 +407,8 @@ thqmva_variables=[
 #    "MVAscore_tHqVsttH_DNN     := getMVAscore_ttHvstHDNN",
     "MVAscore_BDT_nrb              := getMVAscore_nrb",
     "MVAscore_BDT_smh              := getMVAscore_smh",
+    #"MVAscore_BDT_nrb_raw          := getMVAscore_nrb_raw",
+    #"MVAscore_BDT_smh_raw          := getMVAscore_smh_raw",
 ]
 
 for label in ["HighestBTagVal", "Medium" , "Loose" , "Tight"]:
@@ -414,6 +416,12 @@ for label in ["HighestBTagVal", "Medium" , "Loose" , "Tight"]:
     thqmva_variables.append('MVA_{0}                   := thqleptonicMvaRes("{0}")'.format(label) )
     thqmva_variables.append('bJetPt_{0}                := ?thqleptonicMvaRes("{0}")>-10.? getbJet("{0}").pt : -999'.format(label) )
 
+gen_photon_variables=[
+    "leadGenMatch              := get_leadGenMatch",
+    "subleadGenMatch           := get_subleadGenMatch",
+    "lead_Prompt               := get_leadPrompt",
+    "sublead_Prompt            := get_subleadPrompt",
+]
 
 truth_variables=[
 

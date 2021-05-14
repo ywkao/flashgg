@@ -63,6 +63,7 @@ public:
   double Rapidity(const BDT_ptvec* obj);
   double Helicity(const BDT_ptvec* particle_1, const BDT_ptvec* particle_2);
   double EvalMVA();
+  double get_raw_score() { return score_raw_; };
 
   //void MakeBabyNtuple(const char*);
   //void FillBabyNtuple();
@@ -141,6 +142,7 @@ private:
   float tprime_pt_ratio_          = -999;
   float helicity_tprime_          = -999;
 
+  double score_raw_ = -999;
   double score_ = -999;
 };
 //}}}
@@ -576,7 +578,8 @@ double THQ_BDT_Helper::EvalScore(const std::shared_ptr<BDT_Hadronic_tprime> obje
   chi2_tprime_deltaR_dipho_ = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->tprime.get()) , dynamic_cast<BDT_ptvec*>(object->diphoton.get())) : -999;
   chi2_wjets_deltaR_        = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->wjet1.get())  , dynamic_cast<BDT_ptvec*>(object->wjet2.get()))    : -999;
 
-  score_ = convert_tmva_to_prob( reader->EvaluateMVA("BDT") );
+  score_raw_ = reader->EvaluateMVA("BDT");
+  score_ = convert_tmva_to_prob( score_raw_ );
 
   if (debug) {
       printf("%-20s: %.2f\n" , "maxIDMVA_"                 , maxIDMVA_                 );
