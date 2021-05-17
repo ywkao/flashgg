@@ -487,6 +487,12 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
     for( unsigned int diphoIndex = 0; diphoIndex < diPhotons->size(); diphoIndex++ ) {
         if(debug) printf("[check] diphoIndex = %d/%d\n", diphoIndex, diPhotons->size());
 
+        if(use_MVAs_)
+        {
+            tprimeTagger_nrb->clear();
+            tprimeTagger_smh->clear();
+        }
+
         hasGoodElec  = false;
         hasVetoElec  = false;
         hasGoodMuons = false;
@@ -630,6 +636,11 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             }
         }//end of jets loop
 
+        if(use_MVAs_)
+        {
+            tprimeTagger_nrb->sortJetsByPt();
+            tprimeTagger_smh->sortJetsByPt();
+        }
 
         if(debug) printf("[debug] num leps = %lu, num_jets = %lu \n", goodElectrons.size() + goodMuons.size(), SelJetVect.size());
 
@@ -641,10 +652,12 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         std::sort( SelJetVect_PtSorted.begin()     , SelJetVect_PtSorted.end()     , GreaterByPt()  );
 
 	    for(unsigned int bjetsindex = 0 ; bjetsindex < LooseBJetVect.size(); bjetsindex++){
-	        if(LooseBJetVect[bjetsindex] !=  SelJetVect_EtaSorted[0] ){
-	            BJetVect.push_back( LooseBJetVect[bjetsindex] );
-	            bDiscr_bjets.push_back( LooseBJetVect[bjetsindex]->bDiscriminator("pfDeepCSVJetTags:probb") + LooseBJetVect[bjetsindex]->bDiscriminator("pfDeepCSVJetTags:probbb") );
-	        }
+	        BJetVect.push_back( LooseBJetVect[bjetsindex] );
+	        bDiscr_bjets.push_back( LooseBJetVect[bjetsindex]->bDiscriminator("pfDeepCSVJetTags:probb") + LooseBJetVect[bjetsindex]->bDiscriminator("pfDeepCSVJetTags:probbb") );
+	        //if(LooseBJetVect[bjetsindex] !=  SelJetVect_EtaSorted[0] ){
+	        //    BJetVect.push_back( LooseBJetVect[bjetsindex] );
+	        //    bDiscr_bjets.push_back( LooseBJetVect[bjetsindex]->bDiscriminator("pfDeepCSVJetTags:probb") + LooseBJetVect[bjetsindex]->bDiscriminator("pfDeepCSVJetTags:probbb") );
+	        //}
 	    }
 	    LooseBJetVect.clear();
 	    std::sort(BJetVect.begin(),BJetVect.end(), GreaterByBTagging("pfDeepCSVJetTags:probb", "pfDeepCSVJetTags:probbb"));
@@ -759,27 +772,135 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         double mva_value_smh = -999;
         double mva_value_nrb_raw = -999;
         double mva_value_smh_raw = -999;
+
+        printf("[check] dipho in producer: %.7f, %.7f, %.7f, %.7f\n", dipho->pt(), dipho->eta(), dipho->phi(), dipho->mass() );
+        printf("[check] dipho in producer (float): %.7f, %.7f, %.7f, %.7f\n", (float) dipho->pt(), (float) dipho->eta(), (float) dipho->phi(), (float) dipho->mass() );
         if(use_MVAs_) {
+            tprimeTagger_nrb->addDiphoton(dipho->pt(), dipho->eta(), dipho->phi(), dipho->mass());
             tprimeTagger_nrb->addPhoton(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), 0., dipho_leadIDMVA_);
             tprimeTagger_nrb->addPhoton(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), 0., dipho_subleadIDMVA_);
             tprimeTagger_nrb->addPhotonPixelSeed(dipho_lead_haspixelseed_, dipho_sublead_haspixelseed_);
+            //tprimeTagger_nrb->addNbjets((float) BJetVect.size());
             tprimeTagger_nrb->addNbjets((float) MediumBJetVect.size());
             tprimeTagger_nrb->addHt(ht);
             tprimeTagger_nrb->addMet(theMET->getCorPt());
             mva_value_nrb = tprimeTagger_nrb->EvalMVA();
             mva_value_nrb_raw = tprimeTagger_nrb->get_raw_score();
-            tprimeTagger_nrb->clear();
 
+            tprimeTagger_smh->addDiphoton(dipho->pt(), dipho->eta(), dipho->phi(), dipho->mass());
             tprimeTagger_smh->addPhoton(dipho->leadingPhoton()->pt(), dipho->leadingPhoton()->eta(), dipho->leadingPhoton()->phi(), 0., dipho_leadIDMVA_);
             tprimeTagger_smh->addPhoton(dipho->subLeadingPhoton()->pt(), dipho->subLeadingPhoton()->eta(), dipho->subLeadingPhoton()->phi(), 0., dipho_subleadIDMVA_);
             tprimeTagger_smh->addPhotonPixelSeed(dipho_lead_haspixelseed_, dipho_sublead_haspixelseed_);
+            //tprimeTagger_smh->addNbjets((float) BJetVect.size());
             tprimeTagger_smh->addNbjets((float) MediumBJetVect.size());
             tprimeTagger_smh->addHt(ht);
             tprimeTagger_smh->addMet(theMET->getCorPt());
             mva_value_smh = tprimeTagger_smh->EvalMVA();
             mva_value_smh_raw = tprimeTagger_smh->get_raw_score();
+        }
+
+        //----------------------------------------------------------------------------------------------------
+        // Consistency check (1st)   14.05.2021
+        //----------------------------------------------------------------------------------------------------
+        bool do_consistency_check = true;
+        if(do_consistency_check)
+        {
+            float lead_eta_ = dipho->leadingPhoton()->eta();
+            float sublead_eta_ = dipho->subLeadingPhoton()->eta();
+            float lead_phi_ = dipho->leadingPhoton()->phi();
+            float sublead_phi_ = dipho->subLeadingPhoton()->phi();
+
+            printf("[check] diphoIndex = %d/%d\n", diphoIndex, diPhotons->size());
+            printf("%s: %.7f, "  , "diphoton_pt_"               , dipho->pt()                                                                  );
+            printf("%s: %.7f, "  , "maxIDMVA_"                  , maxPhoID_                                                                    );
+            printf("%s: %.7f, "  , "minIDMVA_"                  , minPhoID_                                                                    );
+            printf("%s: %.7f, "  , "max1_btag_"                 , maxBTagVal_                                                                  );
+            printf("%s: %.7f, "  , "max2_btag_"                 , secondMaxBTagVal_                                                            );
+            printf("%s: %.7f, "  , "dipho_delta_R"              , deltaR(lead_eta_, lead_phi_, sublead_eta_, sublead_phi_)                     );
+            printf("%s: %.7f, "  , "njets_"                     , n_jets_                                                                      );
+            printf("%s: %.7f, "  , "nbjets_"                    , (float) MediumBJetVect.size()                                                );
+            printf("%s: %.7f, "  , "ht_"                        , ht                                                                           );
+            printf("%s: %.7f, "  , "leadptoM_"                  , dipho->leadingPhoton()->pt() / dipho->mass()                                 );
+            printf("%s: %.7f, "  , "subleadptoM_"               , dipho->subLeadingPhoton()->pt() / dipho->mass()                              );
+            printf("%s: %.7f, "  , "lead_eta_"                  , dipho->leadingPhoton()->eta()                                                );
+            printf("%s: %.7f, "  , "sublead_eta_"               , dipho->subLeadingPhoton()->eta()                                             );
+            printf("%s: %.7f, "  , "jet1_ptOverM_"              , jet1_pt_ / tprimeTagger_nrb->get_top_mass()                                  );
+            printf("%s: %.7f, "  , "jet1_eta_"                  , jet1_eta_                                                                    );
+            printf("%s: %.7f, "  , "jet1_btag_"                 , jet1_discr_                                                                  );
+            printf("%s: %.7f, "  , "jet2_ptOverM_"              , jet2_pt_ / tprimeTagger_nrb->get_top_mass()                                  );
+            printf("%s: %.7f, "  , "jet2_eta_"                  , jet2_eta_                                                                    );
+            printf("%s: %.7f, "  , "jet2_btag_"                 , jet2_discr_                                                                  );
+            printf("%s: %.7f, "  , "jet3_ptOverM_"              , jet3_pt_ / tprimeTagger_nrb->get_top_mass()                                  );
+            printf("%s: %.7f, "  , "jet3_eta_"                  , jet3_eta_                                                                    );
+            printf("%s: %.7f, "  , "jet3_btag_"                 , jet3_discr_                                                                  );
+            printf("%s: %.7f, "  , "jet4_ptOverM_"              , jet4_pt_ / tprimeTagger_nrb->get_top_mass()                                  );
+            printf("%s: %.7f, "  , "jet4_eta_"                  , jet4_eta_                                                                    );
+            printf("%s: %.7f, "  , "jet4_btag_"                 , jet4_discr_                                                                  );
+            printf("%s: %.7f, "  , "leadPSV_"                   , dipho_lead_haspixelseed_                                                     );
+            printf("%s: %.7f, "  , "subleadPSV_"                , dipho_sublead_haspixelseed_                                                  );
+            printf("%s: %.7f, "  , "dipho_cosphi_"              , TMath::Cos(dipho->leadingPhoton()->phi() - dipho->subLeadingPhoton()->phi()) );
+            printf("%s: %.7f, "  , "dipho_rapidity_"            , tprimeTagger_nrb->get_dipho_rapidity()                                       );
+            printf("%s: %.7f, "  , "met_"                       , theMET->getCorPt()                                                           );
+            printf("%s: %.7f, "  , "dipho_pt_over_mass_"        , dipho->pt() / dipho->mass()                                                  );
+            printf("%s: %.7f, "  , "helicity_angle_"            , tprimeTagger_nrb->get_helicity_angle()                                       );
+            printf("%s: %.7f, "  , "chi2_value_"                , tprimeTagger_nrb->get_chi2_value()                                           );
+            printf("%s: %.7f, "  , "chi2_bjet_ptOverM_"         , tprimeTagger_nrb->get_chi2_bjet_ptOverM()                                    );
+            printf("%s: %.7f, "  , "chi2_bjet_eta_"             , tprimeTagger_nrb->get_chi2_bjet_eta()                                        );
+            printf("%s: %.7f, "  , "chi2_bjet_btagScores_"      , tprimeTagger_nrb->get_chi2_bjet_btagScores()                                 );
+            printf("%s: %.7f, "  , "chi2_wjet1_ptOverM_"        , tprimeTagger_nrb->get_chi2_wjet1_ptOverM()                                   );
+            printf("%s: %.7f, "  , "chi2_wjet1_eta_"            , tprimeTagger_nrb->get_chi2_wjet1_eta()                                       );
+            printf("%s: %.7f, "  , "chi2_wjet1_btagScores_"     , tprimeTagger_nrb->get_chi2_wjet1_btagScores()                                );
+            printf("%s: %.7f, "  , "chi2_wjet2_ptOverM_"        , tprimeTagger_nrb->get_chi2_wjet2_ptOverM()                                   );
+            printf("%s: %.7f, "  , "chi2_wjet2_eta_"            , tprimeTagger_nrb->get_chi2_wjet2_eta()                                       );
+            printf("%s: %.7f, "  , "chi2_wjet2_btagScores_"     , tprimeTagger_nrb->get_chi2_wjet2_btagScores()                                );
+            printf("%s: %.7f, "  , "chi2_wjets_deltaR_"         , tprimeTagger_nrb->get_chi2_wjets_deltaR()                                    );
+            printf("%s: %.7f, "  , "chi2_wboson_ptOverM_"       , tprimeTagger_nrb->get_chi2_wboson_ptOverM()                                  );
+            printf("%s: %.7f, "  , "chi2_wboson_eta_"           , tprimeTagger_nrb->get_chi2_wboson_eta()                                      );
+            printf("%s: %.7f, "  , "chi2_wboson_mass_"          , tprimeTagger_nrb->get_chi2_wboson_mass()                                     );
+            printf("%s: %.7f, "  , "chi2_wboson_deltaR_bjet_"   , tprimeTagger_nrb->get_chi2_wboson_deltaR_bjet()                              );
+            printf("%s: %.7f, "  , "chi2_tbw_mass_"             , tprimeTagger_nrb->get_top_mass()                                             );
+            printf("%s: %.7f, "  , "chi2_tbw_ptOverM_"          , tprimeTagger_nrb->get_chi2_tbw_ptOverM()                                     );
+            printf("%s: %.7f, "  , "chi2_tbw_eta_"              , tprimeTagger_nrb->get_chi2_tbw_eta()                                         );
+            printf("%s: %.7f, "  , "chi2_tbw_deltaR_dipho_"     , tprimeTagger_nrb->get_chi2_tbw_deltaR_dipho()                                );
+            printf("%s: %.7f, "  , "chi2_tprime_ptOverM_"       , tprimeTagger_nrb->get_chi2_tprime_ptOverM()                                  );
+            printf("%s: %.7f, "  , "chi2_tprime_eta_"           , tprimeTagger_nrb->get_chi2_tprime_eta()                                      );
+            printf("%s: %.7f, "  , "chi2_tprime_deltaR_tbw_"    , tprimeTagger_nrb->get_chi2_tprime_deltaR_tbw()                               );
+            printf("%s: %.7f, "  , "chi2_tprime_deltaR_dipho_"  , tprimeTagger_nrb->get_chi2_tprime_deltaR_dipho()                             );
+            printf("%s: %.7f, "  , "tprime_pt_ratio_"           , tprimeTagger_nrb->get_tprime_pt_ratio()                                      );
+            printf("%s: %.7f, "  , "helicity_tprime_"           , tprimeTagger_nrb->get_helicity_tprime()                                      );
+            printf("%s: %.7f, "  , "score_raw_"                 , tprimeTagger_nrb->get_raw_score()                                            );
+            printf("%s: %.7f, "  , "score_"                     , mva_value_nrb                                                                );
+            printf("\n\n");
+        }
+
+        //----------------------------------------------------------------------------------------------------
+        // Monitor consistency of # jets
+        //----------------------------------------------------------------------------------------------------
+        bool is_consistent = tprimeTagger_nrb->set_alarm_njets_inconsistency(n_jets_);
+        if(!is_consistent)
+        {
+            printf(">>>>> jets in producer:\n");
+            for(std::size_t i=0; i<n_jets_; ++i)
+            {
+                printf("idx = %lu, ", i);
+                printf("pt= %.7f, ", SelJetVect[i]->pt());
+                printf("eta = %.7f, ", SelJetVect[i]->eta());
+                printf("deepcsv = %.7f, ", SelJetVect[i]->bDiscriminator("pfDeepCSVJetTags:probb") + SelJetVect[i]->bDiscriminator("pfDeepCSVJetTags:probbb"));
+                printf("\n");
+            }
+            printf("\n");
+        }
+
+        printf("----------------------------------------------------------------------------------------------------\n\n");
+
+        if(use_MVAs_)
+        {
+            tprimeTagger_nrb->clear();
             tprimeTagger_smh->clear();
         }
+
+
+        //----------------------------------------------------------------------------------------------------
 
         // select events that pass specified bdt scores
         //if(mva_value_nrb < 0.56) continue;
