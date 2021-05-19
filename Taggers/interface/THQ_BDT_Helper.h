@@ -45,17 +45,22 @@ public:
 //class THQ_BDT_Helper {{{
 class THQ_BDT_Helper {
 public:
-  //THQ_BDT_Helper(std::string weight_file_name){ Init(weight_file_name); MakeBabyNtuple("my_ntuple.root"); };
   THQ_BDT_Helper(std::string weight_file_name){ Init(weight_file_name); };
   ~THQ_BDT_Helper(){ clear(); };
 
-  void addDiphoton(double pt, double eta, double phi, double mass)             { diphoton = std::make_shared<BDT_ptvec>(pt,eta,phi,mass); printf("[check] adding dipho: %.7f, %.7f, %.7f, %.7f\n", pt, eta, phi, mass); } ;
+  void addDiphoton(double pt, double eta, double phi, double mass)             { diphoton = std::make_shared<BDT_ptvec>(pt,eta,phi,mass); } ;
   void addPhoton(double pt, double eta, double phi, double mass, double IDMVA) { photons.push_back(std::make_shared<BDT_Photon>(pt,eta,phi,mass,IDMVA)); } ;
   void addPhotonPixelSeed(double a, double b)                                  { leadPSV_ = a; subleadPSV_ = b; } ;
   void addJet(double pt, double eta, double phi, double mass, double deepcsv)  { jets.push_back(std::make_shared<BDT_Jet>(pt,eta,phi,mass,deepcsv));     } ;
   void addMet(double met)                                                      { met_     = met; } ;
   void addHt(float ht)                                                         { ht_      = ht;  } ;
   void addNbjets(float n)                                                      { nbjets_  = n;   } ;
+  //void addDiphoton(double pt, double eta, double phi, double mass)             { diphoton = std::make_shared<BDT_ptvec>(pt,eta,phi,mass); printf("[check] adding dipho: %f, %f, %f, %f\n", pt, eta, phi, mass); } ;
+  //void addDiphoton(float pt, float eta, float phi, float mass)                 { diphoton = std::make_shared<BDT_ptvec>(pt,eta,phi,mass); } ;
+  //void addPhoton(float pt, float eta, float phi, float mass, float IDMVA)      { photons.push_back(std::make_shared<BDT_Photon>(pt,eta,phi,mass,IDMVA)); } ;
+  //void addPhotonPixelSeed(float a, float b)                                    { leadPSV_ = a; subleadPSV_ = b; } ;
+  //void addJet(float pt, float eta, float phi, float mass, float deepcsv)       { jets.push_back(std::make_shared<BDT_Jet>(pt,eta,phi,mass,deepcsv));     } ;
+  //void addMet(float met)                                                       { met_     = met; } ;
 
   //bool mycompare(std::shared_ptr<BDT_Jet> j1, std::shared_ptr<BDT_Jet> j2)     { return j1->pt() > j2->pt(); };
   void sortJetsByPt()                                                          { std::sort( jets.begin(), jets.end(), [](std::shared_ptr<BDT_Jet> j1, std::shared_ptr<BDT_Jet> j2){return j1->pt() > j2->pt();} ); };
@@ -67,7 +72,7 @@ public:
   double convert_tmva_to_prob(double score);
   double DeltaR(const BDT_ptvec* obj1, const BDT_ptvec* obj2);
   double Rapidity(const BDT_ptvec* obj);
-  double Helicity(const BDT_ptvec* particle_1, const BDT_ptvec* particle_2);
+  double Helicity(const TLorentzVector particle_1, const TLorentzVector particle_2);
   double EvalMVA();
   //----------------------------------------------------------------------------------------------------
   // functions defined for consistency check (values in plug-in code vs. the ones in offline analysis)
@@ -80,13 +85,25 @@ public:
   float get_helicity_angle()           { return helicity_angle_           ; };
   float get_chi2_value()               { return chi2_value_               ; };
   float get_chi2_bjet_ptOverM()        { return chi2_bjet_ptOverM_        ; };
+  float get_chi2_bjet_pt()             { return chi2_bjet_pt_             ; };
   float get_chi2_bjet_eta()            { return chi2_bjet_eta_            ; };
+  float get_chi2_bjet_phi()            { return chi2_bjet_phi_            ; };
+  float get_chi2_bjet_mass()           { return chi2_bjet_mass_           ; };
+  float get_chi2_bjet_energy()         { return chi2_bjet_energy_         ; };
   float get_chi2_bjet_btagScores()     { return chi2_bjet_btagScores_     ; };
   float get_chi2_wjet1_ptOverM()       { return chi2_wjet1_ptOverM_       ; };
+  float get_chi2_wjet1_pt()            { return chi2_wjet1_pt_            ; };
   float get_chi2_wjet1_eta()           { return chi2_wjet1_eta_           ; };
+  float get_chi2_wjet1_phi()           { return chi2_wjet1_phi_           ; };
+  float get_chi2_wjet1_mass()          { return chi2_wjet1_mass_          ; };
+  float get_chi2_wjet1_energy()        { return chi2_wjet1_energy_        ; };
   float get_chi2_wjet1_btagScores()    { return chi2_wjet1_btagScores_    ; };
   float get_chi2_wjet2_ptOverM()       { return chi2_wjet2_ptOverM_       ; };
+  float get_chi2_wjet2_pt()            { return chi2_wjet2_pt_            ; };
   float get_chi2_wjet2_eta()           { return chi2_wjet2_eta_           ; };
+  float get_chi2_wjet2_phi()           { return chi2_wjet2_phi_           ; };
+  float get_chi2_wjet2_mass()          { return chi2_wjet2_mass_          ; };
+  float get_chi2_wjet2_energy()        { return chi2_wjet2_energy_        ; };
   float get_chi2_wjet2_btagScores()    { return chi2_wjet2_btagScores_    ; };
   float get_chi2_wjets_deltaR()        { return chi2_wjets_deltaR_        ; };
   float get_chi2_wboson_ptOverM()      { return chi2_wboson_ptOverM_      ; };
@@ -96,6 +113,7 @@ public:
   float get_chi2_tbw_mass()            { return chi2_tbw_mass_            ; };
   float get_chi2_tbw_ptOverM()         { return chi2_tbw_ptOverM_         ; };
   float get_chi2_tbw_eta()             { return chi2_tbw_eta_             ; };
+  float get_chi2_tbw_phi()             { return chi2_tbw_phi_             ; };
   float get_chi2_tbw_deltaR_dipho()    { return chi2_tbw_deltaR_dipho_    ; };
   float get_chi2_tprime_ptOverM()      { return chi2_tprime_ptOverM_      ; };
   float get_chi2_tprime_eta()          { return chi2_tprime_eta_          ; };
@@ -103,7 +121,7 @@ public:
   float get_chi2_tprime_deltaR_dipho() { return chi2_tprime_deltaR_dipho_ ; };
   float get_tprime_pt_ratio()          { return tprime_pt_ratio_          ; };
   float get_helicity_tprime()          { return helicity_tprime_          ; };
-  //TLorentzVector get_top_quark()       { TLorentzVector p; p.SetPtEtaPhiM(chi2_tbw_ptOverM_*chi2_tbw_mass_, chi2_tbw_eta_, chi2_tbw); return; };
+  TLorentzVector get_top_quark()       { TLorentzVector p; p.SetPtEtaPhiM(chi2_tbw_ptOverM_*chi2_tbw_mass_, chi2_tbw_eta_, chi2_tbw_phi_, chi2_tbw_mass_); return p; };
 
 private:
   std::shared_ptr<BDT_ptvec> diphoton;
@@ -116,7 +134,7 @@ private:
   double EvalScore(const std::shared_ptr<BDT_Hadronic_tprime>);
 
   bool debug = false;
-  bool show_input_variables = true;
+  bool show_input_variables = false;
   bool has_resonable_reco;
   float min_chi2_value = 99999.;
 
@@ -133,16 +151,32 @@ private:
   float lead_eta_                 = -999;
   float sublead_eta_              = -999;
   float jet1_ptOverM_             = -999;
+  float jet1_pt_                  = -999;
   float jet1_eta_                 = -999;
+  float jet1_phi_                 = -999;
+  float jet1_mass_                = -999;
+  float jet1_energy_              = -999;
   float jet1_btag_                = -999;
   float jet2_ptOverM_             = -999;
+  float jet2_pt_                  = -999;
   float jet2_eta_                 = -999;
+  float jet2_phi_                 = -999;
+  float jet2_mass_                = -999;
+  float jet2_energy_              = -999;
   float jet2_btag_                = -999;
   float jet3_ptOverM_             = -999;
+  float jet3_pt_                  = -999;
   float jet3_eta_                 = -999;
+  float jet3_phi_                 = -999;
+  float jet3_mass_                = -999;
+  float jet3_energy_              = -999;
   float jet3_btag_                = -999;
   float jet4_ptOverM_             = -999;
+  float jet4_pt_                  = -999;
   float jet4_eta_                 = -999;
+  float jet4_phi_                 = -999;
+  float jet4_mass_                = -999;
+  float jet4_energy_              = -999;
   float jet4_btag_                = -999;
   float leadPSV_                  = -999;
   float subleadPSV_               = -999;
@@ -153,13 +187,25 @@ private:
   float helicity_angle_           = -999;
   float chi2_value_               = -999;
   float chi2_bjet_ptOverM_        = -999;
+  float chi2_bjet_pt_             = -999;
   float chi2_bjet_eta_            = -999;
+  float chi2_bjet_phi_            = -999;
+  float chi2_bjet_mass_           = -999;
+  float chi2_bjet_energy_         = -999;
   float chi2_bjet_btagScores_     = -999;
   float chi2_wjet1_ptOverM_       = -999;
+  float chi2_wjet1_pt_            = -999;
   float chi2_wjet1_eta_           = -999;
+  float chi2_wjet1_phi_           = -999;
+  float chi2_wjet1_mass_          = -999;
+  float chi2_wjet1_energy_        = -999;
   float chi2_wjet1_btagScores_    = -999;
   float chi2_wjet2_ptOverM_       = -999;
+  float chi2_wjet2_pt_            = -999;
   float chi2_wjet2_eta_           = -999;
+  float chi2_wjet2_phi_           = -999;
+  float chi2_wjet2_mass_          = -999;
+  float chi2_wjet2_energy_        = -999;
   float chi2_wjet2_btagScores_    = -999;
   float chi2_wjets_deltaR_        = -999;
   float chi2_wboson_ptOverM_      = -999;
@@ -179,6 +225,10 @@ private:
 
   double score_raw_ = -999;
   double score_ = -999;
+
+  //----- var for debug -----//
+  float chi2_tbw_phi_             = -999;
+
 };
 //}}}
 
@@ -269,16 +319,32 @@ void THQ_BDT_Helper::clear(){
   lead_eta_                 = -999;
   sublead_eta_              = -999;
   jet1_ptOverM_             = -999;
+  jet1_pt_                  = -999;
   jet1_eta_                 = -999;
+  jet1_phi_                 = -999;
+  jet1_mass_                = -999;
+  jet1_energy_              = -999;
   jet1_btag_                = -999;
   jet2_ptOverM_             = -999;
+  jet2_pt_                  = -999;
   jet2_eta_                 = -999;
+  jet2_phi_                 = -999;
+  jet2_mass_                = -999;
+  jet2_energy_              = -999;
   jet2_btag_                = -999;
   jet3_ptOverM_             = -999;
+  jet3_pt_                  = -999;
   jet3_eta_                 = -999;
+  jet3_phi_                 = -999;
+  jet3_mass_                = -999;
+  jet3_energy_              = -999;
   jet3_btag_                = -999;
   jet4_ptOverM_             = -999;
+  jet4_pt_                  = -999;
   jet4_eta_                 = -999;
+  jet4_phi_                 = -999;
+  jet4_mass_                = -999;
+  jet4_energy_              = -999;
   jet4_btag_                = -999;
   leadPSV_                  = -999;
   subleadPSV_               = -999;
@@ -289,13 +355,25 @@ void THQ_BDT_Helper::clear(){
   helicity_angle_           = -999;
   chi2_value_               = -999;
   chi2_bjet_ptOverM_        = -999;
+  chi2_bjet_pt_             = -999;
   chi2_bjet_eta_            = -999;
+  chi2_bjet_phi_            = -999;
+  chi2_bjet_mass_           = -999;
+  chi2_bjet_energy_         = -999;
   chi2_bjet_btagScores_     = -999;
   chi2_wjet1_ptOverM_       = -999;
+  chi2_wjet1_pt_            = -999;
   chi2_wjet1_eta_           = -999;
+  chi2_wjet1_phi_           = -999;
+  chi2_wjet1_mass_          = -999;
+  chi2_wjet1_energy_        = -999;
   chi2_wjet1_btagScores_    = -999;
   chi2_wjet2_ptOverM_       = -999;
+  chi2_wjet2_pt_            = -999;
   chi2_wjet2_eta_           = -999;
+  chi2_wjet2_phi_           = -999;
+  chi2_wjet2_mass_          = -999;
+  chi2_wjet2_energy_        = -999;
   chi2_wjet2_btagScores_    = -999;
   chi2_wjets_deltaR_        = -999;
   chi2_wboson_ptOverM_      = -999;
@@ -312,6 +390,8 @@ void THQ_BDT_Helper::clear(){
   chi2_tprime_deltaR_dipho_ = -999;
   tprime_pt_ratio_          = -999;
   helicity_tprime_          = -999;
+
+  chi2_tbw_phi_             = -999;
 };
 //}}}
 //double THQ_BDT_Helper::chi2_calculator_2x2(double w_mass, double t_mass){{{
@@ -366,38 +446,22 @@ double THQ_BDT_Helper::Rapidity(const BDT_ptvec* obj)
     return rapidity;
 };
 //}}}
-//double THQ_BDT_Helper::Helicity(const BDT_ptvec* particle_1, const BDT_ptvec* particle_2){{{
+//double Helicity(const TLorentzVector particle_1, const TLorentzVector particle_2) {{{
 inline
-double THQ_BDT_Helper::Helicity(const BDT_ptvec* particle_1, const BDT_ptvec* particle_2)
+double THQ_BDT_Helper::Helicity(const TLorentzVector particle_1, const TLorentzVector particle_2)
 {
-  std::shared_ptr<BDT_ptvec> p1_     = std::make_shared<BDT_ptvec>(0,0,0,0);
-  std::shared_ptr<BDT_ptvec> parent_ = std::make_shared<BDT_ptvec>(0,0,0,0);
-
-  *p1_ = *particle_1;
-  *parent_ = *particle_1 + *particle_2;
-
-  TLorentzVector p1;
-  TLorentzVector parent;
-  p1.SetPtEtaPhiM(p1_->Pt(), p1_->Eta(), p1_->Phi(), p1_->M());
-  parent.SetPtEtaPhiM(parent_->Pt(), parent_->Eta(), parent_->Phi(), parent_->M());
+  TLorentzVector p1 = particle_1;
+  TLorentzVector parent = particle_1 + particle_2;
   
   TVector3 boost_to_parent = -(parent.BoostVector());
   p1.Boost(boost_to_parent);
 
   TVector3 v1 = p1.Vect();
   TVector3 vParent = parent.Vect();
-  
-  if (isnan(v1.Mag())) return -999;
+
+  if( isnan(v1.Mag()) ) return -999;
 
   double cos_theta_1 = (v1.Dot(vParent)) / (v1.Mag() * vParent.Mag());
-
-  if(debug){
-      printf("[check] v1.Mag() = %.2f\n"        , v1.Mag());
-      printf("[check] vParent.Mag() = %.2f\n"   , vParent.Mag());
-      printf("[check] v1.Dot(vParent) = %.2f\n" , v1.Dot(vParent));
-      printf("[check] cos_theta_1 = %.2f\n"     , cos_theta_1);
-  }
-
   return abs(cos_theta_1);  
 };
 //}}}
@@ -475,118 +539,204 @@ double THQ_BDT_Helper::EvalScore(const std::shared_ptr<BDT_Hadronic_tprime> obje
   dipho_pt_over_mass_  =  object->diphoton->Pt() / object->diphoton->M();
   dipho_cosphi_        =  TMath::Cos(photons[0]->Phi() - photons[1]->Phi());
   dipho_rapidity_      =  Rapidity(dynamic_cast<BDT_ptvec*>(object->diphoton.get()));
-  dipho_delta_R        =  DeltaR  (dynamic_cast<BDT_ptvec*>(photons[0].get()), dynamic_cast<BDT_ptvec*>(photons[1].get()));
-  helicity_angle_      =  Helicity(dynamic_cast<BDT_ptvec*>(photons[0].get()), dynamic_cast<BDT_ptvec*>(photons[1].get()));
+
+  TLorentzVector pho1, pho2;
+  pho1.SetPtEtaPhiM(photons[0]->Pt(), photons[0]->Eta(), photons[0]->Phi(), 0.);
+  pho2.SetPtEtaPhiM(photons[1]->Pt(), photons[1]->Eta(), photons[1]->Phi(), 0.);
+  dipho_delta_R        =  pho1.DeltaR(pho2);
+  helicity_angle_      =  Helicity(pho1, pho2);
 
   bool reco_condition = has_resonable_reco && pass_eta_criteria_on_wjets;
-  njets_         =  jets.size();
-  max1_btag_     =  bjets[0]->deepcsv();
-  max2_btag_     =  bjets[1]->deepcsv();
-  jet1_eta_      =  (njets_ >= 1) ? jets[0]->Eta()     : -999;
-  jet2_eta_      =  (njets_ >= 2) ? jets[1]->Eta()     : -999;
-  jet3_eta_      =  (njets_ >= 3) ? jets[2]->Eta()     : -999;
-  jet4_eta_      =  (njets_ >= 4) ? jets[3]->Eta()     : -999;
-  jet1_btag_     =  (njets_ >= 1) ? jets[0]->deepcsv() : -999;
-  jet2_btag_     =  (njets_ >= 2) ? jets[1]->deepcsv() : -999;
-  jet3_btag_     =  (njets_ >= 3) ? jets[2]->deepcsv() : -999;
-  jet4_btag_     =  (njets_ >= 4) ? jets[3]->deepcsv() : -999;
-  jet1_ptOverM_  =  (njets_ >= 1 && reco_condition) ? jets[0]->Pt() / object->top->M()  : -999;
-  jet2_ptOverM_  =  (njets_ >= 2 && reco_condition) ? jets[1]->Pt() / object->top->M()  : -999;
-  jet3_ptOverM_  =  (njets_ >= 3 && reco_condition) ? jets[2]->Pt() / object->top->M()  : -999;
-  jet4_ptOverM_  =  (njets_ >= 4 && reco_condition) ? jets[3]->Pt() / object->top->M()  : -999;
+  njets_         = jets.size();
+  max1_btag_     = bjets[0]->deepcsv();
+  max2_btag_     = bjets[1]->deepcsv();
+  jet1_eta_      = (njets_ >= 1) ? jets[0]->Eta()     : -999;
+  jet2_eta_      = (njets_ >= 2) ? jets[1]->Eta()     : -999;
+  jet3_eta_      = (njets_ >= 3) ? jets[2]->Eta()     : -999;
+  jet4_eta_      = (njets_ >= 4) ? jets[3]->Eta()     : -999;
+  jet1_btag_     = (njets_ >= 1) ? jets[0]->deepcsv() : -999;
+  jet2_btag_     = (njets_ >= 2) ? jets[1]->deepcsv() : -999;
+  jet3_btag_     = (njets_ >= 3) ? jets[2]->deepcsv() : -999;
+  jet4_btag_     = (njets_ >= 4) ? jets[3]->deepcsv() : -999;
+  jet1_ptOverM_  = (njets_ >= 1 && reco_condition) ? jets[0]->Pt() / object->top->M()  : -999;
+  jet2_ptOverM_  = (njets_ >= 2 && reco_condition) ? jets[1]->Pt() / object->top->M()  : -999;
+  jet3_ptOverM_  = (njets_ >= 3 && reco_condition) ? jets[2]->Pt() / object->top->M()  : -999;
+  jet4_ptOverM_  = (njets_ >= 4 && reco_condition) ? jets[3]->Pt() / object->top->M()  : -999;
+  jet1_pt_       = (njets_ >= 1 && reco_condition) ? jets[0]->Pt()                     : -999;
+  jet2_pt_       = (njets_ >= 2 && reco_condition) ? jets[1]->Pt()                     : -999;
+  jet3_pt_       = (njets_ >= 3 && reco_condition) ? jets[2]->Pt()                     : -999;
+  jet4_pt_       = (njets_ >= 4 && reco_condition) ? jets[3]->Pt()                     : -999;
+  jet1_eta_      = (njets_ >= 1 && reco_condition) ? jets[0]->Eta()                    : -999;
+  jet2_eta_      = (njets_ >= 2 && reco_condition) ? jets[1]->Eta()                    : -999;
+  jet3_eta_      = (njets_ >= 3 && reco_condition) ? jets[2]->Eta()                    : -999;
+  jet4_eta_      = (njets_ >= 4 && reco_condition) ? jets[3]->Eta()                    : -999;
+  jet1_phi_      = (njets_ >= 1 && reco_condition) ? jets[0]->Phi()                    : -999;
+  jet2_phi_      = (njets_ >= 2 && reco_condition) ? jets[1]->Phi()                    : -999;
+  jet3_phi_      = (njets_ >= 3 && reco_condition) ? jets[2]->Phi()                    : -999;
+  jet4_phi_      = (njets_ >= 4 && reco_condition) ? jets[3]->Phi()                    : -999;
+  jet1_mass_     = (njets_ >= 1 && reco_condition) ? jets[0]->M()                      : -999;
+  jet2_mass_     = (njets_ >= 2 && reco_condition) ? jets[1]->M()                      : -999;
+  jet3_mass_     = (njets_ >= 3 && reco_condition) ? jets[2]->M()                      : -999;
+  jet4_mass_     = (njets_ >= 4 && reco_condition) ? jets[3]->M()                      : -999;
+  jet1_energy_   = (njets_ >= 1 && reco_condition) ? jets[0]->E()                      : -999;
+  jet2_energy_   = (njets_ >= 2 && reco_condition) ? jets[1]->E()                      : -999;
+  jet3_energy_   = (njets_ >= 3 && reco_condition) ? jets[2]->E()                      : -999;
+  jet4_energy_   = (njets_ >= 4 && reco_condition) ? jets[3]->E()                      : -999;
 
-  chi2_value_               = min_chi2_value;
-  chi2_bjet_btagScores_     = reco_condition ? object->bjet->deepcsv()                           : -999;
-  chi2_wjet1_btagScores_    = reco_condition ? object->wjet1->deepcsv()                          : -999;
-  chi2_wjet2_btagScores_    = reco_condition ? object->wjet2->deepcsv()                          : -999;
-  chi2_bjet_ptOverM_        = reco_condition ? object->bjet->Pt() / object->top->M()             : -999;
-  chi2_wjet1_ptOverM_       = reco_condition ? object->wjet1->Pt() / object->wboson->M()         : -999;
-  chi2_wjet2_ptOverM_       = reco_condition ? object->wjet2->Pt() / object->wboson->M()         : -999;
-  chi2_wboson_ptOverM_      = reco_condition ? object->wboson->Pt() / object->wboson->M()        : -999;
-  chi2_tbw_ptOverM_         = reco_condition ? object->top->Pt() / object->top->M()              : -999;
-  chi2_tprime_ptOverM_      = reco_condition ? object->tprime->Pt()/object->tprime->M()          : -999;
-  chi2_bjet_eta_            = reco_condition ? object->bjet->Eta()                               : -999;
-  chi2_wjet1_eta_           = reco_condition ? object->wjet1->Eta()                              : -999;
-  chi2_wjet2_eta_           = reco_condition ? object->wjet2->Eta()                              : -999;
-  chi2_wboson_eta_          = reco_condition ? object->wboson->Eta()                             : -999;
-  chi2_tbw_eta_             = reco_condition ? object->top->Eta()                                : -999;
-  chi2_tprime_eta_          = reco_condition ? object->tprime->Eta()                             : -999;
-  chi2_wboson_mass_         = reco_condition ? object->wboson->M()                               : -999;
-  chi2_tbw_mass_            = reco_condition ? object->top->M()                                  : -999;
-  tprime_pt_ratio_          = reco_condition ? (object->top->Pt() + object->diphoton->Pt())/ ht_ : -999;
-  helicity_tprime_          = reco_condition ? Helicity(dynamic_cast<BDT_ptvec*>(object->top.get())  , dynamic_cast<BDT_ptvec*>(object->diphoton.get())) : -999;
-  chi2_wboson_deltaR_bjet_  = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->wboson.get()) , dynamic_cast<BDT_ptvec*>(object->bjet.get()))     : -999;
-  chi2_tbw_deltaR_dipho_    = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->top.get())    , dynamic_cast<BDT_ptvec*>(object->diphoton.get())) : -999;
-  chi2_tprime_deltaR_tbw_   = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->tprime.get()) , dynamic_cast<BDT_ptvec*>(object->top.get()))      : -999;
-  chi2_tprime_deltaR_dipho_ = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->tprime.get()) , dynamic_cast<BDT_ptvec*>(object->diphoton.get())) : -999;
-  chi2_wjets_deltaR_        = reco_condition ? DeltaR(dynamic_cast<BDT_ptvec*>(object->wjet1.get())  , dynamic_cast<BDT_ptvec*>(object->wjet2.get()))    : -999;
+  chi2_value_            = min_chi2_value;
+  chi2_bjet_btagScores_  = reco_condition ? object->bjet->deepcsv()                           : -999;
+  chi2_wjet1_btagScores_ = reco_condition ? object->wjet1->deepcsv()                          : -999;
+  chi2_wjet2_btagScores_ = reco_condition ? object->wjet2->deepcsv()                          : -999;
+  chi2_bjet_ptOverM_     = reco_condition ? object->bjet->Pt() / object->top->M()             : -999;
+  chi2_wjet1_ptOverM_    = reco_condition ? object->wjet1->Pt() / object->wboson->M()         : -999;
+  chi2_wjet2_ptOverM_    = reco_condition ? object->wjet2->Pt() / object->wboson->M()         : -999;
+  chi2_bjet_pt_          = reco_condition ? object->bjet->Pt()                                : -999;
+  chi2_wjet1_pt_         = reco_condition ? object->wjet1->Pt()                               : -999;
+  chi2_wjet2_pt_         = reco_condition ? object->wjet2->Pt()                               : -999;
+  chi2_bjet_eta_         = reco_condition ? object->bjet->Eta()                               : -999;
+  chi2_wjet1_eta_        = reco_condition ? object->wjet1->Eta()                              : -999;
+  chi2_wjet2_eta_        = reco_condition ? object->wjet2->Eta()                              : -999;
+  chi2_bjet_phi_         = reco_condition ? object->bjet->Phi()                               : -999;
+  chi2_wjet1_phi_        = reco_condition ? object->wjet1->Phi()                              : -999;
+  chi2_wjet2_phi_        = reco_condition ? object->wjet2->Phi()                              : -999;
+  chi2_bjet_mass_        = reco_condition ? object->bjet->M()                                 : -999;
+  chi2_wjet1_mass_       = reco_condition ? object->wjet1->M()                                : -999;
+  chi2_wjet2_mass_       = reco_condition ? object->wjet2->M()                                : -999;
+  chi2_bjet_energy_      = reco_condition ? object->bjet->E()                                 : -999;
+  chi2_wjet1_energy_     = reco_condition ? object->wjet1->E()                                : -999;
+  chi2_wjet2_energy_     = reco_condition ? object->wjet2->E()                                : -999;
+  chi2_wboson_ptOverM_   = reco_condition ? object->wboson->Pt() / object->wboson->M()        : -999;
+  chi2_tbw_ptOverM_      = reco_condition ? object->top->Pt() / object->top->M()              : -999;
+  chi2_tprime_ptOverM_   = reco_condition ? object->tprime->Pt()/object->tprime->M()          : -999;
+  chi2_bjet_eta_         = reco_condition ? object->bjet->Eta()                               : -999;
+  chi2_wjet1_eta_        = reco_condition ? object->wjet1->Eta()                              : -999;
+  chi2_wjet2_eta_        = reco_condition ? object->wjet2->Eta()                              : -999;
+  chi2_wboson_eta_       = reco_condition ? object->wboson->Eta()                             : -999;
+  chi2_tbw_eta_          = reco_condition ? object->top->Eta()                                : -999;
+  chi2_tbw_phi_          = reco_condition ? object->top->Phi()                                : -999; // double check only; not for training
+  chi2_tprime_eta_       = reco_condition ? object->tprime->Eta()                             : -999;
+  chi2_wboson_mass_      = reco_condition ? object->wboson->M()                               : -999;
+  chi2_tbw_mass_         = reco_condition ? object->top->M()                                  : -999;
+  tprime_pt_ratio_       = reco_condition ? (object->top->Pt() + object->diphoton->Pt())/ ht_ : -999;
+
+  TLorentzVector diphoton_, wboson_, top_, tprime_, bjet_, wjet1_, wjet2_;
+  diphoton_ .SetPtEtaPhiM(object->diphoton->Pt() , object->diphoton->Eta() , object->diphoton->Phi() , object->diphoton->M() );
+  wboson_   .SetPtEtaPhiM(object->wboson->Pt()   , object->wboson->Eta()   , object->wboson->Phi()   , object->wboson->M()   );
+  top_      .SetPtEtaPhiM(object->top->Pt()      , object->top->Eta()      , object->top->Phi()      , object->top->M()      );
+  tprime_   .SetPtEtaPhiM(object->tprime->Pt()   , object->tprime->Eta()   , object->tprime->Phi()   , object->tprime->M()   );
+  bjet_     .SetPtEtaPhiM(object->bjet->Pt()     , object->bjet->Eta()     , object->bjet->Phi()     , object->bjet->M()     );
+  wjet1_    .SetPtEtaPhiM(object->wjet1->Pt()    , object->wjet1->Eta()    , object->wjet1->Phi()    , object->wjet1->M()    );
+  wjet2_    .SetPtEtaPhiM(object->wjet2->Pt()    , object->wjet2->Eta()    , object->wjet2->Phi()    , object->wjet2->M()    );
+
+  helicity_tprime_          = reco_condition ? Helicity(top_, diphoton_)     : -999;
+  chi2_wboson_deltaR_bjet_  = reco_condition ? wboson_ .DeltaR(bjet_)        : -999;
+  chi2_tbw_deltaR_dipho_    = reco_condition ? top_    .DeltaR(diphoton_)    : -999;
+  chi2_tprime_deltaR_tbw_   = reco_condition ? tprime_ .DeltaR(top_)         : -999;
+  chi2_tprime_deltaR_dipho_ = reco_condition ? tprime_ .DeltaR(diphoton_)    : -999;
+  chi2_wjets_deltaR_        = reco_condition ? wjet1_  .DeltaR(wjet2_)       : -999;
+
 
   score_raw_ = reader->EvaluateMVA("BDT");
   score_ = convert_tmva_to_prob( score_raw_ );
 
-  printf("[check] recorded dipho: %.7f, %.7f, %.7f, %.7f\n", object->diphoton->Pt(), object->diphoton->Eta(), object->diphoton->Phi(), object->diphoton->M() );
+  //printf("[check] recorded dipho: %f, %f, %f, %f\n", object->diphoton->Pt(), object->diphoton->Eta(), object->diphoton->Phi(), object->diphoton->M() );
   if (show_input_variables) {
       //printf("%-20s: %.2f\n" , "maxIDMVA_"                 , maxIDMVA_                 );
-      
-      printf("%s: %.7f, " , "diphoton_pt_"              , object->diphoton->Pt()    );
-      printf("%s: %.7f, " , "maxIDMVA_"                 , maxIDMVA_                 );
-      printf("%s: %.7f, " , "minIDMVA_"                 , minIDMVA_                 );
-      printf("%s: %.7f, " , "max1_btag_"                , max1_btag_                );
-      printf("%s: %.7f, " , "max2_btag_"                , max2_btag_                );
-      printf("%s: %.7f, " , "dipho_delta_R"             , dipho_delta_R             );
-      printf("%s: %.7f, " , "njets_"                    , njets_                    );
-      printf("%s: %.7f, " , "nbjets_"                   , nbjets_                   );
-      printf("%s: %.7f, " , "ht_"                       , ht_                       );
-      printf("%s: %.7f, " , "leadptoM_"                 , leadptoM_                 );
-      printf("%s: %.7f, " , "subleadptoM_"              , subleadptoM_              );
-      printf("%s: %.7f, " , "lead_eta_"                 , lead_eta_                 );
-      printf("%s: %.7f, " , "sublead_eta_"              , sublead_eta_              );
-      printf("%s: %.7f, " , "jet1_ptOverM_"             , jet1_ptOverM_             );
-      printf("%s: %.7f, " , "jet1_eta_"                 , jet1_eta_                 );
-      printf("%s: %.7f, " , "jet1_btag_"                , jet1_btag_                );
-      printf("%s: %.7f, " , "jet2_ptOverM_"             , jet2_ptOverM_             );
-      printf("%s: %.7f, " , "jet2_eta_"                 , jet2_eta_                 );
-      printf("%s: %.7f, " , "jet2_btag_"                , jet2_btag_                );
-      printf("%s: %.7f, " , "jet3_ptOverM_"             , jet3_ptOverM_             );
-      printf("%s: %.7f, " , "jet3_eta_"                 , jet3_eta_                 );
-      printf("%s: %.7f, " , "jet3_btag_"                , jet3_btag_                );
-      printf("%s: %.7f, " , "jet4_ptOverM_"             , jet4_ptOverM_             );
-      printf("%s: %.7f, " , "jet4_eta_"                 , jet4_eta_                 );
-      printf("%s: %.7f, " , "jet4_btag_"                , jet4_btag_                );
-      printf("%s: %.7f, " , "leadPSV_"                  , leadPSV_                  );
-      printf("%s: %.7f, " , "subleadPSV_"               , subleadPSV_               );
-      printf("%s: %.7f, " , "dipho_cosphi_"             , dipho_cosphi_             );
-      printf("%s: %.7f, " , "dipho_rapidity_"           , dipho_rapidity_           );
-      printf("%s: %.7f, " , "met_"                      , met_                      );
-      printf("%s: %.7f, " , "dipho_pt_over_mass_"       , dipho_pt_over_mass_       );
-      printf("%s: %.7f, " , "helicity_angle_"           , helicity_angle_           );
-      printf("%s: %.7f, " , "chi2_value_"               , chi2_value_               );
-      printf("%s: %.7f, " , "chi2_bjet_ptOverM_"        , chi2_bjet_ptOverM_        );
-      printf("%s: %.7f, " , "chi2_bjet_eta_"            , chi2_bjet_eta_            );
-      printf("%s: %.7f, " , "chi2_bjet_btagScores_"     , chi2_bjet_btagScores_     );
-      printf("%s: %.7f, " , "chi2_wjet1_ptOverM_"       , chi2_wjet1_ptOverM_       );
-      printf("%s: %.7f, " , "chi2_wjet1_eta_"           , chi2_wjet1_eta_           );
-      printf("%s: %.7f, " , "chi2_wjet1_btagScores_"    , chi2_wjet1_btagScores_    );
-      printf("%s: %.7f, " , "chi2_wjet2_ptOverM_"       , chi2_wjet2_ptOverM_       );
-      printf("%s: %.7f, " , "chi2_wjet2_eta_"           , chi2_wjet2_eta_           );
-      printf("%s: %.7f, " , "chi2_wjet2_btagScores_"    , chi2_wjet2_btagScores_    );
-      printf("%s: %.7f, " , "chi2_wjets_deltaR_"        , chi2_wjets_deltaR_        );
-      printf("%s: %.7f, " , "chi2_wboson_ptOverM_"      , chi2_wboson_ptOverM_      );
-      printf("%s: %.7f, " , "chi2_wboson_eta_"          , chi2_wboson_eta_          );
-      printf("%s: %.7f, " , "chi2_wboson_mass_"         , chi2_wboson_mass_         );
-      printf("%s: %.7f, " , "chi2_wboson_deltaR_bjet_"  , chi2_wboson_deltaR_bjet_  );
-      printf("%s: %.7f, " , "chi2_tbw_mass_"            , chi2_tbw_mass_            );
-      printf("%s: %.7f, " , "chi2_tbw_ptOverM_"         , chi2_tbw_ptOverM_         );
-      printf("%s: %.7f, " , "chi2_tbw_eta_"             , chi2_tbw_eta_             );
-      printf("%s: %.7f, " , "chi2_tbw_deltaR_dipho_"    , chi2_tbw_deltaR_dipho_    );
-      printf("%s: %.7f, " , "chi2_tprime_ptOverM_"      , chi2_tprime_ptOverM_      );
-      printf("%s: %.7f, " , "chi2_tprime_eta_"          , chi2_tprime_eta_          );
-      printf("%s: %.7f, " , "chi2_tprime_deltaR_tbw_"   , chi2_tprime_deltaR_tbw_   );
-      printf("%s: %.7f, " , "chi2_tprime_deltaR_dipho_" , chi2_tprime_deltaR_dipho_ );
-      printf("%s: %.7f, " , "tprime_pt_ratio_"          , tprime_pt_ratio_          );
-      printf("%s: %.7f, " , "helicity_tprime_"          , helicity_tprime_          );
-      printf("%s: %.7f, " , "score_raw_"                , score_raw_                );
-      printf("%s: %.7f, " , "score_"                    , score_                    );
+      printf("%s: %7.3f, " , "diphoton_pt_"              , object->diphoton->Pt()    );
+      printf("%s: %7.5f, " , "maxIDMVA_"                 , maxIDMVA_                 );
+      printf("%s: %7.5f, " , "minIDMVA_"                 , minIDMVA_                 );
+      printf("%s: %7.5f, " , "max1_btag_"                , max1_btag_                );
+      printf("%s: %7.5f, " , "max2_btag_"                , max2_btag_                );
+      printf("%s: %7.5f, " , "dipho_delta_R"             , dipho_delta_R             );
+      printf("%s: %7.5f, " , "njets_"                    , njets_                    );
+      printf("%s: %7.5f, " , "nbjets_"                   , nbjets_                   );
+      printf("%s: %7.3f, " , "ht_"                       , ht_                       );
+      printf("%s: %7.5f, " , "leadptoM_"                 , leadptoM_                 );
+      printf("%s: %7.5f, " , "subleadptoM_"              , subleadptoM_              );
+      printf("%s: %7.5f, " , "lead_eta_"                 , lead_eta_                 );
+      printf("%s: %7.5f, " , "sublead_eta_"              , sublead_eta_              );
+      printf("%s: %7.5f, " , "jet1_ptOverM_"             , jet1_ptOverM_             );
+      printf("%s: %7.5f, " , "jet1_pt_"                  , jet1_pt_                  );
+      printf("%s: %7.5f, " , "jet1_eta_"                 , jet1_eta_                 );
+      printf("%s: %7.5f, " , "jet1_phi_"                 , jet1_phi_                 );
+      std::cout << "jet1_mass_: " << jet1_mass_ << ", ";
+      //printf("%s: %7.5f, " , "jet1_mass_"                , jet1_mass_                );
+      printf("%s: %7.4f, " , "jet1_energy_"              , jet1_energy_              );
+      printf("%s: %7.5f, " , "jet1_btag_"                , jet1_btag_                );
+      printf("%s: %7.5f, " , "jet2_ptOverM_"             , jet2_ptOverM_             );
+      printf("%s: %7.5f, " , "jet2_pt_"                  , jet2_pt_                  );
+      printf("%s: %7.5f, " , "jet2_eta_"                 , jet2_eta_                 );
+      printf("%s: %7.5f, " , "jet2_phi_"                 , jet2_phi_                 );
+      std::cout << "jet2_mass_: " << jet2_mass_ << ", ";
+      //printf("%s: %7.5f, " , "jet2_mass_"                , jet2_mass_                );
+      printf("%s: %7.4f, " , "jet2_energy_"              , jet2_energy_              );
+      printf("%s: %7.5f, " , "jet2_btag_"                , jet2_btag_                );
+      printf("%s: %7.5f, " , "jet3_ptOverM_"             , jet3_ptOverM_             );
+      printf("%s: %7.5f, " , "jet3_pt_"                  , jet3_pt_                  );
+      printf("%s: %7.5f, " , "jet3_eta_"                 , jet3_eta_                 );
+      printf("%s: %7.5f, " , "jet3_phi_"                 , jet3_phi_                 );
+      std::cout << "jet3_mass_: " << jet3_mass_ << ", ";
+      //printf("%s: %7.5f, " , "jet3_mass_"                , jet3_mass_                );
+      printf("%s: %7.4f, " , "jet3_energy_"              , jet3_energy_              );
+      printf("%s: %7.5f, " , "jet3_btag_"                , jet3_btag_                );
+      printf("%s: %7.5f, " , "jet4_ptOverM_"             , jet4_ptOverM_             );
+      printf("%s: %7.5f, " , "jet4_pt_"                  , jet4_pt_                  );
+      printf("%s: %7.5f, " , "jet4_eta_"                 , jet4_eta_                 );
+      printf("%s: %7.5f, " , "jet4_phi_"                 , jet4_phi_                 );
+      std::cout << "jet4_mass_: " << jet4_mass_ << ", ";
+      //printf("%s: %7.5f, " , "jet4_mass_"                , jet4_mass_                );
+      printf("%s: %7.4f, " , "jet4_energy_"              , jet4_energy_              );
+      printf("%s: %7.5f, " , "jet4_btag_"                , jet4_btag_                );
+      printf("%s: %7.5f, " , "leadPSV_"                  , leadPSV_                  );
+      printf("%s: %7.5f, " , "subleadPSV_"               , subleadPSV_               );
+      printf("%s: %7.5f, " , "dipho_cosphi_"             , dipho_cosphi_             );
+      printf("%s: %7.5f, " , "dipho_rapidity_"           , dipho_rapidity_           );
+      printf("%s: %7.4f, " , "met_"                      , met_                      );
+      printf("%s: %7.5f, " , "dipho_pt_over_mass_"       , dipho_pt_over_mass_       );
+      printf("%s: %7.5f, " , "helicity_angle_"           , helicity_angle_           );
+      printf("%s: %7.5f, " , "chi2_value_"               , chi2_value_               );
+      printf("%s: %7.5f, " , "chi2_bjet_ptOverM_"        , chi2_bjet_ptOverM_        );
+      printf("%s: %7.5f, " , "chi2_bjet_pt_"             , chi2_bjet_pt_             );
+      printf("%s: %7.5f, " , "chi2_bjet_eta_"            , chi2_bjet_eta_            );
+      printf("%s: %7.5f, " , "chi2_bjet_phi_"            , chi2_bjet_phi_            );
+      std::cout << "chi2_bjet_mass_: " << chi2_bjet_mass_ << ", ";
+      //printf("%s: %7.5f, " , "chi2_bjet_mass_"           , chi2_bjet_mass_           );
+      printf("%s: %7.4f, " , "chi2_bjet_energy_"         , chi2_bjet_energy_         );
+      printf("%s: %7.5f, " , "chi2_bjet_btagScores_"     , chi2_bjet_btagScores_     );
+      printf("%s: %7.5f, " , "chi2_wjet1_ptOverM_"       , chi2_wjet1_ptOverM_       );
+      printf("%s: %7.5f, " , "chi2_wjet1_pt_"            , chi2_wjet1_pt_            );
+      printf("%s: %7.5f, " , "chi2_wjet1_eta_"           , chi2_wjet1_eta_           );
+      printf("%s: %7.5f, " , "chi2_wjet1_phi_"           , chi2_wjet1_phi_           );
+      std::cout << "chi2_wjet1_mass_: " << chi2_wjet1_mass_ << ", ";
+      //printf("%s: %7.5f, " , "chi2_wjet1_mass_"          , chi2_wjet1_mass_          );
+      printf("%s: %7.4f, " , "chi2_wjet1_energy_"        , chi2_wjet1_energy_        );
+      printf("%s: %7.5f, " , "chi2_wjet1_btagScores_"    , chi2_wjet1_btagScores_    );
+      printf("%s: %7.5f, " , "chi2_wjet2_ptOverM_"       , chi2_wjet2_ptOverM_       );
+      printf("%s: %7.5f, " , "chi2_wjet2_pt_"            , chi2_wjet2_pt_            );
+      printf("%s: %7.5f, " , "chi2_wjet2_eta_"           , chi2_wjet2_eta_           );
+      printf("%s: %7.5f, " , "chi2_wjet2_phi_"           , chi2_wjet2_phi_           );
+      std::cout << "chi2_wjet2_mass_: " << chi2_wjet2_mass_ << ", ";
+      //printf("%s: %7.5f, " , "chi2_wjet2_mass_"          , chi2_wjet2_mass_          );
+      printf("%s: %7.4f, " , "chi2_wjet2_energy_"        , chi2_wjet2_energy_        );
+      printf("%s: %7.5f, " , "chi2_wjet2_btagScores_"    , chi2_wjet2_btagScores_    );
+      printf("%s: %7.5f, " , "chi2_wjets_deltaR_"        , chi2_wjets_deltaR_        );
+      printf("%s: %7.5f, " , "chi2_wboson_ptOverM_"      , chi2_wboson_ptOverM_      );
+      printf("%s: %7.5f, " , "chi2_wboson_eta_"          , chi2_wboson_eta_          );
+      printf("%s: %7.4f, " , "chi2_wboson_mass_"         , chi2_wboson_mass_         );
+      printf("%s: %7.5f, " , "chi2_wboson_deltaR_bjet_"  , chi2_wboson_deltaR_bjet_  );
+      printf("%s: %7.3f, " , "chi2_tbw_mass_"            , chi2_tbw_mass_            );
+      printf("%s: %7.5f, " , "chi2_tbw_ptOverM_"         , chi2_tbw_ptOverM_         );
+      printf("%s: %7.5f, " , "chi2_tbw_eta_"             , chi2_tbw_eta_             );
+      printf("%s: %7.5f, " , "chi2_tbw_phi_"             , chi2_tbw_phi_             );
+      printf("%s: %7.5f, " , "chi2_tbw_deltaR_dipho_"    , chi2_tbw_deltaR_dipho_    );
+      printf("%s: %7.5f, " , "chi2_tprime_ptOverM_"      , chi2_tprime_ptOverM_      );
+      printf("%s: %7.5f, " , "chi2_tprime_eta_"          , chi2_tprime_eta_          );
+      printf("%s: %7.5f, " , "chi2_tprime_deltaR_tbw_"   , chi2_tprime_deltaR_tbw_   );
+      printf("%s: %7.5f, " , "chi2_tprime_deltaR_dipho_" , chi2_tprime_deltaR_dipho_ );
+      printf("%s: %7.5f, " , "tprime_pt_ratio_"          , tprime_pt_ratio_          );
+      printf("%s: %7.5f, " , "helicity_tprime_"          , helicity_tprime_          );
+      printf("%s: %7.5f, " , "score_raw_"                , score_raw_                );
+      printf("%s: %7.5f, " , "score_"                    , score_                    );
       printf("\n\n");
   }
 
@@ -605,9 +755,9 @@ bool THQ_BDT_Helper::set_alarm_njets_inconsistency(float n_jets_)
         for(std::size_t i=0; i<njets_; ++i)
         {
             printf("idx = %lu, ", i);
-            printf("pt= %.7f, ", jets[i]->pt());
-            printf("eta = %.7f, ", jets[i]->eta());
-            printf("deepcsv = %.7f, ", jets[i]->deepcsv());
+            printf("pt= %f, ", jets[i]->pt());
+            printf("eta = %f, ", jets[i]->eta());
+            printf("deepcsv = %f, ", jets[i]->deepcsv());
             printf("\n");
         }
         printf("\n");
