@@ -295,7 +295,7 @@ void THQ_BDT_Helper::Init(std::string weight_file_name){
   reader->AddVariable("tprime_pt_ratio_"          , &tprime_pt_ratio_          );
   reader->AddVariable("helicity_tprime_"          , &helicity_tprime_          );
 
-  reader->BookMVA("BDT", weight_file_name);
+  reader->BookMVA("BDTG", weight_file_name);
 };
 //}}}
 //void THQ_BDT_Helper::clear(){{{
@@ -636,7 +636,7 @@ double THQ_BDT_Helper::EvalScore(const std::shared_ptr<BDT_Hadronic_tprime> obje
   chi2_wjets_deltaR_        = reco_condition ? wjet1_  .DeltaR(wjet2_)       : -999;
 
 
-  score_raw_ = reader->EvaluateMVA("BDT");
+  score_raw_ = reader->EvaluateMVA("BDTG");
   score_ = convert_tmva_to_prob( score_raw_ );
 
   //printf("[check] recorded dipho: %f, %f, %f, %f\n", object->diphoton->Pt(), object->diphoton->Eta(), object->diphoton->Phi(), object->diphoton->M() );
