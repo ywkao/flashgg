@@ -537,7 +537,7 @@ double THQ_BDT_Helper::EvalScore(const std::shared_ptr<BDT_Hadronic_tprime> obje
   lead_eta_            =  photons[0]->Eta();
   sublead_eta_         =  photons[1]->Eta();
   dipho_pt_over_mass_  =  object->diphoton->Pt() / object->diphoton->M();
-  dipho_cosphi_        =  TMath::Cos(photons[0]->Phi() - photons[1]->Phi());
+  dipho_cosphi_        =  abs(TMath::Cos(photons[0]->Phi() - photons[1]->Phi()));
   dipho_rapidity_      =  Rapidity(dynamic_cast<BDT_ptvec*>(object->diphoton.get()));
 
   TLorentzVector pho1, pho2;

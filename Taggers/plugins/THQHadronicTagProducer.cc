@@ -908,7 +908,7 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             printf("%s: %7.5f, "  , "jet4_btag_"                 , jet4_discr_                                                                  );
             printf("%s: %7.5f, "  , "leadPSV_"                   , dipho_lead_haspixelseed_                                                     );
             printf("%s: %7.5f, "  , "subleadPSV_"                , dipho_sublead_haspixelseed_                                                  );
-            printf("%s: %7.5f, "  , "dipho_cosphi_"              , TMath::Cos(dipho->leadingPhoton()->phi() - dipho->subLeadingPhoton()->phi()) );
+            printf("%s: %7.5f, "  , "dipho_cosphi_"              , abs(TMath::Cos(dipho->leadingPhoton()->phi() - dipho->subLeadingPhoton()->phi())) );
             printf("%s: %7.5f, "  , "dipho_rapidity_"            , tprimeTagger_nrb->get_dipho_rapidity()                                       );
             printf("%s: %7.4f, "  , "met_"                       , theMET->getCorPt()                                                           );
             printf("%s: %7.5f, "  , "dipho_pt_over_mass_"        , dipho->pt() / dipho->mass()                                                  );
