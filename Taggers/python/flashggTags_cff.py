@@ -358,9 +358,9 @@ flashggTHQHadronicTag = cms.EDProducer("FlashggTHQHadronicTagProducer",
                                        #----------------------------------------------------------------------------------------------------
                                        # bdt scores for tprime hadronic channel
                                        #----------------------------------------------------------------------------------------------------
-                                       tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_NRB_varSet8_M600_M700_20210519.weights.xml"),
-                                       #tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_NRB_varSet8_M800_M1000_20210519.weights.xml"),
-                                       #tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_NRB_varSet8_M1100_M1200_20210519.weights.xml"),
+                                       tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_NRB_varSet8_M600_M700_20210525.weights.xml"),
+                                       #tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_NRB_varSet8_M800_M1000_20210525.weights.xml"),
+                                       #tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_NRB_varSet8_M1100_M1200_20210525.weights.xml"),
                                        tprime_bdt_smh_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_SMH_varSet8_M600_M700_20210520.weights.xml"),
                                        #tprime_bdt_smh_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_SMH_varSet8_M800_M1000_20210520.weights.xml"),
                                        #tprime_bdt_smh_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_SMH_varSet8_M1100_M1200_20210520.weights.xml"),
