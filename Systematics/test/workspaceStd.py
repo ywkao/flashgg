@@ -19,7 +19,7 @@ process.load("Configuration.StandardSequences.GeometryDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 10 )
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32( 10000 )
 
 
 systlabels = [""]
@@ -313,7 +313,7 @@ useEGMTools(process)
 
 # Only run systematics for signal events
 # convention: ggh vbf wzh (wh zh) tth
-signal_processes = ["ggh_","vbf_","wzh_","wh_","zh_","bbh_","thq_","thw_","tth_","ggzh_","HHTo2B2G","GluGluHToGG","VBFHToGG","VHToGG","ttHToGG","Acceptance","hh","vbfhh","qqh","ggh","tth","vh"]
+signal_processes = ["ggh_","vbf_","wzh_","wh_","zh_","bbh_","thq_","thw_","tth_","ggzh_","HHTo2B2G","GluGluHToGG","VBFHToGG","VHToGG","ttHToGG","Acceptance","hh","vbfhh","qqh","ggh","tth","vh", "tHq"]
 is_signal = reduce(lambda y,z: y or z, map(lambda x: customize.processId.count(x), signal_processes))
 
 applyL1Prefiring = customizeForL1Prefiring(process, customize.metaConditions, customize.processId)
@@ -324,7 +324,9 @@ if is_signal:
     if customize.doHTXS:
         variablesToUse = minimalVariablesHTXS
     else:
-        variablesToUse = minimalVariables
+        import flashgg.Taggers.THQHadronicTagVariables as var
+        variablesToUse = minimalVariables + var.vtx_variables + var.dipho_variables + var.photon_variables + var.lepton_variables + var.jet_variables + var.truth_variables + var.thqmva_variables + var.gen_photon_variables
+
 
     if customize.doSystematics:
         for direction in ["Up","Down"]:
@@ -386,13 +388,15 @@ elif customize.processId == "Data":
     print "Data, so turn off all shifts and systematics, with some exceptions"
     #variablesToUse = minimalNonSignalVariables
     import flashgg.Taggers.THQHadronicTagVariables as var
-    variablesToUse = minimalNonSignalVariables + minimalVariables + var.vtx_variables + var.dipho_variables + var.photon_variables + var.lepton_variables + var.jet_variables
+    variablesToUse = minimalNonSignalVariables + var.vtx_variables + var.dipho_variables + var.photon_variables + var.lepton_variables + var.jet_variables + var.thqmva_variables + var.gen_photon_variables
     customizeSystematicsForData(process)
 else:
     print "Background MC, so store mgg and central only"
-    variablesToUse = minimalNonSignalVariables
+    #variablesToUse = minimalNonSignalVariables
+    import flashgg.Taggers.THQHadronicTagVariables as var
+    variablesToUse = minimalNonSignalVariables + var.vtx_variables + var.dipho_variables + var.photon_variables + var.lepton_variables + var.jet_variables + var.thqmva_variables + var.gen_photon_variables
     customizeSystematicsForBackground(process)
-
+           
 if customize.doubleHTagsOnly:
     variablesToUse = minimalVariables
    # if customize.processId == "Data":
@@ -400,7 +404,7 @@ if customize.doubleHTagsOnly:
   
 if customize.doDoubleHTag:
    systlabels,jetsystlabels,metsystlabels = hhc.customizeSystematics(systlabels,jetsystlabels,metsystlabels)
-           
+
 
 print "--- Systematics  with independent collections ---"
 print systlabels
@@ -445,10 +449,6 @@ process.extraDumpers = cms.Sequence()
 
 from flashgg.Taggers.TagsDumperCustomize import customizeTagsDumper
 customizeTagsDumper(process, customize) ## move all the default tags dumper configuration to this function
-
-if customize.processId == "tHq":
-    import flashgg.Taggers.THQHadronicTagVariables as var
-    variablesToUse = minimalVariables + var.vtx_variables + var.dipho_variables + var.photon_variables + var.lepton_variables + var.jet_variables #+ var.truth_variables
 
 #tagList=[
 #["UntaggedTag",4],
