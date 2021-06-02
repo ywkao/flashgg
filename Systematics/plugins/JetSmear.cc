@@ -127,12 +127,30 @@ namespace flashgg {
                 float rnd = y.userFloat(random_label_);       
                 float extra_smear_width = std::sqrt(max<float>(scale_factor*scale_factor - 1,0.)) * r;
                 float escale = (1. + rnd * extra_smear_width);
+                // for the study of jet negative energy
+                bool debug_condition = escale < 0.;
+                if(debug_condition)
+                {
+                    printf("[JetSmear.cc] escale = %f, ", escale);
+                    printf("%s: %.10f , " , "jet_pt"           , y.pt()                );
+                    printf("%s: %.10f , " , "jet_eta"          , y.eta()               );
+                    printf("%s: %.10f , " , "jet_phi"          , y.phi()               );
+                    printf("%s: %.10f , " , "jet_energy"       , y.energy()            );
+                }
                 if (debug_) {
                     std::cout << "  " << shiftLabel( syst_shift ) << ": Jet has pt=" << y.pt() << " eta=" << y.eta() << " NO GEN MATCH "
                               << " rnd=" << rnd << " r=" << r << " scale_factor=" << scale_factor << " extra_smear_width=" << extra_smear_width
                               << " --> escale=" << escale << " to get new pt " << (escale*y.pt()) << std::endl;
                 }
                 y.setP4(escale*y.p4());
+                if(debug_condition)
+                {
+                    printf("%s: %.10f , " , "new_pt"           , y.pt()                );
+                    printf("%s: %.10f , " , "new_eta"          , y.eta()               );
+                    printf("%s: %.10f , " , "new_phi"          , y.phi()               );
+                    printf("%s: %.10f , " , "new_energy"       , y.energy()            );
+                    printf("\n");
+                }
             }
         }
     }
