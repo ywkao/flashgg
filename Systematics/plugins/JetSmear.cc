@@ -63,6 +63,7 @@ namespace flashgg {
         overall_range_( conf.getParameter<std::string>( "OverallRange" ) ),
         random_label_( conf.getParameter<std::string>("RandomLabel")),
         m_rho_token(iC.consumes<double>( conf.getParameter<edm::InputTag>("rho"))),
+        //debug_( conf.getUntrackedParameter<bool>("Debug", false) ),
         debug_( conf.getUntrackedParameter<bool>("Debug", false) ),
         useTextFiles_( conf.getParameter<bool>("UseTextFiles") ),
         textFileSF_( conf.getParameter<string>("TextFileSF") ),
@@ -87,6 +88,8 @@ namespace flashgg {
 
     void JetSmear::applyCorrection( flashgg::Jet &y, int syst_shift )
     {
+        bool debug_condition = false;
+
         if( overall_range_( y ) ) {
             if ( debug_ ) {
                 std::cout << "  " << shiftLabel( syst_shift ) << ": Jet has pt=" << y.pt() << " eta=" << y.eta() << std::endl;
@@ -119,7 +122,12 @@ namespace flashgg {
                     std::cout << "  " << shiftLabel( syst_shift ) << ": Jet has pt=" << y.pt() << " eta=" << y.eta() << " genpt=" << genpt
                               << " and we apply a scale_factor to (recpt-genpt) of " << scale_factor << " to get new pt=" << newpt << std::endl;
                 }
+                if(debug_condition)
+                    std::cout << "[JetSmear.cc] Jet Pt " << y.pt() << " eta " << y.eta() << " phi " << y.phi() << " E " << y.energy() << ", ";
                 y.setP4((newpt/recpt)*y.p4());
+                if(debug_condition)
+                    std::cout << "New Pt " << y.pt() << " eta " << y.eta() << " phi " << y.phi() << " E " << y.energy() << ", " << std::endl;
+
             } else {
                 if (!y.hasUserFloat(random_label_)) {
                     throw cms::Exception("Missing embedded random number") << "Could not find key " << random_label_ << " for random numbers embedded in the jet object, please make sure to read the appropriate version of MicroAOD and/or access the correct label and/or run the randomizer on-the-fly";
@@ -127,29 +135,31 @@ namespace flashgg {
                 float rnd = y.userFloat(random_label_);       
                 float extra_smear_width = std::sqrt(max<float>(scale_factor*scale_factor - 1,0.)) * r;
                 float escale = (1. + rnd * extra_smear_width);
-                // for the study of jet negative energy
-                bool debug_condition = escale < 0.;
-                if(debug_condition)
-                {
-                    printf("[JetSmear.cc] escale = %f, ", escale);
-                    printf("%s: %.10f , " , "jet_pt"           , y.pt()                );
-                    printf("%s: %.10f , " , "jet_eta"          , y.eta()               );
-                    printf("%s: %.10f , " , "jet_phi"          , y.phi()               );
-                    printf("%s: %.10f , " , "jet_energy"       , y.energy()            );
-                }
                 if (debug_) {
                     std::cout << "  " << shiftLabel( syst_shift ) << ": Jet has pt=" << y.pt() << " eta=" << y.eta() << " NO GEN MATCH "
                               << " rnd=" << rnd << " r=" << r << " scale_factor=" << scale_factor << " extra_smear_width=" << extra_smear_width
                               << " --> escale=" << escale << " to get new pt " << (escale*y.pt()) << std::endl;
                 }
+                // for the study of jet negative energy
+                //bool debug_condition = escale < 0.;
+                if(debug_condition)
+                {
+                    std::cout << "[JetSmear.cc] escale = " << escale << ", Jet Pt " << y.pt() << " eta " << y.eta() << " phi " << y.phi() << " E " << y.energy() << ", ";
+                    //printf("[JetSmear.cc] escale = %f, ", escale);
+                    //printf("%s: %.10f , " , "jet_pt"           , y.pt()                );
+                    //printf("%s: %.10f , " , "jet_eta"          , y.eta()               );
+                    //printf("%s: %.10f , " , "jet_phi"          , y.phi()               );
+                    //printf("%s: %.10f , " , "jet_energy"       , y.energy()            );
+                }
                 y.setP4(escale*y.p4());
                 if(debug_condition)
                 {
-                    printf("%s: %.10f , " , "new_pt"           , y.pt()                );
-                    printf("%s: %.10f , " , "new_eta"          , y.eta()               );
-                    printf("%s: %.10f , " , "new_phi"          , y.phi()               );
-                    printf("%s: %.10f , " , "new_energy"       , y.energy()            );
-                    printf("\n");
+                    std::cout << "New Pt " << y.pt() << " eta " << y.eta() << " phi " << y.phi() << " E " << y.energy() << ", " << std::endl;
+                    //printf("%s: %.10f , " , "new_pt"           , y.pt()                );
+                    //printf("%s: %.10f , " , "new_eta"          , y.eta()               );
+                    //printf("%s: %.10f , " , "new_phi"          , y.phi()               );
+                    //printf("%s: %.10f , " , "new_energy"       , y.energy()            );
+                    //printf("\n");
                 }
             }
         }
