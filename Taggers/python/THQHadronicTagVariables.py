@@ -342,19 +342,23 @@ jet_variables=[
     "jet14_discr  := ? jets.size>13 ? bDiscriminatorValue_jets.at(13) : -999",
     "jet15_discr  := ? jets.size>14 ? bDiscriminatorValue_jets.at(14) : -999",
 
-    "recoMET_pt             :=getRECOMET().getCorPt()",
-    "recoMET_eta            :=getRECOMET().eta()",
-    "recoMET_phi            :=getRECOMET().getCorPhi()",
-    "recoMET_e              :=getRECOMET().energy()",
-    "solvedMET_pt           :=getMET_Pt(\"SolvedMET\")",
-    "solvedMET_eta          :=getMET_Eta(\"SolvedMET\")",
-    "solvedMET_phi          :=getMET_Phi(\"SolvedMET\")",
-    "solvedMET_e            :=getMET_E(\"SolvedMET\")",
-    "dr_leadphobjet         :=getmyfunction()",
-    "dr_leptonfwdjet        :=getdRleptonfwdjet",
-    "top_mt                 :=gettop_mt()",
-    "top_mass               :=gettop_mass()",
-    "HT                     :=getHT()"    
+    "recoMET_pt             := getRECOMET().getCorPt()",
+    "recoMET_eta            := getRECOMET().eta()",
+    "recoMET_phi            := getRECOMET().getCorPhi()",
+    "recoMET_e              := getRECOMET().energy()",
+    "solvedMET_pt           := getMET_Pt(\"SolvedMET\")",
+    "solvedMET_eta          := getMET_Eta(\"SolvedMET\")",
+    "solvedMET_phi          := getMET_Phi(\"SolvedMET\")",
+    "solvedMET_e            := getMET_E(\"SolvedMET\")",
+    "dr_leadphobjet         := getmyfunction()",
+    "dr_leptonfwdjet        := getdRleptonfwdjet",
+    "top_mt                 := gettop_mt()",
+    "top_mass               := gettop_mass()",
+    "HT                     := getHT()",    
+
+    "chi2_recoMass_wboson   := getRecoMass_wboson()",
+    "chi2_recoMass_top      := getRecoMass_top()",
+    "chi2_recoMass_tprime   := getRecoMass_tprime()"
 ]
 
 #bDiscr_values=[
@@ -448,6 +452,12 @@ truth_variables=[
     "gen_parton8_pt         := ?get_gen_pt.size>7? get_gen_pt.at(7) : -999",
     "gen_parton9_pt         := ?get_gen_pt.size>8? get_gen_pt.at(8) : -999",
     "gen_parton10_pt        := ?get_gen_pt.size>9? get_gen_pt.at(9) : -999",
+    "gen_parton11_pt        := ?get_gen_pt.size>10? get_gen_pt.at(10) : -999",
+    "gen_parton12_pt        := ?get_gen_pt.size>11? get_gen_pt.at(11) : -999",
+    "gen_parton13_pt        := ?get_gen_pt.size>12? get_gen_pt.at(12) : -999",
+    "gen_parton14_pt        := ?get_gen_pt.size>13? get_gen_pt.at(13) : -999",
+    "gen_parton15_pt        := ?get_gen_pt.size>14? get_gen_pt.at(14) : -999",
+    
 
     "gen_parton1_eta        := ?get_gen_eta.size>0? get_gen_eta.at(0) : -999",
     "gen_parton2_eta        := ?get_gen_eta.size>1? get_gen_eta.at(1) : -999",
@@ -459,6 +469,12 @@ truth_variables=[
     "gen_parton8_eta        := ?get_gen_eta.size>7? get_gen_eta.at(7) : -999",
     "gen_parton9_eta        := ?get_gen_eta.size>8? get_gen_eta.at(8) : -999",
     "gen_parton10_eta       := ?get_gen_eta.size>9? get_gen_eta.at(9) : -999",
+    "gen_parton11_eta       := ?get_gen_eta.size>10? get_gen_eta.at(10) : -999",
+    "gen_parton12_eta       := ?get_gen_eta.size>11? get_gen_eta.at(11) : -999",
+    "gen_parton13_eta       := ?get_gen_eta.size>12? get_gen_eta.at(12) : -999",
+    "gen_parton14_eta       := ?get_gen_eta.size>13? get_gen_eta.at(13) : -999",
+    "gen_parton15_eta       := ?get_gen_eta.size>14? get_gen_eta.at(14) : -999",
+    
 
     "gen_parton1_phi        := ?get_gen_phi.size>0? get_gen_phi.at(0) : -999",
     "gen_parton2_phi        := ?get_gen_phi.size>1? get_gen_phi.at(1) : -999",
@@ -470,6 +486,12 @@ truth_variables=[
     "gen_parton8_phi        := ?get_gen_phi.size>7? get_gen_phi.at(7) : -999",
     "gen_parton9_phi        := ?get_gen_phi.size>8? get_gen_phi.at(8) : -999",
     "gen_parton10_phi       := ?get_gen_phi.size>9? get_gen_phi.at(9) : -999",
+    "gen_parton11_phi       := ?get_gen_phi.size>10? get_gen_phi.at(10) : -999",
+    "gen_parton12_phi       := ?get_gen_phi.size>11? get_gen_phi.at(11) : -999",
+    "gen_parton13_phi       := ?get_gen_phi.size>12? get_gen_phi.at(12) : -999",
+    "gen_parton14_phi       := ?get_gen_phi.size>13? get_gen_phi.at(13) : -999",
+    "gen_parton15_phi       := ?get_gen_phi.size>14? get_gen_phi.at(14) : -999",
+    
 
     "gen_parton1_mass       := ?get_gen_mass.size>0? get_gen_mass.at(0) : -999",
     "gen_parton2_mass       := ?get_gen_mass.size>1? get_gen_mass.at(1) : -999",
@@ -481,6 +503,12 @@ truth_variables=[
     "gen_parton8_mass       := ?get_gen_mass.size>7? get_gen_mass.at(7) : -999",
     "gen_parton9_mass       := ?get_gen_mass.size>8? get_gen_mass.at(8) : -999",
     "gen_parton10_mass      := ?get_gen_mass.size>9? get_gen_mass.at(9) : -999",
+    "gen_parton11_mass      := ?get_gen_mass.size>10? get_gen_mass.at(10) : -999",
+    "gen_parton12_mass      := ?get_gen_mass.size>11? get_gen_mass.at(11) : -999",
+    "gen_parton13_mass      := ?get_gen_mass.size>12? get_gen_mass.at(12) : -999",
+    "gen_parton14_mass      := ?get_gen_mass.size>13? get_gen_mass.at(13) : -999",
+    "gen_parton15_mass      := ?get_gen_mass.size>14? get_gen_mass.at(14) : -999",
+    
 
     "gen_parton1_pdgId      := ?get_gen_pdgId.size>0? get_gen_pdgId.at(0) : -999",
     "gen_parton2_pdgId      := ?get_gen_pdgId.size>1? get_gen_pdgId.at(1) : -999",
@@ -492,6 +520,12 @@ truth_variables=[
     "gen_parton8_pdgId      := ?get_gen_pdgId.size>7? get_gen_pdgId.at(7) : -999",
     "gen_parton9_pdgId      := ?get_gen_pdgId.size>8? get_gen_pdgId.at(8) : -999",
     "gen_parton10_pdgId     := ?get_gen_pdgId.size>9? get_gen_pdgId.at(9) : -999",
+    "gen_parton11_pdgId     := ?get_gen_pdgId.size>10? get_gen_pdgId.at(10) : -999",
+    "gen_parton12_pdgId     := ?get_gen_pdgId.size>11? get_gen_pdgId.at(11) : -999",
+    "gen_parton13_pdgId     := ?get_gen_pdgId.size>12? get_gen_pdgId.at(12) : -999",
+    "gen_parton14_pdgId     := ?get_gen_pdgId.size>13? get_gen_pdgId.at(13) : -999",
+    "gen_parton15_pdgId     := ?get_gen_pdgId.size>14? get_gen_pdgId.at(14) : -999",
+    
 
     "gen_parton1_status     := ?get_gen_status.size>0? get_gen_status.at(0) : -999",
     "gen_parton2_status     := ?get_gen_status.size>1? get_gen_status.at(1) : -999",
@@ -503,6 +537,12 @@ truth_variables=[
     "gen_parton8_status     := ?get_gen_status.size>7? get_gen_status.at(7) : -999",
     "gen_parton9_status     := ?get_gen_status.size>8? get_gen_status.at(8) : -999",
     "gen_parton10_status    := ?get_gen_status.size>9? get_gen_status.at(9) : -999",
+    "gen_parton11_status    := ?get_gen_status.size>10? get_gen_status.at(10) : -999",
+    "gen_parton12_status    := ?get_gen_status.size>11? get_gen_status.at(11) : -999",
+    "gen_parton13_status    := ?get_gen_status.size>12? get_gen_status.at(12) : -999",
+    "gen_parton14_status    := ?get_gen_status.size>13? get_gen_status.at(13) : -999",
+    "gen_parton15_status    := ?get_gen_status.size>14? get_gen_status.at(14) : -999",
+    
 
     #--------------------------------------------------
 
@@ -516,6 +556,12 @@ truth_variables=[
     "mom_parton8_pt         := ?get_mom_pt.size>7? get_mom_pt.at(7) : -999",
     "mom_parton9_pt         := ?get_mom_pt.size>8? get_mom_pt.at(8) : -999",
     "mom_parton10_pt        := ?get_mom_pt.size>9? get_mom_pt.at(9) : -999",
+    "mom_parton11_pt        := ?get_mom_pt.size>10? get_mom_pt.at(10) : -999",
+    "mom_parton12_pt        := ?get_mom_pt.size>11? get_mom_pt.at(11) : -999",
+    "mom_parton13_pt        := ?get_mom_pt.size>12? get_mom_pt.at(12) : -999",
+    "mom_parton14_pt        := ?get_mom_pt.size>13? get_mom_pt.at(13) : -999",
+    "mom_parton15_pt        := ?get_mom_pt.size>14? get_mom_pt.at(14) : -999",
+    
 
     "mom_parton1_eta        := ?get_mom_eta.size>0? get_mom_eta.at(0) : -999",
     "mom_parton2_eta        := ?get_mom_eta.size>1? get_mom_eta.at(1) : -999",
@@ -527,6 +573,12 @@ truth_variables=[
     "mom_parton8_eta        := ?get_mom_eta.size>7? get_mom_eta.at(7) : -999",
     "mom_parton9_eta        := ?get_mom_eta.size>8? get_mom_eta.at(8) : -999",
     "mom_parton10_eta       := ?get_mom_eta.size>9? get_mom_eta.at(9) : -999",
+    "mom_parton11_eta       := ?get_mom_eta.size>10? get_mom_eta.at(10) : -999",
+    "mom_parton12_eta       := ?get_mom_eta.size>11? get_mom_eta.at(11) : -999",
+    "mom_parton13_eta       := ?get_mom_eta.size>12? get_mom_eta.at(12) : -999",
+    "mom_parton14_eta       := ?get_mom_eta.size>13? get_mom_eta.at(13) : -999",
+    "mom_parton15_eta       := ?get_mom_eta.size>14? get_mom_eta.at(14) : -999",
+    
 
     "mom_parton1_phi        := ?get_mom_phi.size>0? get_mom_phi.at(0) : -999",
     "mom_parton2_phi        := ?get_mom_phi.size>1? get_mom_phi.at(1) : -999",
@@ -538,6 +590,12 @@ truth_variables=[
     "mom_parton8_phi        := ?get_mom_phi.size>7? get_mom_phi.at(7) : -999",
     "mom_parton9_phi        := ?get_mom_phi.size>8? get_mom_phi.at(8) : -999",
     "mom_parton10_phi       := ?get_mom_phi.size>9? get_mom_phi.at(9) : -999",
+    "mom_parton11_phi       := ?get_mom_phi.size>10? get_mom_phi.at(10) : -999",
+    "mom_parton12_phi       := ?get_mom_phi.size>11? get_mom_phi.at(11) : -999",
+    "mom_parton13_phi       := ?get_mom_phi.size>12? get_mom_phi.at(12) : -999",
+    "mom_parton14_phi       := ?get_mom_phi.size>13? get_mom_phi.at(13) : -999",
+    "mom_parton15_phi       := ?get_mom_phi.size>14? get_mom_phi.at(14) : -999",
+    
 
     "mom_parton1_mass       := ?get_mom_mass.size>0? get_mom_mass.at(0) : -999",
     "mom_parton2_mass       := ?get_mom_mass.size>1? get_mom_mass.at(1) : -999",
@@ -549,6 +607,12 @@ truth_variables=[
     "mom_parton8_mass       := ?get_mom_mass.size>7? get_mom_mass.at(7) : -999",
     "mom_parton9_mass       := ?get_mom_mass.size>8? get_mom_mass.at(8) : -999",
     "mom_parton10_mass      := ?get_mom_mass.size>9? get_mom_mass.at(9) : -999",
+    "mom_parton11_mass      := ?get_mom_mass.size>10? get_mom_mass.at(10) : -999",
+    "mom_parton12_mass      := ?get_mom_mass.size>11? get_mom_mass.at(11) : -999",
+    "mom_parton13_mass      := ?get_mom_mass.size>12? get_mom_mass.at(12) : -999",
+    "mom_parton14_mass      := ?get_mom_mass.size>13? get_mom_mass.at(13) : -999",
+    "mom_parton15_mass      := ?get_mom_mass.size>14? get_mom_mass.at(14) : -999",
+    
 
     "mom_parton1_pdgId      := ?get_mom_pdgId.size>0? get_mom_pdgId.at(0) : -999",
     "mom_parton2_pdgId      := ?get_mom_pdgId.size>1? get_mom_pdgId.at(1) : -999",
@@ -560,6 +624,12 @@ truth_variables=[
     "mom_parton8_pdgId      := ?get_mom_pdgId.size>7? get_mom_pdgId.at(7) : -999",
     "mom_parton9_pdgId      := ?get_mom_pdgId.size>8? get_mom_pdgId.at(8) : -999",
     "mom_parton10_pdgId     := ?get_mom_pdgId.size>9? get_mom_pdgId.at(9) : -999",
+    "mom_parton11_pdgId     := ?get_mom_pdgId.size>10? get_mom_pdgId.at(10) : -999",
+    "mom_parton12_pdgId     := ?get_mom_pdgId.size>11? get_mom_pdgId.at(11) : -999",
+    "mom_parton13_pdgId     := ?get_mom_pdgId.size>12? get_mom_pdgId.at(12) : -999",
+    "mom_parton14_pdgId     := ?get_mom_pdgId.size>13? get_mom_pdgId.at(13) : -999",
+    "mom_parton15_pdgId     := ?get_mom_pdgId.size>14? get_mom_pdgId.at(14) : -999",
+    
 
     "mom_parton1_status     := ?get_mom_status.size>0? get_mom_status.at(0) : -999",
     "mom_parton2_status     := ?get_mom_status.size>1? get_mom_status.at(1) : -999",
@@ -571,6 +641,12 @@ truth_variables=[
     "mom_parton8_status     := ?get_mom_status.size>7? get_mom_status.at(7) : -999",
     "mom_parton9_status     := ?get_mom_status.size>8? get_mom_status.at(8) : -999",
     "mom_parton10_status    := ?get_mom_status.size>9? get_mom_status.at(9) : -999",
+    "mom_parton11_status    := ?get_mom_status.size>10? get_mom_status.at(10) : -999",
+    "mom_parton12_status    := ?get_mom_status.size>11? get_mom_status.at(11) : -999",
+    "mom_parton13_status    := ?get_mom_status.size>12? get_mom_status.at(12) : -999",
+    "mom_parton14_status    := ?get_mom_status.size>13? get_mom_status.at(13) : -999",
+    "mom_parton15_status    := ?get_mom_status.size>14? get_mom_status.at(14) : -999",
+    
 
 
     "genMatched_jet0_pdgId  := ?getMatchedPdgId.size>0?  getMatchedPdgId.at(0)  : -999",

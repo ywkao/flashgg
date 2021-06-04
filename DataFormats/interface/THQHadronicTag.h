@@ -191,18 +191,15 @@ namespace flashgg {
         float getMVAscore_smh_raw() const{
             return mva_value_smh_raw_;
         }
-        //double getMVAscore_nrb() const{
-        //    return mva_value_nrb_;
-        //}
-        //double getMVAscore_smh() const{
-        //    return mva_value_smh_;
-        //}
-        //double getMVAscore_nrb_raw() const{
-        //    return mva_value_nrb_raw_;
-        //}
-        //double getMVAscore_smh_raw() const{
-        //    return mva_value_smh_raw_;
-        //}
+        float getRecoMass_wboson() const{
+            return chi2_wboson_mass_;
+        }
+        float getRecoMass_top() const{
+            return chi2_top_mass_;
+        }
+        float getRecoMass_tprime() const{
+            return chi2_tprime_mass_;
+        }
         float get_leadGenMatch() const{
             return leadGenMatch_;
         }
@@ -432,6 +429,10 @@ namespace flashgg {
         void setMVAscore_smh(double mva_value){mva_value_smh_ = mva_value;}
         void setMVAscore_nrb_raw(double mva_value){mva_value_nrb_raw_ = mva_value;}
         void setMVAscore_smh_raw(double mva_value){mva_value_smh_raw_ = mva_value;}
+
+        void setRecoMass_wboson(double wboson_mass){chi2_wboson_mass_ = wboson_mass;}
+        void setRecoMass_top(double top_mass){chi2_top_mass_ = top_mass;}
+        void setRecoMass_tprime(double tprime_mass){chi2_tprime_mass_ = tprime_mass;}
         
         void setLeadGenMatch    (double genMatchType) {leadGenMatch_    = genMatchType;}
         void setSubLeadGenMatch (double genMatchType) {subleadGenMatch_ = genMatchType;}
@@ -657,6 +658,9 @@ namespace flashgg {
         float mva_value_smh_;
         float mva_value_nrb_raw_;
         float mva_value_smh_raw_;
+        float chi2_wboson_mass_;
+        float chi2_top_mass_;
+        float chi2_tprime_mass_;
         float leadGenMatch_;
         float subleadGenMatch_;
         float leadPrompt_;
