@@ -228,6 +228,7 @@ public:
   void print_details(InputVariables var);
   void print_details_cout(InputVariables var);
   void print_details_more(MoreVariables var);
+  void print_details_jets(MoreVariables var);
 
 private:
   std::shared_ptr<TMVA::Reader> reader_ = nullptr;
@@ -653,7 +654,27 @@ void THQ_BDT_Helper::print_details_more(MoreVariables var)
     std::cout << "jet15_energy_: "     << var.jet15_energy_     << ", ";
     std::cout << "jet15_mass_: "       << var.jet15_mass_       << ", ";
     std::cout << "jet15_btag_: "       << var.jet15_btag_       << ", ";
-    std::cout << "jet15_btag_: "       << var.jet15_btag_       << ", ";
+};
+//}}}
+// print details jets{{{
+inline
+void THQ_BDT_Helper::print_details_jets(MoreVariables var)
+{
+    std::cout << "jet1  pt: " << var.jet1_pt_  << ", eta: " << var.jet1_eta_  << ", phi: " << var.jet1_phi_  << ", E: " << var.jet1_energy_  << std::endl;
+    std::cout << "jet2  pt: " << var.jet2_pt_  << ", eta: " << var.jet2_eta_  << ", phi: " << var.jet2_phi_  << ", E: " << var.jet2_energy_  << std::endl;
+    std::cout << "jet3  pt: " << var.jet3_pt_  << ", eta: " << var.jet3_eta_  << ", phi: " << var.jet3_phi_  << ", E: " << var.jet3_energy_  << std::endl;
+    std::cout << "jet4  pt: " << var.jet4_pt_  << ", eta: " << var.jet4_eta_  << ", phi: " << var.jet4_phi_  << ", E: " << var.jet4_energy_  << std::endl;
+    std::cout << "jet5  pt: " << var.jet5_pt_  << ", eta: " << var.jet5_eta_  << ", phi: " << var.jet5_phi_  << ", E: " << var.jet5_energy_  << std::endl;
+    std::cout << "jet6  pt: " << var.jet6_pt_  << ", eta: " << var.jet6_eta_  << ", phi: " << var.jet6_phi_  << ", E: " << var.jet6_energy_  << std::endl;
+    std::cout << "jet7  pt: " << var.jet7_pt_  << ", eta: " << var.jet7_eta_  << ", phi: " << var.jet7_phi_  << ", E: " << var.jet7_energy_  << std::endl;
+    std::cout << "jet8  pt: " << var.jet8_pt_  << ", eta: " << var.jet8_eta_  << ", phi: " << var.jet8_phi_  << ", E: " << var.jet8_energy_  << std::endl;
+    std::cout << "jet9  pt: " << var.jet9_pt_  << ", eta: " << var.jet9_eta_  << ", phi: " << var.jet9_phi_  << ", E: " << var.jet9_energy_  << std::endl;
+    std::cout << "jet10 pt: " << var.jet10_pt_ << ", eta: " << var.jet10_eta_ << ", phi: " << var.jet10_phi_ << ", E: " << var.jet10_energy_ << std::endl;
+    std::cout << "jet11 pt: " << var.jet11_pt_ << ", eta: " << var.jet11_eta_ << ", phi: " << var.jet11_phi_ << ", E: " << var.jet11_energy_ << std::endl;
+    std::cout << "jet12 pt: " << var.jet12_pt_ << ", eta: " << var.jet12_eta_ << ", phi: " << var.jet12_phi_ << ", E: " << var.jet12_energy_ << std::endl;
+    std::cout << "jet13 pt: " << var.jet13_pt_ << ", eta: " << var.jet13_eta_ << ", phi: " << var.jet13_phi_ << ", E: " << var.jet13_energy_ << std::endl;
+    std::cout << "jet14 pt: " << var.jet14_pt_ << ", eta: " << var.jet14_eta_ << ", phi: " << var.jet14_phi_ << ", E: " << var.jet14_energy_ << std::endl;
+    std::cout << "jet15 pt: " << var.jet15_pt_ << ", eta: " << var.jet15_eta_ << ", phi: " << var.jet15_phi_ << ", E: " << var.jet15_energy_ << std::endl;
 };
 //}}}
 
