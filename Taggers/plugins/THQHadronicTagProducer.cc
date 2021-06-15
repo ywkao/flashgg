@@ -595,6 +595,7 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             if( !thejet->passesPuJetId( dipho ) ) continue;
             if( fabs( thejet->eta() ) > jetEtaThreshold_ ) continue;
             if( thejet->pt() < jetPtThreshold_ ) continue;
+            if( thejet->energy() < 0.1 ) continue; // filter out low energy jet
 
             dRPhoLeadJet    = deltaR( thejet->eta(), thejet->phi(), dipho->leadingPhoton()->superCluster()->eta(), dipho->leadingPhoton()->superCluster()->phi() ) ;
             dRPhoSubLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->subLeadingPhoton()->superCluster()->eta(),dipho->subLeadingPhoton()->superCluster()->phi() );
@@ -1058,6 +1059,12 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         //----------------------------------------------------------------------------------------------------
         // Consistency check  last update: 31.05.2021, 19.05.2021
         //----------------------------------------------------------------------------------------------------
+        bool print_jet_info = false;
+        if(print_jet_info)
+        {
+            tprimeTagger_nrb->print_details_jets( MyCheckVarList );
+        }
+
         bool do_consistency_check = false;
         if(do_consistency_check)
         {
