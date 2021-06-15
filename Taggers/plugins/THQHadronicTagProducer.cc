@@ -595,7 +595,6 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             if( !thejet->passesPuJetId( dipho ) ) continue;
             if( fabs( thejet->eta() ) > jetEtaThreshold_ ) continue;
             if( thejet->pt() < jetPtThreshold_ ) continue;
-            if( thejet->energy() < 0.1 ) continue; // filter out low energy jet
 
             dRPhoLeadJet    = deltaR( thejet->eta(), thejet->phi(), dipho->leadingPhoton()->superCluster()->eta(), dipho->leadingPhoton()->superCluster()->phi() ) ;
             dRPhoSubLeadJet = deltaR( thejet->eta(), thejet->phi(), dipho->subLeadingPhoton()->superCluster()->eta(),dipho->subLeadingPhoton()->superCluster()->phi() );
