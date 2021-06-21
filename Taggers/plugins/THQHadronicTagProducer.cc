@@ -516,9 +516,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         if( dipho->subLeadingPhoton()->pt() < ( dipho->mass() )*subleadPhoOverMassThreshold_ ) continue;
         idmva1 = dipho->leadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
         idmva2 = dipho->subLeadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
-        if( idmva1 < -0.9 || idmva2 < -0.9 ) continue; // for the purpose of data-driven study, use looser criteria on photon idmva
-        //if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
-        //if( (!evt.isRealData()) && (idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_) ) continue; // for ntuple production, data skips the condition
+        //if( idmva1 < -0.9 || idmva2 < -0.9 ) continue; // for the purpose of data-driven study, use looser criteria on photon idmva
+        if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
         //if( mvares->result < MVAThreshold_ ) continue;            //DiPho_MVA
 
         photonSelection = true;
@@ -839,6 +838,7 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
   
         bool pass_eta_criteria_on_wjets = ( cov_wjet1.Eta() < 3. && cov_wjet2.Eta() < 3. );
         if( !pass_eta_criteria_on_wjets ) continue;
+        if( !has_resonable_reco ) continue;
   
         min_chi2_value_2x2 = has_resonable_reco ? min_chi2_value_2x2 : -1.;
         //----------------------------------------------------------------------------------------------------
@@ -1100,8 +1100,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         // Selection on BDT scorers
         //----------------------------------------------------------------------------------------------------
         // select events that pass specified bdt scores
-        //if(mva_value_nrb < 0.56) continue;
-        //if(mva_value_smh < 0.52) continue;
+        if(mva_value_nrb < 0.530) continue;
+        if(mva_value_smh < 0.828) continue;
 
         /*---------------------------------------------------------------------------------------
         # Evaluate MVA
