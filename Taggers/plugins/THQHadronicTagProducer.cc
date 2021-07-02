@@ -516,8 +516,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         if( dipho->subLeadingPhoton()->pt() < ( dipho->mass() )*subleadPhoOverMassThreshold_ ) continue;
         idmva1 = dipho->leadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
         idmva2 = dipho->subLeadingPhoton()->phoIdMvaDWrtVtx( dipho->vtx() );
-        //if( idmva1 < -0.9 || idmva2 < -0.9 ) continue; // for the purpose of data-driven study, use looser criteria on photon idmva
-        if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
+        if( idmva1 < -0.9 || idmva2 < -0.9 ) continue; // for the purpose of data-driven study, use looser criteria on photon idmva
+        //if( idmva1 < PhoMVAThreshold_ || idmva2 < PhoMVAThreshold_ ) continue;
         //if( mvares->result < MVAThreshold_ ) continue;            //DiPho_MVA
 
         photonSelection = true;
@@ -1100,8 +1100,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         // Selection on BDT scorers
         //----------------------------------------------------------------------------------------------------
         // select events that pass specified bdt scores
-        if(mva_value_nrb < 0.530) continue;
-        if(mva_value_smh < 0.828) continue;
+        //if(mva_value_nrb < 0.530) continue;
+        //if(mva_value_smh < 0.828) continue;
 
         /*---------------------------------------------------------------------------------------
         # Evaluate MVA
@@ -1130,6 +1130,8 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
             //thqhtags_obj.setLeptonType(LeptonType);
             thqhtags_obj.includeWeights( *dipho );
             thqhtags_obj.photonWeights = dipho->leadingPhoton()->centralWeight()*dipho->subLeadingPhoton()->centralWeight() ;
+
+            thqhtags_obj.setDiphoRapidity(MVAvarList.dipho_rapidity_);
 
             thqhtags_obj.setLeadGenMatch(dipho->leadingPhoton()->genMatchType());
             thqhtags_obj.setSubLeadGenMatch(dipho->subLeadingPhoton()->genMatchType());

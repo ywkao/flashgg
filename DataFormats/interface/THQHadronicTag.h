@@ -200,6 +200,9 @@ namespace flashgg {
         float getRecoMass_tprime() const{
             return chi2_tprime_mass_;
         }
+        float get_diphoRapidity() const{
+            return dipho_rapidity_;
+        }
         float get_leadGenMatch() const{
             return leadGenMatch_;
         }
@@ -434,6 +437,7 @@ namespace flashgg {
         void setRecoMass_top(double top_mass){chi2_top_mass_ = top_mass;}
         void setRecoMass_tprime(double tprime_mass){chi2_tprime_mass_ = tprime_mass;}
         
+        void setDiphoRapidity   (double rapidity)     {dipho_rapidity_  = rapidity;}
         void setLeadGenMatch    (double genMatchType) {leadGenMatch_    = genMatchType;}
         void setSubLeadGenMatch (double genMatchType) {subleadGenMatch_ = genMatchType;}
         void setLeadPrompt      (double isPrompt)     {leadPrompt_      = isPrompt;    }
@@ -661,6 +665,7 @@ namespace flashgg {
         float chi2_wboson_mass_;
         float chi2_top_mass_;
         float chi2_tprime_mass_;
+        float dipho_rapidity_;
         float leadGenMatch_;
         float subleadGenMatch_;
         float leadPrompt_;

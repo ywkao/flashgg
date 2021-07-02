@@ -32,6 +32,7 @@ vtx_truth_variables = [
 dipho_variables=[
     "dipho_sumpt            := diPhoton.sumPt",
     "dipho_cosphi           := abs(cos(diPhoton.leadingPhoton.phi - diPhoton.subLeadingPhoton.phi))",
+    "dipho_rapidity         := get_diphoRapidity",
     "dipho_mass             := diPhoton.mass",
     "dipho_pt               := diPhoton.pt",
     "dipho_phi              := diPhoton.phi",

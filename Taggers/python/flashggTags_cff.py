@@ -278,7 +278,7 @@ flashggTHQLeptonicTag = cms.EDProducer("FlashggTHQLeptonicTagProducer",
                                        MVAMethod = cms.string("BDT"),
                                        GenJetTag = cms.InputTag("slimmedGenJets"),
                                        muonEtaThreshold = cms.double(2.4),
-                                       muonPtThreshold = cms.double(5.0),
+                                       muonPtThreshold = cms.double(10.0),
                                        electronPtThreshold = cms.double(10.0),                        
                                        electronEtaThresholds = cms.vdouble(1.4442,1.566,2.4),
                                        leadPhoOverMassThreshold = cms.double(0.33),
@@ -358,6 +358,8 @@ flashggTHQHadronicTag = cms.EDProducer("FlashggTHQHadronicTagProducer",
                                        #----------------------------------------------------------------------------------------------------
                                        # bdt scores for tprime hadronic channel
                                        #----------------------------------------------------------------------------------------------------
+                                       #tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_NRB_varSet8_M600_M700_20210525.weights.xml"),
+                                       #tprime_bdt_smh_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_SMH_varSet8_M600_M700_20210520.weights.xml"),
                                        tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_NRB_varSet8_M600_M700_20210620.weights.xml"),
                                        tprime_bdt_smh_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_SMH_varSet8_M600_M700_20210620.weights.xml"),
                                        #tprime_bdt_nrb_xmlfile = cms.FileInPath("flashgg/Taggers/mydata/TMVAClassification_BDTG_tprime_NRB_varSet8_M800_M1000_20210620.weights.xml"),
