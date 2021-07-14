@@ -1102,6 +1102,19 @@ void THQHadronicTagProducer::produce( Event &evt, const EventSetup & )
         // select events that pass specified bdt scores
         //if(mva_value_nrb < 0.530) continue;
         //if(mva_value_smh < 0.828) continue;
+        if(evt.isRealData() && mva_value_nrb > 0.530 && mva_value_smh > 0.828) 
+        {
+            printf(">>> start my check: ");
+            printf("%s: %.10f\n" , "diphoton_mass_"           , dipho->mass()                );
+            printf("%s: %.10f\n" , "diphoton_pt_"             , dipho->pt()                  );
+            std::cout << "score_nrb_ = " << mva_value_nrb << ", ";
+            std::cout << "score_smh_ = " << mva_value_smh << std::endl;
+    
+            std::cout << "[Info] run:lumi:event = ";
+            std::cout << evt.id().run() << ":";
+            std::cout << evt.luminosityBlock() << ":";
+            std::cout << evt.id().event() << std::endl;
+        }
 
         /*---------------------------------------------------------------------------------------
         # Evaluate MVA
